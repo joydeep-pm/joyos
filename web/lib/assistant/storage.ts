@@ -7,6 +7,11 @@ function getCacheDir(): string {
     return path.resolve(process.env.ASSISTANT_CACHE_DIR);
   }
 
+  // On Vercel (or other serverless), use /tmp as it's the only writable directory
+  if (process.env.VERCEL || process.env.NODE_ENV === "production") {
+    return "/tmp/.cache";
+  }
+
   return path.join(getPersonalOsRoot(), ".cache");
 }
 
