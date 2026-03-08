@@ -1,0 +1,131 @@
+{
+  "id": "core_execution",
+  "name": "Core Execution",
+  "version": "0.1.0",
+  "description": "Core Personal OS actions for capture, triage, task creation, and status updates.",
+  "actions": [
+    {
+      "id": "capture_item",
+      "name": "Capture Backlog Item",
+      "description": "Append a raw note to BACKLOG.md for later triage.",
+      "toolName": "capture",
+      "params": [
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": "Backlog line to capture."
+        }
+      ]
+    },
+    {
+      "id": "process_backlog",
+      "name": "Process Backlog",
+      "description": "Analyze backlog for ready tasks, duplicates, and clarifications.",
+      "toolName": "process_backlog_with_dedup",
+      "params": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": false,
+          "description": "Optional explicit backlog items. If omitted, reads BACKLOG.md."
+        }
+      ]
+    },
+    {
+      "id": "clear_backlog",
+      "name": "Clear Backlog",
+      "description": "Reset BACKLOG.md to placeholder state.",
+      "toolName": "clear_backlog"
+    },
+    {
+      "id": "create_task",
+      "name": "Create Task",
+      "description": "Create a new task markdown document in Tasks/.",
+      "toolName": "create_task",
+      "params": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Task title."
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "Task category.",
+          "default": "other"
+        },
+        {
+          "name": "priority",
+          "type": "string",
+          "required": false,
+          "description": "Priority level.",
+          "enum": ["P0", "P1", "P2", "P3"],
+          "default": "P2"
+        }
+      ]
+    },
+    {
+      "id": "update_task_status",
+      "name": "Update Task Status",
+      "description": "Update a task status code (n/s/b/d).",
+      "toolName": "update_task_status",
+      "params": [
+        {
+          "name": "filename",
+          "type": "string",
+          "required": true,
+          "description": "Task filename, with or without .md extension."
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": true,
+          "description": "New status code.",
+          "enum": ["n", "s", "b", "d"]
+        }
+      ]
+    },
+    {
+      "id": "list_tasks",
+      "name": "List Tasks",
+      "description": "List tasks with optional filters.",
+      "toolName": "list_tasks",
+      "params": [
+        {
+          "name": "category",
+          "type": "array",
+          "required": false,
+          "description": "Category filters."
+        },
+        {
+          "name": "priority",
+          "type": "array",
+          "required": false,
+          "description": "Priority filters."
+        },
+        {
+          "name": "status",
+          "type": "array",
+          "required": false,
+          "description": "Status filters."
+        },
+        {
+          "name": "includeDone",
+          "type": "boolean",
+          "required": false,
+          "description": "Include completed tasks.",
+          "default": false
+        }
+      ]
+    },
+    {
+      "id": "system_status",
+      "name": "System Status",
+      "description": "Return active task and backlog status overview.",
+      "toolName": "get_system_status"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+node_modules/
+.next/
+coverage/
+.cache/
+*.tsbuildinfo
+.env.local

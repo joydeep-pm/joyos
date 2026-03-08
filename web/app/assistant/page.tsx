@@ -1,0 +1,516 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { api } from "@/lib/client-api";
+import { EmptyState, PriorityBadge } from "@/components/ui";
+import type {
+  AssistantAlert,
+  AssistantCommsHistory,
+  AssistantContext,
+  AssistantQueueItem,
+  AssistantQueueStatus,
+  DailyBrief,
+  OutcomeClosureKpi,
+  WeeklyReview
+} from "@/lib/types";
+
+const queueStatuses: AssistantQueueStatus[] = ["queued", "in_progress", "awaiting_input", "done", "dropped"];
+
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function isoWeekIdFromDate(dateInput?: string): string {
+  const date = dateInput ? new Date(`${dateInput}T00:00:00`) : new Date();
+  const utc = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = utc.getUTCDay() || 7;
+  utc.setUTCDate(utc.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
+  const week = Math.ceil(((utc.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  return `${utc.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+}
+
+function severityClass(severity: "high" | "medium" | "low"): string {
+  if (severity === "high") return "border-rose-200 bg-rose-50 text-rose-900";
+  if (severity === "medium") return "border-amber-200 bg-amber-50 text-amber-900";
+  return "border-sky-200 bg-sky-50 text-sky-900";
+}
+
+export default function AssistantPage() {
+  const [date, setDate] = useState(todayIso());
+  const [context, setContext] = useState<AssistantContext | null>(null);
+  const [brief, setBrief] = useState<DailyBrief | null>(null);
+  const [queue, setQueue] = useState<AssistantQueueItem[]>([]);
+  const [comms, setComms] = useState<AssistantCommsHistory | null>(null);
+  const [review, setReview] = useState<WeeklyReview | null>(null);
+  const [kpi, setKpi] = useState<OutcomeClosureKpi | null>(null);
+  const [alerts, setAlerts] = useState<AssistantAlert[]>([]);
+  const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
+  const [notes, setNotes] = useState("");
+  const [destination, setDestination] = useState("stakeholders@local");
+  const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [commsEnabled, setCommsEnabled] = useState(true);
+  const [reviewEnabled, setReviewEnabled] = useState(true);
+  const [alertsEnabled, setAlertsEnabled] = useState(true);
+
+  const weekId = useMemo(() => isoWeekIdFromDate(date), [date]);
+
+  const load = async () => {
+    setLoading(true);
+
+    const [contextRes, briefRes, queueRes, commsRes, reviewRes, alertsRes, kpiRes] = await Promise.all([
+      api.getAssistantContext(),
+      api.getAssistantBrief(date),
+      api.getAssistantQueue(),
+      api.getCommsHistory(),
+      api.getAssistantReview(weekId),
+      api.getAssistantAlerts(date),
+      api.getOutcomeClosureKpi(weekId)
+    ]);
+
+    if (contextRes.ok && contextRes.data) setContext(contextRes.data);
+    if (briefRes.ok && briefRes.data) {
+      setBrief(briefRes.data);
+      setSelectedTaskIds(briefRes.data.topOutcomes.map((item) => item.taskId).slice(0, 3));
+    }
+    if (queueRes.ok && Array.isArray(queueRes.data)) setQueue(queueRes.data);
+
+    if (commsRes.ok && commsRes.data) {
+      setComms(commsRes.data);
+      setCommsEnabled(true);
+    } else if (commsRes.error?.code === "FEATURE_DISABLED") {
+      setCommsEnabled(false);
+      setComms(null);
+    }
+
+    if (reviewRes.ok && reviewRes.data) {
+      setReview(reviewRes.data);
+      setReviewEnabled(true);
+    } else if (reviewRes.error?.code === "FEATURE_DISABLED") {
+      setReviewEnabled(false);
+      setReview(null);
+    }
+
+    if (alertsRes.ok && Array.isArray(alertsRes.data)) {
+      setAlerts(alertsRes.data);
+      setAlertsEnabled(true);
+    } else if (alertsRes.error?.code === "FEATURE_DISABLED") {
+      setAlertsEnabled(false);
+      setAlerts([]);
+    }
+
+    if (kpiRes.ok && kpiRes.data) {
+      setKpi(kpiRes.data);
+    } else if (kpiRes.error?.code === "FEATURE_DISABLED") {
+      setKpi(null);
+    }
+
+    const responseErrors = [contextRes, briefRes, queueRes, commsRes, reviewRes, alertsRes, kpiRes]
+      .map((entry) => entry.error)
+      .filter((entry): entry is { code: string; message: string } => entry !== undefined && entry.code !== "FEATURE_DISABLED");
+
+    if (responseErrors.length) {
+      setMessage(responseErrors[0].message);
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    void load();
+  }, [date, weekId]);
+
+  const top3Selected = useMemo(() => selectedTaskIds.slice(0, 3), [selectedTaskIds]);
+  const latestDraft = comms?.drafts[0];
+
+  const commitDayPlan = async () => {
+    setBusy("commit");
+    const response = await api.commitAssistantPlan({
+      date,
+      taskIds: top3Selected,
+      notes: notes.trim() || undefined
+    });
+
+    if (!response.ok) {
+      setMessage(response.error?.message ?? "Unable to commit day plan.");
+      setBusy(null);
+      return;
+    }
+
+    setMessage(`Committed ${response.data?.items.length ?? 0} outcome(s) for ${date}.`);
+    setNotes("");
+    await load();
+    setBusy(null);
+  };
+
+  const refreshContext = async () => {
+    setBusy("rebuild");
+    const response = await api.rebuildAssistantContext();
+    if (!response.ok) {
+      setMessage(response.error?.message ?? "Unable to rebuild context.");
+      setBusy(null);
+      return;
+    }
+    setMessage("Assistant context rebuilt.");
+    await load();
+    setBusy(null);
+  };
+
+  const updateQueueStatus = async (id: string, status: AssistantQueueStatus) => {
+    const response = await api.updateAssistantQueueStatus(id, status);
+    if (!response.ok) {
+      setMessage(response.error?.message ?? "Unable to update queue item.");
+      return;
+    }
+    setQueue((current) => current.map((item) => (item.id === id ? response.data ?? item : item)));
+  };
+
+  const resolveAlert = async (alertId: string, actionId?: string) => {
+    setBusy(`alert:${alertId}`);
+    const response = await api.resolveAssistantAlert(alertId, actionId, "user");
+    if (!response.ok) {
+      setMessage(response.error?.message ?? "Unable to resolve alert.");
+      setBusy(null);
+      return;
+    }
+    setMessage(response.data?.actionResult ?? `Resolved alert ${alertId}.`);
+    await load();
+    setBusy(null);
+  };
+
+  const createDraft = async (type: "stakeholder_update" | "blocked_followup") => {
+    setBusy("draft");
+    const response = await api.createCommsDraft({ type, destination, date });
+    if (!response.ok) {
+      setMessage(response.error?.message ?? "Unable to create draft.");
+      setBusy(null);
+      return;
+    }
+    setMessage(`Draft created: ${response.data?.subject ?? "outbound update"}`);
+    await load();
+    setBusy(null);
+  };
+
+  const approveDraft = async (id: string) => {
+    setBusy(`approve:${id}`);
+    const response = await api.approveCommsDraft(id, "user");
+    if (!response.ok) {
+      setMessage(response.error?.message ?? "Unable to approve draft.");
+      setBusy(null);
+      return;
+    }
+    setMessage(`Draft approved (${response.data?.approvalToken?.slice(0, 8) ?? "token"}...).`);
+    await load();
+    setBusy(null);
+  };
+
+  const sendDraft = async (id: string) => {
+    setBusy(`send:${id}`);
+    const response = await api.sendCommsDraft(id, "user");
+    if (!response.ok) {
+      setMessage(response.error?.message ?? "Unable to send draft.");
+      setBusy(null);
+      return;
+    }
+    setMessage(response.data?.message ?? "Send attempted.");
+    await load();
+    setBusy(null);
+  };
+
+  return (
+    <section className="space-y-6">
+      <div className="rounded-3xl border border-ink/10 bg-white/85 p-6 shadow-panel">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate">Execution assistant</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Daily brief and action queue</h2>
+            <p className="mt-2 text-sm text-ink/65">
+              Commit top outcomes, track drift during the day, and draft outbound updates with explicit approval.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              type="date"
+              value={date}
+              onChange={(event) => setDate(event.target.value)}
+              className="rounded-xl border border-ink/20 bg-white px-3 py-2 text-sm"
+            />
+            <button
+              type="button"
+              onClick={refreshContext}
+              disabled={busy === "rebuild"}
+              className="rounded-xl border border-ink/20 bg-cloud px-4 py-2 text-sm font-semibold text-ink"
+            >
+              {busy === "rebuild" ? "Rebuilding..." : "Rebuild context"}
+            </button>
+          </div>
+        </div>
+        {message && <p className="mt-3 text-sm text-ink/75">{message}</p>}
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="rounded-2xl border border-ink/10 bg-white/85 p-4 shadow-card">
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate">This week</h3>
+            <Link href="/review" className="text-xs font-semibold text-ink underline-offset-2 hover:underline">
+              Open weekly review
+            </Link>
+          </div>
+          {!reviewEnabled ? (
+            <p className="mt-2 text-sm text-ink/65">Weekly review is disabled by feature flag.</p>
+          ) : !review ? (
+            <p className="mt-2 text-sm text-ink/65">Loading weekly scorecard...</p>
+          ) : (
+            <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+              <div className="rounded-xl border border-ink/10 bg-cloud/60 p-3">
+                <p className="text-xs text-ink/60">Committed</p>
+                <p className="mt-1 text-xl font-semibold">{review.scorecard.committedCount}</p>
+              </div>
+              <div className="rounded-xl border border-ink/10 bg-cloud/60 p-3">
+                <p className="text-xs text-ink/60">Completed</p>
+                <p className="mt-1 text-xl font-semibold">{review.scorecard.completedCount}</p>
+              </div>
+              <div className="rounded-xl border border-ink/10 bg-cloud/60 p-3">
+                <p className="text-xs text-ink/60">Rollover</p>
+                <p className="mt-1 text-xl font-semibold">{review.scorecard.rolloverCount}</p>
+              </div>
+              <div className="rounded-xl border border-ink/10 bg-cloud/60 p-3">
+                <p className="text-xs text-ink/60">Closure rate</p>
+                <p className="mt-1 text-xl font-semibold">{Math.round(review.scorecard.closureRate * 100)}%</p>
+              </div>
+            </div>
+          )}
+          {kpi && (
+            <p className="mt-3 text-xs text-ink/65">
+              KPI target: {Math.round(kpi.target * 100)}% ({kpi.metTarget ? "on track" : "below target"})
+            </p>
+          )}
+        </div>
+
+        <div className="rounded-2xl border border-ink/10 bg-white/85 p-4 shadow-card">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate">Top alerts</h3>
+          {!alertsEnabled ? (
+            <p className="mt-2 text-sm text-ink/65">Alerts are disabled by feature flag.</p>
+          ) : alerts.length === 0 ? (
+            <p className="mt-2 text-sm text-ink/65">No active alert.</p>
+          ) : (
+            <ul className="mt-3 space-y-2">
+              {alerts.slice(0, 3).map((alert) => (
+                <li key={alert.id} className={`rounded-xl border p-3 ${severityClass(alert.severity)}`}>
+                  <p className="text-sm font-medium">
+                    {alert.type === "wip_limit"
+                      ? alert.message
+                      : `${alert.taskTitle}: ${alert.fromPriority} -> ${alert.toPriority}`}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {alert.correctiveActions.slice(0, 2).map((action) => (
+                      <button
+                        key={action.id}
+                        type="button"
+                        onClick={() => void resolveAlert(alert.id, action.id)}
+                        disabled={busy === `alert:${alert.id}`}
+                        className="rounded-lg border border-ink/25 bg-white/80 px-2 py-1 text-xs font-semibold text-ink"
+                      >
+                        {action.label}
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => void resolveAlert(alert.id)}
+                      disabled={busy === `alert:${alert.id}`}
+                      className="rounded-lg border border-ink/25 bg-white/80 px-2 py-1 text-xs font-semibold text-ink"
+                    >
+                      Resolve
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      {loading ? (
+        <p className="text-sm text-ink/65">Loading assistant state...</p>
+      ) : !brief ? (
+        <EmptyState title="No brief available" subtitle="Try rebuilding context and generating the brief again." />
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-[1.8fr_1fr]">
+          <div className="space-y-6">
+            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h3 className="text-lg font-semibold">Morning brief: top outcomes</h3>
+                <button
+                  type="button"
+                  onClick={commitDayPlan}
+                  disabled={busy === "commit"}
+                  className="rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-cloud disabled:opacity-60"
+                >
+                  {busy === "commit" ? "Committing..." : "Commit day plan"}
+                </button>
+              </div>
+
+              {brief.topOutcomes.length === 0 ? (
+                <p className="mt-3 text-sm text-ink/65">No candidate outcomes found. Triage backlog and activate key tasks.</p>
+              ) : (
+                <ul className="mt-4 space-y-3">
+                  {brief.topOutcomes.map((outcome) => (
+                    <li key={outcome.id} className="rounded-2xl border border-ink/10 bg-cloud/70 p-4">
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedTaskIds.includes(outcome.taskId)}
+                          onChange={(event) => {
+                            setSelectedTaskIds((current) => {
+                              if (event.target.checked) return [...current, outcome.taskId].slice(0, 3);
+                              return current.filter((item) => item !== outcome.taskId);
+                            });
+                          }}
+                          className="mt-1 h-4 w-4 rounded border-ink/30"
+                        />
+                        <div className="space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <PriorityBadge priority={outcome.priority} />
+                            <span className="mono text-xs text-ink/60">score {outcome.score}</span>
+                          </div>
+                          <h4 className="font-semibold text-ink">{outcome.title}</h4>
+                          <p className="text-sm text-ink/70">{outcome.whyNow}</p>
+                          <p className="text-xs text-ink/60">{outcome.goalReference}</p>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <textarea
+                value={notes}
+                onChange={(event) => setNotes(event.target.value)}
+                className="mt-4 min-h-20 w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm"
+                placeholder="Optional commitment notes"
+              />
+              <p className="mt-2 text-xs text-ink/55">Midday checkpoint: {brief.middayCheckpoint}</p>
+              <p className="mt-1 text-xs text-ink/55">Evening closure: {brief.eveningClosurePrompt}</p>
+            </div>
+
+            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
+              <h3 className="text-lg font-semibold">Action queue</h3>
+              {queue.length === 0 ? (
+                <p className="mt-3 text-sm text-ink/65">No queued items yet. Commit the day plan to seed execution.</p>
+              ) : (
+                <ul className="mt-4 space-y-3">
+                  {queue.map((item) => (
+                    <li key={item.id} className="rounded-2xl border border-ink/10 bg-cloud/60 p-4">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <PriorityBadge priority={item.priority} />
+                            <span className="text-xs text-ink/60">{item.goalReference}</span>
+                          </div>
+                          <h4 className="mt-1 font-semibold text-ink">{item.title}</h4>
+                        </div>
+                        <select
+                          value={item.status}
+                          onChange={(event) => void updateQueueStatus(item.id, event.target.value as AssistantQueueStatus)}
+                          className="rounded-lg border border-ink/20 bg-white px-2 py-1 text-xs"
+                        >
+                          {queueStatuses.map((status) => (
+                            <option key={status} value={status}>
+                              {status}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          <aside className="space-y-6">
+            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
+              <h3 className="text-lg font-semibold">Risk and drift</h3>
+              {!context || context.driftAlerts.length === 0 ? (
+                <p className="mt-2 text-sm text-ink/65">No drift alert active.</p>
+              ) : (
+                <ul className="mt-3 space-y-2">
+                  {context.driftAlerts.slice(0, 6).map((alert) => (
+                    <li key={alert.id} className={`rounded-xl border p-3 text-sm ${severityClass(alert.severity)}`}>
+                      {alert.message}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
+              <h3 className="text-lg font-semibold">Outbound updates</h3>
+              {!commsEnabled ? (
+                <p className="mt-2 text-sm text-ink/65">Comms module is disabled by feature flag.</p>
+              ) : (
+                <>
+                  <input
+                    value={destination}
+                    onChange={(event) => setDestination(event.target.value)}
+                    className="mt-3 w-full rounded-xl border border-ink/20 bg-white px-3 py-2 text-sm"
+                    placeholder="Destination"
+                  />
+                  <div className="mt-3 grid gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void createDraft("stakeholder_update")}
+                      disabled={busy === "draft"}
+                      className="rounded-xl border border-ink/20 bg-cloud px-3 py-2 text-sm font-semibold text-ink"
+                    >
+                      Draft stakeholder update
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void createDraft("blocked_followup")}
+                      disabled={busy === "draft"}
+                      className="rounded-xl border border-ink/20 bg-cloud px-3 py-2 text-sm font-semibold text-ink"
+                    >
+                      Draft blocker follow-up
+                    </button>
+                  </div>
+
+                  {!latestDraft ? (
+                    <p className="mt-3 text-sm text-ink/65">No draft yet.</p>
+                  ) : (
+                    <div className="mt-4 rounded-xl border border-ink/10 bg-cloud/60 p-3">
+                      <p className="text-xs text-ink/60">{latestDraft.status.toUpperCase()}</p>
+                      <p className="mt-1 text-sm font-semibold text-ink">{latestDraft.subject}</p>
+                      <pre className="mt-2 max-h-36 overflow-y-auto whitespace-pre-wrap text-xs text-ink/75">{latestDraft.body}</pre>
+                      <div className="mt-3 flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => void approveDraft(latestDraft.id)}
+                          disabled={latestDraft.status !== "draft" || busy === `approve:${latestDraft.id}`}
+                          className="rounded-lg bg-ink px-3 py-1 text-xs font-semibold text-cloud disabled:opacity-50"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void sendDraft(latestDraft.id)}
+                          disabled={latestDraft.status !== "approved" || busy === `send:${latestDraft.id}`}
+                          className="rounded-lg bg-mint px-3 py-1 text-xs font-semibold text-ink disabled:opacity-50"
+                        >
+                          Send
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </aside>
+        </div>
+      )}
+    </section>
+  );
+}
