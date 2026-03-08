@@ -1,0 +1,101 @@
+# M2P OKR Tracking Template
+# Based on M2P's OKR Tracking spreadsheet format
+type: okr_tracking
+name: "OKR Tracking (M2P Format)"
+description: "M2P Fintech Quarterly OKR Tracking - Product team alignment with organization pillars"
+
+sections:
+  - id: organization_context
+    title: "Organization Context"
+    placeholder: |
+      **Organization Pillar:** [Pillar 1: Customers / Pillar 2: Product / Pillar 3: Technology / Pillar 4: People]
+
+      **Organization Objective:** [High-level org objective]
+
+      **Organization KRs:** [Key results at org level]
+    required: true
+    hints:
+      - "Link to one of the 4 organization pillars"
+      - "Ensure alignment with org-level objectives"
+
+  - id: product_objective
+    title: "Product Objective"
+    placeholder: |
+      **Product Objective:** [Specific product team objective aligned with org pillar]
+
+      **Product Owner:** [PM Name]
+    required: true
+    hints:
+      - "Clear, measurable objective for the product team"
+      - "Specify the product owner responsible"
+
+  - id: key_results
+    title: "Product Key Results"
+    placeholder: |
+      ### Key Result 1:
+      [Detailed description of measurable outcome]
+
+      **Metrics/Success Criteria:**
+      - [Specific metric with target]
+      - [Timeline for achievement]
+
+      ### Key Result 2 (if applicable):
+      [Detailed description of measurable outcome]
+
+      **Metrics/Success Criteria:**
+      - [Specific metric with target]
+      - [Timeline for achievement]
+    required: true
+    hints:
+      - "Each KR should have clear metrics"
+      - "Include timeline (Q3, Q4, etc.)"
+      - "Be specific about targets (%, numbers, dates)"
+
+  - id: dependencies
+    title: "Dependencies"
+    placeholder: |
+      **Dependency Functions:** [Engineering / Implementation / BD / Other teams]
+
+      **Dependency Owner:** [Name of owner from dependent function]
+
+      **Critical Blockers/Risks:**
+      - [Any blocking dependencies]
+      - [Resource availability issues]
+      - [External dependencies]
+    required: true
+    hints:
+      - "Identify all cross-functional dependencies"
+      - "Flag critical blockers early"
+
+  - id: priority_timeline
+    title: "Priority & Timeline"
+    placeholder: |
+      **Priority:** [Q3 - Oct-Dec / Q4 - Jan-Mar / Pushed to next FY]
+
+      **Target Quarter:** [Specific quarter]
+    required: true
+    hints:
+      - "Align with quarterly planning cycles"
+      - "Be realistic about timelines"
+
+  - id: monthly_checkin
+    title: "Monthly Check-In Status"
+    placeholder: |
+      **Current Status:** [In Progress / Completed / Moved to Next Month / Hold / Not Started]
+
+      **Progress Update:**
+      [Brief update on current progress]
+
+      **Completion %:** [0% - 100%]
+
+      **Blockers/Risks:**
+      - [Any issues blocking progress]
+
+      **Next Steps:**
+      - [Action items for next month]
+    required: true
+    hints:
+      - "Use standard status values for consistency"
+      - "Update monthly during check-ins"
+      - "Be honest about blockers and delays"
+      - "Track completion percentage"

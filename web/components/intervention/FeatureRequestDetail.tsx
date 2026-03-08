@@ -9,6 +9,7 @@ import { RiskBadge } from "./RiskBadge";
 import { InterventionReasonBadge } from "./InterventionReasonBadge";
 import { NotesSection } from "./NotesSection";
 import { ArtifactViewer } from "../artifacts/ArtifactViewer";
+import { getStageLabel, getStageColor, getStageMetadata } from "@/lib/control-tower/stage-config";
 import type { FeatureRequestWithIntervention } from "@/lib/control-tower/intervention-engine";
 import type { Artifact, ArtifactType } from "@/lib/control-tower/artifacts/types";
 
@@ -79,21 +80,17 @@ export function FeatureRequestDetail({
   };
   const handleDraftStatusUpdate = () => handleGenerateArtifact("status_update");
 
-  const stageLabels: Record<string, string> = {
-    incoming: "Incoming",
-    ba_grooming: "BA Grooming",
-    pm_exploration: "PM Exploration",
-    director_review: "Director Review",
-    engineering_validation: "Engineering Validation",
-    prd_drafting: "PRD Drafting",
-    estimation: "Estimation",
-    prioritized: "Prioritized",
-    in_delivery: "In Delivery",
-    testing: "Testing",
-    client_update: "Client Update",
-    uat_deploy: "UAT Deploy",
-    prod_deploy: "Production"
-  };
+  // Stage metadata now comes from centralized config
+  const stageMetadata = getStageMetadata(fr.stage);
+  const stageColorClasses = {
+    gray: "bg-gray-100 text-gray-700",
+    blue: "bg-blue-100 text-blue-700",
+    purple: "bg-purple-100 text-purple-700",
+    cyan: "bg-cyan-100 text-cyan-700",
+    green: "bg-green-100 text-green-700",
+    orange: "bg-orange-100 text-orange-700",
+    yellow: "bg-yellow-100 text-yellow-700"
+  }[stageMetadata.color] || "bg-gray-100 text-gray-700";
 
   const sourceLabels: Record<string, string> = {
     client_escalation: "Client Escalation",
@@ -124,8 +121,11 @@ export function FeatureRequestDetail({
               <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded">
                 {sourceLabels[fr.source]}
               </span>
-              <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded">
-                {stageLabels[fr.stage]}
+              <span
+                className={`px-2 py-1 text-xs font-medium rounded ${stageColorClasses}`}
+                title={stageMetadata.description}
+              >
+                {getStageLabel(fr.stage)} ({stageMetadata.group.replace('-', ' ')})
               </span>
             </div>
           </div>
@@ -186,6 +186,30 @@ export function FeatureRequestDetail({
               >
                 {showNotes ? "Hide Notes" : "Director Notes"}
               </button>
+            </div>
+
+            {/* M2P-Specific Actions */}
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <h4 className="text-xs font-semibold text-gray-700 mb-2">M2P Leadership Tools</h4>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => handleGenerateArtifact("okr_update")}
+                  disabled={isGenerating}
+                  className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Draft OKR Update
+                </button>
+                <button
+                  onClick={() => {
+                    const pmOwner = fr.pmOwner || "Team Member";
+                    handleGenerateArtifact("idp_feedback", pmOwner);
+                  }}
+                  disabled={isGenerating}
+                  className="px-3 py-1.5 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Draft IDP Feedback
+                </button>
+              </div>
             </div>
           </div>
 
@@ -271,15 +295,57 @@ export function FeatureRequestDetail({
               <div className="space-y-2">
                 {fr.jiraIssues.map((issue) => (
                   <div key={issue.key} className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-mono text-sm font-medium text-blue-700">{issue.key}</span>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-sm font-medium text-blue-700">{issue.key}</span>
+                        {issue.boardType && (
+                          <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+                            issue.boardType === 'cso'
+                              ? 'bg-cyan-100 text-cyan-700'
+                              : issue.boardType === 'len'
+                              ? 'bg-purple-100 text-purple-700'
+                              : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            {issue.boardType.toUpperCase()}
+                          </span>
+                        )}
+                        {issue.documentType && (
+                          <span className="px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-700 rounded">
+                            {issue.documentType.toUpperCase().replace('_', ' ')}
+                          </span>
+                        )}
+                      </div>
                       <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded">
                         {issue.status}
                       </span>
                     </div>
+
+                    {issue.sprintName && (
+                      <div className="mb-1 flex items-center gap-1">
+                        <span className="text-xs text-blue-900">📅 Sprint:</span>
+                        <span className="text-xs font-medium text-blue-900">{issue.sprintName}</span>
+                      </div>
+                    )}
+
                     {issue.assignee && (
                       <p className="text-xs text-blue-900">Assignee: {issue.assignee}</p>
                     )}
+
+                    {issue.linkedIssueKeys && issue.linkedIssueKeys.length > 0 && (
+                      <div className="mt-2 pt-2 border-t border-blue-200">
+                        <p className="text-xs font-medium text-blue-900 mb-1">
+                          🔗 Linked Issues (CSo↔LEN Workflow):
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {issue.linkedIssueKeys.map((linkedKey) => (
+                            <span key={linkedKey} className="px-2 py-0.5 text-xs font-mono bg-blue-100 text-blue-700 rounded">
+                              {linkedKey}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <p className="text-xs text-blue-700 mt-1">
                       Last updated: {new Date(issue.lastUpdated).toLocaleString()}
                     </p>

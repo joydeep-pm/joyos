@@ -1,0 +1,202 @@
+# M2P Monthly Product Update Template
+# Based on M2P's Monthly Product Update format
+type: monthly_product_update
+name: "Monthly Product Update (M2P Format)"
+description: "M2P Fintech Monthly Product Update - Leadership communication format"
+
+sections:
+  - id: header
+    title: "Header"
+    placeholder: |
+      ## Monthly Product Update -- [Product Area] | [Month Year]
+      ## Product Owners: [Names]
+    required: true
+    hints:
+      - "Update month, year, and product area"
+      - "List all Product Owners"
+
+  - id: executive_summary
+    title: "1. Executive Summary"
+    placeholder: |
+      [High-level overview of the month]
+
+      Key highlights:
+      - Client deliveries and go-lives
+      - Strategic initiatives progress
+      - Platform enhancements
+      - Sales and delivery enablement
+      - Major risks requiring attention
+    required: true
+    hints:
+      - "2-3 paragraphs maximum"
+      - "Focus on business impact, not technical details"
+      - "Highlight wins and flag critical risks"
+
+  - id: product_updates
+    title: "2. Product Updates"
+    placeholder: |
+      Updates on work completed by the Product Team in [Month], classified by product. Includes feature builds, client deliveries, and product enhancements.
+
+      ## 💳 Personal Loan
+
+      ## ⚱️ Gold Loan
+
+      ## 🎓 Education Loan
+
+      ## 📈 Loan Against Shares (LAS)
+
+      ## 📊 Loan Against Mutual Funds (LAMF)
+
+      ## 🏦 MFI
+
+      ## 💰 BNPL / Credit Line
+
+      ## 🛒 Consumer Durables
+
+      ## 🏢 Business Loan / SCF
+
+      ## 🚗 Auto Loan
+
+      ## 🏠 Loan Against Property (LAP)
+
+      ## 🏡 Home Loan
+    required: true
+    hints:
+      - "Organize by product line"
+      - "Include completed features, client deliveries, and progress"
+      - "If no updates for a product, mention 'No updates this month'"
+
+  - id: platform_updates
+    title: "3. Platform Updates"
+    placeholder: |
+      Platform-level work that benefits multiple products.
+
+      ## 📱 LOS (Loan Origination System)
+
+      ## 📞 Collections (Link to documentation)
+
+      ## ⚙️ LMS (Loan Management System - Generic)
+
+      ## 🤝 Co-Lending
+
+      ## 🔒 Security / Collateral Management (SMS)
+
+      ## 🔨 Auction & Repo
+
+      ## ⚖️ Legal
+    required: true
+    hints:
+      - "Cross-product platform features"
+      - "Infrastructure and core capabilities"
+
+  - id: other_initiatives
+    title: "4. Other Initiatives"
+    placeholder: |
+      Cross-cutting initiatives and BAU work.
+
+      - User Manual (BAU)
+      - Standard Reports (Status)
+      - Standard Product Notes (Status)
+      - Product Decks (BAU)
+      - AI in Lending (Status)
+    required: false
+    hints:
+      - "Documentation, enablement, and strategic initiatives"
+      - "Mark as BAU, On Track, Delayed, or Blocked"
+
+  - id: upcoming_features
+    title: "5. Upcoming Product Features / Initiatives"
+    placeholder: |
+      Features and initiatives planned for next month.
+
+      ## 💳 Personal Loan
+
+      ## ⚱️ Gold Loan
+
+      ## 🎓 Education Loan
+
+      ## 📈 Loan Against Shares (LAS)
+
+      ## 📊 Loan Against Mutual Funds (LAMF)
+
+      ## 🏦 MFI
+
+      ## 💰 BNPL / Credit Line
+
+      ## 🛒 Consumer Durables
+
+      ## 🚗 Auto Loan
+
+      ## 🏠 Loan Against Property (LAP)
+
+      ## 📱 LOS (Generic)
+
+      ## ⚙️ LMS (Generic)
+
+      ## 🤝 Co-Lending
+
+      ## 🔒 Security / Collateral Management (SMS)
+    required: true
+    hints:
+      - "Forward-looking view"
+      - "Planned features, initiatives, and deliveries"
+
+  - id: okrs_progress
+    title: "6. OKRs and Progress"
+    placeholder: |
+      Progress against quarterly OKRs.
+
+      ### Objective 1: [Objective Name]
+      **Owner:** [Name]
+
+      #### Key Result 1.1: [Metric and Target]
+      - **Current:** [Status]
+      - **Progress:** [On Track / At Risk / Delayed]
+      - **Notes:** [Brief update]
+
+      #### Key Result 1.2: [Metric and Target]
+      - **Current:** [Status]
+      - **Progress:** [On Track / At Risk / Delayed]
+      - **Notes:** [Brief update]
+
+      ### Objective 2: [Objective Name]
+      **Owner:** [Name]
+
+      #### Key Result 2.1: [Metric and Target]
+      - **Current:** [Status]
+      - **Progress:** [On Track / At Risk / Delayed]
+      - **Notes:** [Brief update]
+    required: true
+    hints:
+      - "Track quarterly OKRs"
+      - "Use traffic light status: On Track / At Risk / Delayed"
+      - "Include owner and current metrics"
+
+  - id: risks_dependencies
+    title: "7. Risks & Dependencies"
+    placeholder: |
+      Critical risks requiring management attention and key dependencies.
+
+      ### 🚨 High Priority Risks
+
+      #### Risk 1: [Risk Title]
+      - **Impact:** [Business/client impact]
+      - **Blocker:** [What's blocking]
+      - **Action Needed:** [What needs to happen]
+      - **Owner:** [Who needs to act]
+
+      #### Risk 2: [Risk Title]
+      - **Impact:** [Business/client impact]
+      - **Blocker:** [What's blocking]
+      - **Action Needed:** [What needs to happen]
+      - **Owner:** [Who needs to act]
+
+      ### 🔗 Key Dependencies
+
+      - Dependency 1: [Description]
+      - Dependency 2: [Description]
+    required: true
+    hints:
+      - "Flag issues needing leadership intervention"
+      - "Be specific about impact and required actions"
+      - "Include bandwidth constraints, resource blockers, external dependencies"

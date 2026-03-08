@@ -1,0 +1,59 @@
+# M2P OKR Update Template
+type: okr_update
+name: "OKR Progress Update"
+description: "Quarterly OKR tracking for M2P leadership"
+
+sections:
+  - id: objective
+    title: "Objective"
+    placeholder: "Which objective is this for? (Documentation / Stability / New Business)"
+    required: true
+    hints:
+      - "Which of the three major OKRs?"
+      - "Owner?"
+      - "Quarter?"
+
+  - id: key_results
+    title: "Key Results"
+    placeholder: "List measurable key results and their current status"
+    required: true
+    hints:
+      - "What are the KRs for this objective?"
+      - "What's the target?"
+      - "What's the current status?"
+
+  - id: progress_summary
+    title: "Progress Summary"
+    placeholder: "Overall progress this quarter"
+    required: true
+    hints:
+      - "What's been accomplished?"
+      - "What's on track?"
+      - "What's at risk?"
+
+  - id: metrics
+    title: "Metrics"
+    placeholder: "Quantitative progress metrics"
+    required: true
+    hints:
+      - "Current vs. target numbers"
+      - "Trend direction"
+      - "Leading indicators"
+
+  - id: blockers
+    title: "Blockers & Risks"
+    placeholder: "What's preventing progress?"
+    required: false
+    hints:
+      - "Dependencies?"
+      - "Resource constraints?"
+      - "External factors?"
+
+  - id: next_steps
+    title: "Next Steps"
+    placeholder: "Actions for next period"
+    required: true
+    hints:
+      - "What needs to happen?"
+      - "Who's responsible?"
+      - "By when?"

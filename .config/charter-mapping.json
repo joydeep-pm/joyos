@@ -1,0 +1,59 @@
+{
+  "$schema": "./charter-mapping.schema.json",
+  "description": "Maps Jira boards and projects to M2P product charters",
+  "boards": {
+    "123": {
+      "name": "CSo Board (Engineering → Product)",
+      "charter": "Co-Lending",
+      "type": "cso",
+      "description": "Engineering creates BRD, groomed TO Product"
+    },
+    "456": {
+      "name": "LEN Board (Product → Engineering)",
+      "charter": "Lending Platform",
+      "type": "len",
+      "description": "Product creates PRD/User Story, groomed TO Engineering"
+    }
+  },
+  "projects": {
+    "CSO": {
+      "name": "CSo Project",
+      "charter": "Co-Lending",
+      "type": "cso",
+      "description": "CSo workflow - BRD documents"
+    },
+    "LEN": {
+      "name": "LEN Project",
+      "charter": "Lending Platform",
+      "type": "len",
+      "description": "LEN workflow - PRD/User Story documents"
+    },
+    "PROD": {
+      "name": "Product General",
+      "charter": "Cross-Charter",
+      "type": "general",
+      "description": "General product work"
+    }
+  },
+  "charters": [
+    "Co-Lending",
+    "LAS",
+    "BNPL",
+    "Loan Origination",
+    "Collections",
+    "Lending Platform",
+    "Cross-Charter"
+  ],
+  "linkingRules": {
+    "csoToLen": {
+      "description": "CSo ticket links to LEN ticket = SAME requirement at different stages",
+      "workflow": "BRD (CSo) → PRD/User Story (LEN)",
+      "linkTypes": ["relates to", "implements", "is implemented by"]
+    }
+  },
+  "documentTypes": {
+    "cso": "brd",
+    "len": "prd_or_user_story",
+    "general": "mixed"
+  }
+}

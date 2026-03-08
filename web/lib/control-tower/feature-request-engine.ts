@@ -131,7 +131,7 @@ function getLatestUpdate(matchResult: MatchResult): LatestUpdate {
 }
 
 /**
- * Create a feature request from match result
+ * Create a feature request from match result with M2P board extensions
  */
 function createFeatureRequest(matchResult: MatchResult): FeatureRequest {
   const issue = matchResult.jiraIssue;
@@ -148,6 +148,7 @@ function createFeatureRequest(matchResult: MatchResult): FeatureRequest {
     source,
     stage,
     pmOwner,
+    productCharter: issue.productCharter, // Auto-populated from charter mapping
     jiraIssues: [
       {
         key: issue.key,
@@ -155,7 +156,13 @@ function createFeatureRequest(matchResult: MatchResult): FeatureRequest {
         statusCategory: issue.statusCategory,
         assignee: issue.assignee?.name,
         dueDate: issue.dueDate,
-        lastUpdated: issue.updatedAt
+        lastUpdated: issue.updatedAt,
+        // M2P Board Extensions
+        boardId: issue.boardId,
+        boardType: issue.boardType,
+        documentType: issue.documentType,
+        sprintName: issue.sprintName,
+        linkedIssueKeys: issue.linkedIssues?.map((l) => l.key)
       }
     ],
     confluencePages: matchResult.confluencePages.map((page) => ({

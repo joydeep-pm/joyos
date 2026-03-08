@@ -1,0 +1,136 @@
+# M2P Grooming Checklist Template
+# Based on M2P's Groomed Tickets spreadsheet format
+type: grooming_checklist
+name: "Grooming Checklist (M2P Format)"
+description: "M2P Fintech Pre-Grooming Checklist - Track engineering grooming readiness"
+
+sections:
+  - id: ticket_info
+    title: "Ticket Information"
+    placeholder: |
+      **Project/Client:** [Project Name]
+
+      **Platform:** [LOS / LMS / Collections / Other]
+
+      **Category:** [Features / VAPT / Bug / Enhancement]
+
+      **Title:** [Brief ticket title]
+
+      **CSO Ticket:** [CSO-XXXX] (Engineering to Product)
+
+      **LEN Ticket:** [FLMS-XXXX / LOS-XXXX] (Product to Engineering)
+    required: true
+    hints:
+      - "CSO tickets are engineering-originated (BRD)"
+      - "LEN tickets are product-originated (PRD/User Story)"
+      - "Both may exist for the same requirement"
+
+  - id: product_ownership
+    title: "Product Ownership"
+    placeholder: |
+      **Product Manager:** [PM Name]
+
+      **Groomed With (Engineers):** [Name 1, Name 2, Name 3]
+
+      **Grooming Date:** [YYYY-MM-DD]
+    required: true
+    hints:
+      - "List all engineers who participated in grooming"
+      - "Track when grooming happened"
+
+  - id: dev_grooming_status
+    title: "Dev Grooming Status"
+    placeholder: |
+      **Status:** [Not Started / Assigned / In Progress / Completed]
+
+      **Estimated Effort:** [X days / X PDs]
+
+      **Assigned To:** [Developer Name]
+
+      **Sprint:** [Sprint Name / Sprint Number]
+
+      **Notes:**
+      - [Any grooming notes or clarifications]
+    required: true
+    hints:
+      - "Track grooming completion"
+      - "Capture effort estimates"
+      - "Note sprint assignment"
+
+  - id: dev_status
+    title: "Development Status"
+    placeholder: |
+      **Status:** [Not Started / In Progress / Done / Blocked]
+
+      **Current Progress:**
+      - [Brief update on development]
+
+      **Blockers:**
+      - [Any blockers or dependencies]
+
+      **Expected Completion:** [Date]
+    required: false
+    hints:
+      - "Track development progress"
+      - "Flag blockers early"
+
+  - id: qa_status
+    title: "QA Status"
+    placeholder: |
+      **Status:** [Not Started / In Progress / Done / Failed]
+
+      **Test Coverage:**
+      - [Test scenarios covered]
+
+      **Test Scenarios Reviewed:** [Yes / No / In Progress]
+
+      **Issues Found:** [Count or brief list]
+
+      **QA Sign-off:** [Yes / No / Pending]
+    required: false
+    hints:
+      - "Track QA progress"
+      - "Ensure test scenarios are reviewed"
+
+  - id: demo_status
+    title: "Demo & Acceptance"
+    placeholder: |
+      **Demo Done:** [Yes / No / Scheduled for [Date]]
+
+      **Demo Attendees:**
+      - [PM Name]
+      - [Stakeholder Name]
+
+      **Acceptance Status:** [Accepted / Rejected / Pending Fixes]
+
+      **Feedback:**
+      - [Any feedback from demo]
+
+      **Ready for Production:** [Yes / No]
+    required: false
+    hints:
+      - "Track demo completion"
+      - "Capture acceptance criteria validation"
+      - "Note any issues found during demo"
+
+  - id: readiness_checklist
+    title: "Grooming Readiness Checklist"
+    placeholder: |
+      Pre-Grooming Requirements:
+      - [ ] PRD/User Story documented
+      - [ ] Acceptance criteria defined
+      - [ ] Wireframes/Diagrams attached (if applicable)
+      - [ ] API contracts defined (if applicable)
+      - [ ] Dependencies identified
+      - [ ] No active blockers
+
+      Post-Grooming Requirements:
+      - [ ] Effort estimated
+      - [ ] Sprint assigned
+      - [ ] Technical approach agreed
+      - [ ] Test scenarios identified
+      - [ ] Assigned to developer
+    required: false
+    hints:
+      - "Use this checklist to verify grooming readiness"
+      - "Ensure all pre-requisites are met"

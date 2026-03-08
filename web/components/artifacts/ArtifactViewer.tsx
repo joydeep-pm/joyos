@@ -18,7 +18,14 @@ const ARTIFACT_TYPE_LABELS: Record<ArtifactType, string> = {
   clarification_request: "Clarification Request",
   status_update: "Status Update",
   leadership_update: "Leadership Update",
-  client_summary: "Client Escalation Summary"
+  client_summary: "Client Escalation Summary",
+  okr_update: "OKR Progress Update",
+  okr_tracking: "OKR Tracking (M2P Format)",
+  idp_feedback: "IDP Feedback (M2P Format)",
+  monthly_product_update: "Monthly Product Update (M2P Format)",
+  grooming_checklist: "Grooming Checklist (M2P Format)",
+  product_roadmap: "Product Roadmap (M2P Format)",
+  bmad_prd: "PRD (BMAD Format)"
 };
 
 export function ArtifactViewer({ artifact, onClose, onEdit }: ArtifactViewerProps) {

@@ -1,0 +1,174 @@
+# M2P User Story Format Template
+# Based on M2P's User Story Template & Checklist
+type: user_story
+name: "User Story (M2P Format)"
+description: "M2P Fintech User Story template - Individual deliverable < 7 PDs"
+
+sections:
+  - id: title
+    title: "Title"
+    placeholder: "Brief title for the user story"
+    required: true
+    hints:
+      - "Clear, concise description of the deliverable"
+
+  - id: user_story
+    title: "User Story"
+    placeholder: |
+      👤 As a [Who - role/persona],
+      📋 I want [What the user wants to achieve],
+      🎯 So that [Why the user wants it/benefit (Objective/Business Justification)].
+    required: true
+    hints:
+      - "Follow the standard user story format"
+      - "Be specific about the role/persona"
+      - "Clearly state the benefit/business justification"
+
+  - id: proposed_solution
+    title: "Proposed Solution & Scope"
+    placeholder: |
+      ✍️ Proposed Solution (in brief):
+
+      ## Existing Functionality
+
+      ## Required Functionality
+
+      ## 📋 Scope
+      ✅ What's included:
+
+      ❌ What's NOT included for this Phase but needed in future (factor in tech design):
+
+      ❌ What's NOT included ever:
+    required: true
+    hints:
+      - "Clearly separate existing vs. required functionality"
+      - "Be explicit about what's in/out of scope"
+
+  - id: acceptance_criteria
+    title: "✅ Acceptance Criteria"
+    placeholder: |
+      General Rule of Thumb: All required criteria to be added by Product. Anything extra added by Engineer during development to be added here too.
+
+      ## 🎯 Feature Specific Requirements
+
+      ## 💰 Accounting Requirements
+
+      ## ⏳ Backdated Transaction Requirements
+
+      ## 📊 Standard Product Report Requirements
+
+      ## 🔐 Roles and Permissions & Maker-Checker Requirements
+
+      ## 🕵️‍♂️ Logging / Audit Trail Requirements
+
+      ## 🔄 Backward Compatibility Requirements
+      Version Requirements: By default, the feature will be delivered on the latest release. In case it is needed on an older release, mention details below:
+      - Client's current application Version:
+      - Is this feature needed on an older release?
+      ## If Yes,
+      - Justification:
+      - Engineering Sign Off:
+      - Version on which it is needed:
+
+      ## ⚙️ Configurations
+      - 🌍 Global Configs needed (from Product) / added (from Dev)
+      - 📦 Loan Product Configs needed (from Product) / added (from Dev)
+      - 🔧 Any other Admin configs needed (from Product) / added (from Dev)
+      - ➕ Combinations of Configs in which the functionality should work (from Product) / will work (from Dev)
+      - ➖ Combinations of Configs in which the functionality should NOT work (from Product) / will NOT work (from Dev)
+
+      Note: If any additional Configs (if applicable), Dev can update the same in the doc/ticket
+
+      ## ✅ Validations
+      - 🔌 API Validations
+      - 🖥️ UI Validations
+      ## Yes
+      ## No
+
+      ## ✅ Any Other Validations
+
+      ## 🧪 Testing Guidance (for both Dev and QA)
+
+      ## ⚠️ Scenarios
+      ✅ Important Positive scenarios
+
+      ❌ Important Negative scenarios
+
+      ⚡ Important Edge case scenarios
+
+      ## 🔄 Important Regression Scenarios
+
+      ## 🎯 General Scenarios
+      - Validate logging and audit trails
+      - Validate Roles and Permissions
+      - ⚙️ Validate Configs (positive combinations and negative combinations)
+
+      ## 🧪 QA Testing
+      System Test cases to be written and report attached
+      In case of Manual Testing, Detailed Test Cases and Test Report with evidences to be made available in Testing Tool (Tuskr)
+
+      ## 📊 Monitoring and Alerts
+      Observability metrics to be captured
+
+      ⚠️ If new tables are being created or any existing tables are being modified, Dev should add/modify details about the table (descriptions for table and columns) in the Db itself, so that Data Dictionary can be generated directly going ahead.
+    required: true
+    hints:
+      - "All sections must be addressed"
+      - "If not applicable, explicitly mention 'N/A' with reason"
+
+  - id: to_be_added_by_dev
+    title: "To be Added by Dev"
+    placeholder: |
+      ## 🔌 APIs
+      - List of newly created APIs along with Open API JSON
+      - ✏️ List of Modified APIs along with Changelogs and Theneo Documentation Links
+      - Deprecated API details
+
+      ## 🗄️ Database Changes
+      Dev to list Database Changes (tables, fields, constraints, etc.) that will help cater to any Client/Custom Report requirements
+
+      ## 📐 HLD and LLD
+
+      ## 🧪 Dev Testing
+      - Attach Unit Test Report
+    required: false
+    hints:
+      - "To be filled by engineering team"
+      - "Product team can leave this blank"
+
+  - id: wireframes
+    title: "📱 Wireframes"
+    placeholder: |
+      (for UI journeys, include every single datapoint / information required on the UI in the wireframes)
+    required: true
+    hints:
+      - "This CANNOT be empty for UI-related stories"
+      - "Include all data points and fields"
+      - "Attach or link to wireframes"
+
+  - id: sequence_diagrams
+    title: "📊 Sequence Diagrams"
+    placeholder: |
+      (for API journeys)
+    required: true
+    hints:
+      - "This CANNOT be empty for API-related stories"
+      - "Show complete flow with all systems involved"
+
+  - id: success_metrics
+    title: "📈 Success Metrics"
+    placeholder: |
+      ## 📊 Metrics
+      - 📈 Adoption (if applicable, add relevant metrics)
+      - ✅ Quality (if applicable, add relevant metrics)
+      - 🎯 Engagement (if applicable, add relevant metrics)
+      - ⚡ Performance (if applicable, add relevant metrics)
+
+      ## 📝 Data Capture Requirements
+      - UI events to be captured (for above metrics)
+      - API logs to be captured (for above metrics)
+      - Specific data to be captured (for above metrics)
+    required: false
+    hints:
+      - "Define measurable success criteria"
+      - "Specify what data needs to be tracked"

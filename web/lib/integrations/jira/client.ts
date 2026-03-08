@@ -66,7 +66,10 @@ export class JiraClient {
           "updated",
           "duedate",
           "labels",
-          "comment"
+          "comment",
+          "issuelinks",    // For CSo↔LEN linking
+          "sprint",        // For LEN sprint tracking
+          "customfield_*"  // Include custom fields
         ]
       });
 
@@ -134,6 +137,89 @@ export class JiraClient {
    */
   async getAllProjectIssues(): Promise<JiraIssue[]> {
     return this.getRecentIssues();
+  }
+
+  /**
+   * Get issues for a specific board (M2P CSo/LEN workflow)
+   */
+  async getBoardIssues(boardId: number, options?: { maxResults?: number; startAt?: number }): Promise<JiraIssue[]> {
+    if (!this.client) {
+      console.error("Jira client not initialized");
+      return [];
+    }
+
+    try {
+      // Use board-specific JQL query
+      const jql = `board = ${boardId} ORDER BY updated DESC`;
+      const result = await this.searchIssues(jql, options);
+      return result?.issues ?? [];
+    } catch (error) {
+      console.error(`Failed to get issues for board ${boardId}:`, error);
+      return [];
+    }
+  }
+
+  /**
+   * Get sprint information for LEN tickets
+   * Note: This requires Jira Software/Agile API access
+   */
+  async getActiveSprints(boardId: number): Promise<Array<{ id: number; name: string; state: string }>> {
+    if (!this.client) {
+      console.error("Jira client not initialized");
+      return [];
+    }
+
+    try {
+      // Use agile API for sprints (may not be available in base jira.js client)
+      // For now, return empty array - sprint info will be extracted from issue fields
+      console.warn(`Sprint API not fully implemented for board ${boardId}, sprint data will be extracted from issue fields`);
+      return [];
+    } catch (error) {
+      console.error(`Failed to get sprints for board ${boardId}:`, error);
+      return [];
+    }
+  }
+
+  /**
+   * Get issue links for CSo↔LEN workflow tracking
+   */
+  async getIssueLinks(issueKey: string): Promise<Array<{ type: string; linkedIssueKey: string; direction: 'inward' | 'outward' }>> {
+    if (!this.client) {
+      console.error("Jira client not initialized");
+      return [];
+    }
+
+    try {
+      const issue = await this.client.issues.getIssue({
+        issueIdOrKey: issueKey,
+        fields: ["issuelinks"]
+      });
+
+      const links: Array<{ type: string; linkedIssueKey: string; direction: 'inward' | 'outward' }> = [];
+      const issueLinks = (issue.fields as any).issuelinks || [];
+
+      for (const link of issueLinks) {
+        if (link.inwardIssue) {
+          links.push({
+            type: link.type.inward,
+            linkedIssueKey: link.inwardIssue.key,
+            direction: 'inward'
+          });
+        }
+        if (link.outwardIssue) {
+          links.push({
+            type: link.type.outward,
+            linkedIssueKey: link.outwardIssue.key,
+            direction: 'outward'
+          });
+        }
+      }
+
+      return links;
+    } catch (error) {
+      console.error(`Failed to get issue links for ${issueKey}:`, error);
+      return [];
+    }
   }
 }
 

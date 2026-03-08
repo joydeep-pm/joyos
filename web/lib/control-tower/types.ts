@@ -51,6 +51,12 @@ export interface LinkedJiraIssue {
   assignee?: string;
   dueDate?: string;
   lastUpdated: string;
+  // M2P Board Extensions
+  boardId?: number;
+  boardType?: "cso" | "len" | "general";
+  documentType?: "brd" | "prd" | "user_story";
+  sprintName?: string;
+  linkedIssueKeys?: string[]; // Keys of linked CSo/LEN tickets
 }
 
 export interface LinkedConfluencePage {

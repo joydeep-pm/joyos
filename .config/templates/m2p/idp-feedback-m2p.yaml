@@ -1,0 +1,190 @@
+# M2P IDP (Individual Development Plan) Template
+# Based on M2P's IDP spreadsheet format
+type: idp_feedback
+name: "IDP Feedback (M2P Format)"
+description: "M2P Fintech Individual Development Plan - Performance management and growth tracking"
+
+sections:
+  - id: employee_info
+    title: "Employee Information"
+    placeholder: |
+      **Employee Name / Role:** [Name - Role]
+
+      **Manager:** [Manager Name]
+
+      **Function:** [Product / Engineering / Implementation]
+
+      **Last Update:** [Date]
+    required: true
+    hints:
+      - "Basic employee context"
+
+  - id: strengths
+    title: "Strengths"
+    placeholder: |
+      ### Key Strengths:
+      - [Strength 1: e.g., Ownership]
+      - [Strength 2: e.g., Technical Depth]
+      - [Strength 3: e.g., Cross-functional Collaboration]
+
+      **Evidence/Examples:**
+      - [Specific examples demonstrating strengths]
+    required: true
+    hints:
+      - "Based on observed performance"
+      - "Provide specific examples"
+
+  - id: areas_for_development
+    title: "Areas for Development"
+    placeholder: |
+      ### Primary Development Areas:
+      1. [Area 1: e.g., Product Sense & Strategy]
+      2. [Area 2: e.g., LMS Domain Knowledge]
+      3. [Area 3: e.g., Communication]
+
+      **Why these areas:**
+      - [Rationale for each development area]
+    required: true
+    hints:
+      - "Focus on 2-4 key development areas"
+      - "Aligned with role expectations and career growth"
+
+  - id: development_plan
+    title: "Development Plan"
+    placeholder: |
+      ## Area 1: [Development Area Name]
+
+      ### Development Goal:
+      [Specific, measurable goal]
+
+      ### Development Actions:
+      - [ ] Action 1: [Specific task/milestone]
+      - [ ] Action 2: [Specific task/milestone]
+      - [ ] Action 3: [Specific task/milestone]
+
+      **Timeline:** [Quarter / Month]
+
+      **Status:** [Not Started / In Progress / Completed]
+
+      **Success Measure:** [% completion or specific outcome]
+
+      ---
+
+      ## Area 2: [Development Area Name]
+
+      ### Development Goal:
+      [Specific, measurable goal]
+
+      ### Development Actions:
+      - [ ] Action 1: [Specific task/milestone]
+      - [ ] Action 2: [Specific task/milestone]
+
+      **Timeline:** [Quarter / Month]
+
+      **Status:** [Not Started / In Progress / Completed]
+
+      **Success Measure:** [% completion or specific outcome]
+
+      ---
+
+      ## Area 3: [Development Area Name]
+
+      ### Development Goal:
+      [Specific, measurable goal]
+
+      ### Development Actions:
+      - [ ] Action 1: [Specific task/milestone]
+
+      **Timeline:** [Quarter / Month]
+
+      **Status:** [Not Started / In Progress / Completed]
+
+      **Success Measure:** [% completion or specific outcome]
+    required: true
+    hints:
+      - "Each area should have clear goals and actions"
+      - "Include timeline and success measures"
+      - "Track progress regularly"
+
+  - id: brag_sheet
+    title: "Brag Sheet (Accomplishments)"
+    placeholder: |
+      Track significant accomplishments and contributions:
+
+      | S.No. | Group/Client | Platform | Accomplishment |
+      |-------|--------------|----------|----------------|
+      | 1 | [Client/Project] | [LOS/LMS/Platform] | [Specific achievement] |
+      | 2 | [Client/Project] | [LOS/LMS/Platform] | [Specific achievement] |
+      | 3 | [Client/Project] | [LOS/LMS/Platform] | [Specific achievement] |
+
+      **Other Contributions:**
+      - [Cross-functional work]
+      - [Process improvements]
+      - [Documentation/enablement work]
+    required: false
+    hints:
+      - "Evidence for performance reviews"
+      - "Update regularly with wins"
+      - "Include both project and non-project work"
+
+  - id: goals_okrs
+    title: "Current Quarter Goals/OKRs"
+    placeholder: |
+      | Objective | Weightage | Key Results | Status |
+      |-----------|-----------|-------------|--------|
+      | [Objective 1] | 30% | [KR with metrics] | [On Track/At Risk/Delayed] |
+      | [Objective 2] | 25% | [KR with metrics] | [On Track/At Risk/Delayed] |
+      | [Objective 3] | 20% | [KR with metrics] | [On Track/At Risk/Delayed] |
+      | [Objective 4] | 15% | [KR with metrics] | [On Track/At Risk/Delayed] |
+      | [Objective 5] | 10% | [KR with metrics] | [On Track/At Risk/Delayed] |
+
+      **Total Weightage:** 100%
+    required: false
+    hints:
+      - "Link to quarterly OKRs"
+      - "Ensure weightages add to 100%"
+      - "Track progress against each objective"
+
+  - id: monthly_one_on_one
+    title: "Monthly 1-on-1 Tracking"
+    placeholder: |
+      ## Month 1: [Month Name]
+
+      ### Review of Last Month:
+      - [Accomplishment 1]
+      - [Accomplishment 2]
+      - [Blocker/Challenge addressed]
+
+      ### What to Expect This Month:
+      - [Goal 1]
+      - [Goal 2]
+      - [Key deliverable]
+
+      ---
+
+      ## Month 2: [Month Name]
+
+      ### Review of Last Month:
+      - [Accomplishment 1]
+      - [Accomplishment 2]
+
+      ### What to Expect This Month:
+      - [Goal 1]
+      - [Goal 2]
+
+      ---
+
+      ## Month 3: [Month Name]
+
+      ### Review of Last Month:
+      - [Accomplishment 1]
+      - [Accomplishment 2]
+
+      ### What to Expect This Month:
+      - [Goal 1]
+      - [Goal 2]
+    required: false
+    hints:
+      - "Track monthly progress and expectations"
+      - "Review accomplishments and set forward goals"
+      - "Use as discussion guide for 1-on-1s"

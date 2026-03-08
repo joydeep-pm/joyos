@@ -1,0 +1,117 @@
+# M2P PRD Format Template
+# Based on M2P's actual PRD structure
+type: prd
+name: "Product Requirements Document (M2P Format)"
+description: "M2P Fintech PRD template - Epic/Feature level with multiple user stories"
+
+sections:
+  - id: what
+    title: "1. WHAT"
+    placeholder: "Briefly describes what we are going to build (not more than a paragraph)"
+    required: true
+    hints:
+      - "Keep it to one paragraph maximum"
+      - "Focus on the feature/epic being built"
+
+  - id: why
+    title: "2. WHY"
+    placeholder: "Briefly describes WHY we are building it (not more than a paragraph)"
+    required: true
+    hints:
+      - "Business justification"
+      - "Problem being solved"
+      - "Expected impact"
+
+  - id: whom
+    title: "3. WHOM"
+    placeholder: "Detail the persona(s) that we are building this for"
+    required: true
+    hints:
+      - "Engineers (consuming APIs)"
+      - "Ops/Business users (UI)"
+      - "Other personas"
+
+  - id: how_solution
+    title: "4.1 The Solution - HOW"
+    placeholder: |
+      How it CURRENTLY works:
+
+      How it WOULD work as part of this solution (your solution, currently in scope):
+
+      How it WILL NOT work (out of scope stuff):
+
+      How it MAY work in future (not needed currently, but would/may be needed in future):
+
+      Visual Representation (Flow Diagram / Sequence Diagram / Swimlane / Wireframes):
+    required: true
+    hints:
+      - "Visual Representation CANNOT be empty"
+      - "Use Flow Diagrams, Sequence Diagrams, Swimlanes, or Wireframes"
+
+  - id: acceptance_criteria
+    title: "4.2 Acceptance Criteria"
+    placeholder: |
+      This section MUST cover the following. If not applicable, explicitly mention as such.
+
+      Behaviour in Various Events:
+      - Loan / Line Creation
+      - Loan / Line Approval
+      - Repayment Schedule
+      - Disbursement / Drawdown
+      - Subsequent Drawdowns / Tranche Disbursals
+      - Moratorium / Grace
+      - Cancellation
+      - Repayments
+      - Presentations
+      - Part Payment
+      - Refunds / Reversals
+      - Accruals (Principal and Interest)
+      - Fees and Charges
+      - Charge Waivers
+      - Interest Waivers
+      - Foreclosure
+      - Closure
+      - Reschedule
+      - Settlement
+      - Write Off
+      - DPD, SMA, NPA and Asset Classification
+      - Billing (BNPL / Line)
+
+      Accounting Behaviour:
+      Backdated Transaction Behaviour:
+      Reports:
+      Bulk Upload requirements:
+      Third Party integration needs:
+      User Notifications needs:
+      Maker Checker needs:
+      Roles & Permissions:
+      Logging / Audit Trail Requirements:
+      Version needed (if applicable):
+      Configs - Global / Loan Product / Any Other:
+      Valid / Invalid Config Combinations:
+      API Requirements - request, response params, mandatory/optional, data types:
+      API Validations and error messages:
+      UI Validations and error messages:
+      ✅ Important Positive scenarios:
+      ❌ Important Negative scenarios:
+      ⚠️ Important Edge case scenarios:
+      🔄 Important Regression Scenarios:
+      Monitoring and Alerts + Key Metrics:
+      API Documentation & Changelog:
+      Database/Table Changelog:
+      Dev Testing and QA Reports:
+    required: true
+    hints:
+      - "If anything is not needed or not applicable, explicitly mention it"
+      - "Do not simply omit sections"
+
+  - id: user_stories_post_grooming
+    title: "User Stories (Post Grooming)"
+    placeholder: |
+      Post grooming, divide the above content into sub-7 PD User Stories.
+      Each User story is a deliverable - demoable and independently verifiable.
+    required: false
+    hints:
+      - "Added after engineering grooming"
+      - "Each story < 7 PDs (Dev + QA + Docs + Demo)"
+      - "Use User Story template for individual stories"

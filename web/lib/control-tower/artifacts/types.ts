@@ -11,7 +11,14 @@ export type ArtifactType =
   | "clarification_request"
   | "status_update"
   | "leadership_update"
-  | "client_summary";
+  | "client_summary"
+  | "okr_update"              // M2P: OKR progress tracking
+  | "okr_tracking"            // M2P: OKR tracking (full format)
+  | "idp_feedback"            // M2P: IDP format
+  | "monthly_product_update"  // M2P: Monthly product update
+  | "grooming_checklist"      // M2P: Grooming readiness checklist
+  | "product_roadmap"         // M2P: Product roadmap
+  | "bmad_prd";               // M2P: BMAD-style PRD (if different from generic)
 
 export type ArtifactStatus = "draft" | "review" | "approved" | "sent";
 

@@ -420,6 +420,130 @@ export const CLIENT_SUMMARY_TEMPLATE: ArtifactTemplate = {
 };
 
 /**
+ * M2P: OKR Update Template
+ */
+export const OKR_UPDATE_TEMPLATE: ArtifactTemplate = {
+  type: "okr_update",
+  name: "OKR Progress Update",
+  description: "Quarterly OKR tracking for M2P leadership (Documentation, Stability, New Business)",
+  sections: [
+    {
+      id: "objective",
+      title: "Objective",
+      placeholder: "Which objective is this for? (Documentation / Stability / New Business)",
+      required: true,
+      hints: ["Which of the three major OKRs?", "Owner?", "Quarter?"]
+    },
+    {
+      id: "key_results",
+      title: "Key Results",
+      placeholder: "List measurable key results and their current status",
+      required: true,
+      hints: ["What are the KRs for this objective?", "What's the target?", "What's the current status?"]
+    },
+    {
+      id: "progress_summary",
+      title: "Progress Summary",
+      placeholder: "Overall progress this quarter",
+      required: true,
+      hints: ["What's been accomplished?", "What's on track?", "What's at risk?"]
+    },
+    {
+      id: "metrics",
+      title: "Metrics",
+      placeholder: "Quantitative progress metrics",
+      required: true,
+      hints: ["Current vs. target numbers", "Trend direction", "Leading indicators"]
+    },
+    {
+      id: "blockers",
+      title: "Blockers & Risks",
+      placeholder: "What's preventing progress?",
+      required: false,
+      hints: ["Dependencies?", "Resource constraints?", "External factors?"]
+    },
+    {
+      id: "next_steps",
+      title: "Next Steps",
+      placeholder: "Actions for next period",
+      required: true,
+      hints: ["What needs to happen?", "Who's responsible?", "By when?"]
+    }
+  ]
+};
+
+/**
+ * M2P: IDP Feedback Template (McKinsey Format)
+ * NOTE: User will provide actual McKinsey IDP format - this is a placeholder structure
+ */
+export const IDP_FEEDBACK_TEMPLATE: ArtifactTemplate = {
+  type: "idp_feedback",
+  name: "IDP Feedback (McKinsey Format)",
+  description: "Individual Development Plan feedback for PM coaching - McKinsey format",
+  sections: [
+    {
+      id: "pm_profile",
+      title: "PM Profile",
+      placeholder: "[PM Name] - [Role: SPM/APM/PM]",
+      required: true,
+      hints: ["PM name", "Current role", "Product charters owned"]
+    },
+    {
+      id: "period",
+      title: "Review Period",
+      placeholder: "Q1 2026 / January 2026",
+      required: true,
+      hints: ["What time period does this cover?"]
+    },
+    {
+      id: "feedback_content",
+      title: "Feedback",
+      placeholder: "[TODO: User will provide McKinsey IDP format structure]",
+      required: true,
+      hints: [
+        "Performance strengths observed",
+        "Development areas identified",
+        "Specific examples from feature requests and delivery",
+        "Coaching recommendations"
+      ]
+    },
+    {
+      id: "evidence",
+      title: "Evidence from Feature Requests",
+      placeholder: "Examples from recent work",
+      required: false,
+      hints: [
+        "PRD quality examples",
+        "Blocker resolution examples",
+        "Stakeholder communication examples",
+        "Delivery timeliness patterns"
+      ]
+    },
+    {
+      id: "development_goals",
+      title: "Development Goals",
+      placeholder: "Specific goals for next period",
+      required: true,
+      hints: ["What should they focus on?", "What skills to develop?", "What outcomes expected?"]
+    },
+    {
+      id: "action_items",
+      title: "Action Items",
+      placeholder: "Concrete next steps",
+      required: true,
+      hints: ["What will they do?", "What support is needed?", "Timeline?"]
+    },
+    {
+      id: "follow_up",
+      title: "Follow-up Plan",
+      placeholder: "Next check-in date and format",
+      required: false,
+      hints: ["When to review progress?", "How to measure improvement?"]
+    }
+  ]
+};
+
+/**
  * Get template by type
  */
 export function getTemplate(type: ArtifactType): ArtifactTemplate {
@@ -438,6 +562,12 @@ export function getTemplate(type: ArtifactType): ArtifactTemplate {
       return LEADERSHIP_UPDATE_TEMPLATE;
     case "client_summary":
       return CLIENT_SUMMARY_TEMPLATE;
+    case "okr_update":
+      return OKR_UPDATE_TEMPLATE;
+    case "idp_feedback":
+      return IDP_FEEDBACK_TEMPLATE;
+    case "bmad_prd":
+      return PRD_TEMPLATE; // Use generic PRD for now, can be customized later
     default:
       throw new Error(`Unknown artifact type: ${type}`);
   }
@@ -454,6 +584,28 @@ export function getAllTemplates(): ArtifactTemplate[] {
     CLARIFICATION_REQUEST_TEMPLATE,
     STATUS_UPDATE_TEMPLATE,
     LEADERSHIP_UPDATE_TEMPLATE,
-    CLIENT_SUMMARY_TEMPLATE
+    CLIENT_SUMMARY_TEMPLATE,
+    OKR_UPDATE_TEMPLATE,
+    IDP_FEEDBACK_TEMPLATE
   ];
+}
+
+/**
+ * Get default templates as a Map (for template registry)
+ */
+export function getDefaultTemplates(): Map<ArtifactType, ArtifactTemplate> {
+  const templates = new Map<ArtifactType, ArtifactTemplate>();
+
+  templates.set("prd", PRD_TEMPLATE);
+  templates.set("user_story", USER_STORY_TEMPLATE);
+  templates.set("follow_up", FOLLOW_UP_TEMPLATE);
+  templates.set("clarification_request", CLARIFICATION_REQUEST_TEMPLATE);
+  templates.set("status_update", STATUS_UPDATE_TEMPLATE);
+  templates.set("leadership_update", LEADERSHIP_UPDATE_TEMPLATE);
+  templates.set("client_summary", CLIENT_SUMMARY_TEMPLATE);
+  templates.set("okr_update", OKR_UPDATE_TEMPLATE);
+  templates.set("idp_feedback", IDP_FEEDBACK_TEMPLATE);
+  templates.set("bmad_prd", PRD_TEMPLATE); // Can be customized with YAML template
+
+  return templates;
 }

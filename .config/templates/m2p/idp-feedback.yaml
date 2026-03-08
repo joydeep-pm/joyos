@@ -1,0 +1,68 @@
+# M2P IDP Feedback Template (McKinsey Format)
+# NOTE: User will provide actual McKinsey IDP format
+type: idp_feedback
+name: "IDP Feedback (McKinsey Format)"
+description: "Individual Development Plan feedback for PM coaching"
+
+sections:
+  - id: pm_profile
+    title: "PM Profile"
+    placeholder: "[PM Name] - [Role: SPM/APM/PM]"
+    required: true
+    hints:
+      - "PM name"
+      - "Current role"
+      - "Product charters owned"
+
+  - id: period
+    title: "Review Period"
+    placeholder: "Q1 2026 / January 2026"
+    required: true
+    hints:
+      - "What time period does this cover?"
+
+  - id: feedback_content
+    title: "Feedback (McKinsey Format)"
+    placeholder: "[TODO: User will provide McKinsey IDP format structure]"
+    required: true
+    hints:
+      - "Performance strengths observed"
+      - "Development areas identified"
+      - "Specific examples from feature requests"
+      - "Coaching recommendations"
+
+  - id: evidence
+    title: "Evidence from Feature Requests"
+    placeholder: "Examples from recent work"
+    required: false
+    hints:
+      - "PRD quality examples"
+      - "Blocker resolution examples"
+      - "Stakeholder communication examples"
+      - "Delivery timeliness patterns"
+
+  - id: development_goals
+    title: "Development Goals"
+    placeholder: "Specific goals for next period"
+    required: true
+    hints:
+      - "What should they focus on?"
+      - "What skills to develop?"
+      - "What outcomes expected?"
+
+  - id: action_items
+    title: "Action Items"
+    placeholder: "Concrete next steps"
+    required: true
+    hints:
+      - "What will they do?"
+      - "What support is needed?"
+      - "Timeline?"
+
+  - id: follow_up
+    title: "Follow-up Plan"
+    placeholder: "Next check-in date and format"
+    required: false
+    hints:
+      - "When to review progress?"
+      - "How to measure improvement?"

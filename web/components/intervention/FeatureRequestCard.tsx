@@ -6,6 +6,7 @@
 
 import { RiskBadge } from "./RiskBadge";
 import { InterventionReasonBadge } from "./InterventionReasonBadge";
+import { getStageLabel, getStageColor, getStageMetadata } from "@/lib/control-tower/stage-config";
 import type { FeatureRequestWithIntervention } from "@/lib/control-tower/intervention-engine";
 
 interface FeatureRequestCardProps {
@@ -15,22 +16,6 @@ interface FeatureRequestCardProps {
 
 export function FeatureRequestCard({ featureRequest, onOpenDetail }: FeatureRequestCardProps) {
   const fr = featureRequest;
-
-  const stageLabels: Record<string, string> = {
-    incoming: "Incoming",
-    ba_grooming: "BA Grooming",
-    pm_exploration: "PM Exploration",
-    director_review: "Director Review",
-    engineering_validation: "Engineering Validation",
-    prd_drafting: "PRD Drafting",
-    estimation: "Estimation",
-    prioritized: "Prioritized",
-    in_delivery: "In Delivery",
-    testing: "Testing",
-    client_update: "Client Update",
-    uat_deploy: "UAT Deploy",
-    prod_deploy: "Production"
-  };
 
   const sourceLabels: Record<string, string> = {
     client_escalation: "Client Escalation",
@@ -42,6 +27,18 @@ export function FeatureRequestCard({ featureRequest, onOpenDetail }: FeatureRequ
     leadership_request: "Leadership",
     unknown: "Unknown"
   };
+
+  // Get stage metadata for color coding
+  const stageMetadata = getStageMetadata(fr.stage);
+  const stageColorClasses = {
+    gray: "bg-gray-100 text-gray-700",
+    blue: "bg-blue-100 text-blue-700",
+    purple: "bg-purple-100 text-purple-700",
+    cyan: "bg-cyan-100 text-cyan-700",
+    green: "bg-green-100 text-green-700",
+    orange: "bg-orange-100 text-orange-700",
+    yellow: "bg-yellow-100 text-yellow-700"
+  }[stageMetadata.color] || "bg-gray-100 text-gray-700";
 
   return (
     <div
@@ -57,7 +54,20 @@ export function FeatureRequestCard({ featureRequest, onOpenDetail }: FeatureRequ
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs text-gray-500">{sourceLabels[fr.source]}</span>
             <span className="text-xs text-gray-400">•</span>
-            <span className="text-xs text-gray-500">{stageLabels[fr.stage]}</span>
+            <span
+              className={`px-2 py-0.5 text-xs font-medium rounded ${stageColorClasses}`}
+              title={stageMetadata.description}
+            >
+              {getStageLabel(fr.stage)}
+            </span>
+            {fr.productCharter && (
+              <>
+                <span className="text-xs text-gray-400">•</span>
+                <span className="px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-700 rounded">
+                  {fr.productCharter}
+                </span>
+              </>
+            )}
             {fr.client && (
               <>
                 <span className="text-xs text-gray-400">•</span>

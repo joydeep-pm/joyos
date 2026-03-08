@@ -1,0 +1,167 @@
+# M2P Product Roadmap Template
+# Based on M2P's Product Roadmap Finflux spreadsheet format
+type: product_roadmap
+name: "Product Roadmap (M2P Format)"
+description: "M2P Fintech Product Roadmap - Strategic planning and prioritization framework"
+
+sections:
+  - id: roadmap_header
+    title: "Roadmap Header"
+    placeholder: |
+      **Product Vertical:** [BNPL / LAS / LAMF / Gold Loan / Personal Loan / etc.]
+
+      **Product Owner:** [PM Name]
+
+      **Planning Period:** [Q1 2026 / Q2 2026 / H1 2026 / FY 2026-27]
+
+      **Last Updated:** [Date]
+    required: true
+    hints:
+      - "Specify which product vertical this roadmap covers"
+      - "Identify the product owner"
+
+  - id: okr_alignment
+    title: "OKR Alignment"
+    placeholder: |
+      ### Linked Objective:
+      [High-level objective this roadmap supports]
+
+      ### Key Results:
+      - **KR 1:** [Measurable key result]
+      - **KR 2:** [Measurable key result]
+      - **KR 3:** [Measurable key result]
+
+      ### Goal Alignment:
+      - [X] Stability (Weight: 8)
+      - [X] Compliance (Weight: 7)
+      - [ ] Revenue (Weight: 6)
+      - [ ] Customizability (Weight: 5)
+    required: true
+    hints:
+      - "Link roadmap items to company OKRs"
+      - "Identify which goals this roadmap serves"
+      - "Goals: Stability, Compliance, Revenue, Customizability"
+
+  - id: roadmap_items
+    title: "Roadmap Items"
+    placeholder: |
+      | # | Feature/Initiative | Goal | Priority | Criticality | T-Shirt Size | Effort (PDs) | Owner | Status | Quarter |
+      |---|-------------------|------|----------|-------------|--------------|--------------|-------|--------|---------|
+      | 1 | [Feature name] | Stability | Very High | 5 | M | 12 | [PM Name] | In Progress | Q3 |
+      | 2 | [Feature name] | Compliance | High | 4 | L | 20 | [PM Name] | Not Started | Q4 |
+      | 3 | [Feature name] | Revenue | Medium | 3 | S | 7 | [PM Name] | Planned | Q4 |
+
+      **Legend:**
+      - **Goal:** Stability (8) / Compliance (7) / Revenue (6) / Customizability (5)
+      - **Priority:** Very High / High / Medium / Low / Cosmetic
+      - **Criticality:** 5 (Very High) / 4 (High) / 3 (Medium) / 2 (Low) / 1 (Cosmetic)
+      - **T-Shirt Size:** S (5-8 PDs) / M (9-15 PDs) / L (16-30 PDs) / XL (31-45 PDs) / XXL (46-60 PDs)
+      - **Status:** In Progress / Not Started / Planned / On Hold / Completed
+    required: true
+    hints:
+      - "List all major features/initiatives"
+      - "Use standardized priority and sizing"
+      - "Track status and ownership"
+
+  - id: prioritization_scoring
+    title: "Prioritization Scoring"
+    placeholder: |
+      **Scoring Formula:**
+      Priority Score = (Goal Weight × 1) + (Priority × 0.1) + (Effort × 0.01)
+
+      **Goal Weights:**
+      - Stability: 8
+      - Compliance: 7
+      - Revenue: 6
+      - Customizability: 5
+
+      **Priority Scores:**
+      - Very High: 5
+      - High: 4
+      - Medium: 3
+      - Low: 2
+      - Cosmetic: 1
+
+      **Effort Scores (Inverse - lower effort = higher score):**
+      - S (5-8 PDs): 8
+      - M (9-15 PDs): 5
+      - L (16-30 PDs): 3
+      - XL (31-45 PDs): 2
+      - XXL (46-60 PDs): 1
+
+      **Top Priorities (Calculated):**
+      1. [Feature name] - Score: [X.XX]
+      2. [Feature name] - Score: [X.XX]
+      3. [Feature name] - Score: [X.XX]
+    required: false
+    hints:
+      - "Use objective scoring to prioritize"
+      - "Higher scores indicate higher priority"
+
+  - id: dependencies
+    title: "Dependencies & Blockers"
+    placeholder: |
+      ### Cross-Vertical Dependencies:
+      - [Feature X] depends on [Other Vertical Feature Y]
+      - [Feature Z] requires [Platform Enhancement]
+
+      ### External Dependencies:
+      - [Dependency on third-party integration]
+      - [Dependency on regulatory approval]
+
+      ### Current Blockers:
+      - [Blocker 1] - Owner: [Name] - ETA to resolve: [Date]
+      - [Blocker 2] - Owner: [Name] - ETA to resolve: [Date]
+    required: false
+    hints:
+      - "Identify cross-team dependencies"
+      - "Track external blockers"
+
+  - id: vertical_status
+    title: "Vertical Roadmap Status"
+    placeholder: |
+      **Overall Status:** [On Track / At Risk / Delayed / Not Started]
+
+      **Progress Summary:**
+      - Total Items: [Count]
+      - Completed: [Count]
+      - In Progress: [Count]
+      - Not Started: [Count]
+      - Blocked: [Count]
+
+      **Recent Wins:**
+      - [Win 1]
+      - [Win 2]
+
+      **Risks/Concerns:**
+      - [Risk 1]
+      - [Risk 2]
+
+      **Next Quarter Focus:**
+      - [Focus area 1]
+      - [Focus area 2]
+    required: true
+    hints:
+      - "High-level status of the vertical"
+      - "Summarize progress and risks"
+
+  - id: quarterly_milestones
+    title: "Quarterly Milestones"
+    placeholder: |
+      ## Q3 (Oct-Dec)
+      - [ ] Milestone 1: [Description]
+      - [ ] Milestone 2: [Description]
+      - [ ] Milestone 3: [Description]
+
+      ## Q4 (Jan-Mar)
+      - [ ] Milestone 1: [Description]
+      - [ ] Milestone 2: [Description]
+      - [ ] Milestone 3: [Description]
+
+      ## Q1 Next FY (Apr-Jun)
+      - [ ] Milestone 1: [Description]
+      - [ ] Milestone 2: [Description]
+    required: false
+    hints:
+      - "Define major milestones per quarter"
+      - "Use as checkpoints for progress tracking"
