@@ -4,3 +4,4 @@ coverage/
 .cache/
 *.tsbuildinfo
 .env.local
+.vercel
