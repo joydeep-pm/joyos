@@ -8,6 +8,8 @@
 
 import { useState } from "react";
 import type { PMProfile } from "@/lib/control-tower/people-types";
+import { ArtifactViewer } from "@/components/artifacts/ArtifactViewer";
+import type { Artifact } from "@/lib/control-tower/artifacts/types";
 
 // Mock PM profiles - will be replaced with actual data
 const mockPMProfiles: PMProfile[] = [
@@ -33,6 +35,7 @@ const mockPMProfiles: PMProfile[] = [
 
 export default function PeoplePage() {
   const [pmProfiles] = useState<PMProfile[]>(mockPMProfiles);
+  const [viewingArtifact, setViewingArtifact] = useState<Artifact | null>(null);
 
   const getDaysSinceLastOneOnOne = (lastDate?: string): number => {
     if (!lastDate) return 999;
@@ -44,6 +47,262 @@ export default function PeoplePage() {
   const isOverdue = (lastDate?: string): boolean => {
     return getDaysSinceLastOneOnOne(lastDate) > 30;
   };
+
+  const handleDraftIDP = (pm: PMProfile) => {
+    const now = new Date().toISOString();
+    const idpArtifact: Artifact = {
+      id: `idp-${pm.id}-${Date.now()}`,
+      type: "idp_feedback",
+      title: `IDP Feedback - ${pm.name}`,
+      content: generateIDPContent(pm),
+      status: "draft",
+      createdAt: now,
+      updatedAt: now,
+      metadata: {
+        featureRequestId: `pm-${pm.id}`,
+        featureRequestTitle: `IDP for ${pm.name}`,
+        generatedAt: now,
+        generatedBy: "Product Control Tower",
+        pmOwner: pm.name
+      }
+    };
+    setViewingArtifact(idpArtifact);
+  };
+
+  const handleOneOnOnePrep = (pm: PMProfile) => {
+    const now = new Date().toISOString();
+    const oneOnOneArtifact: Artifact = {
+      id: `1on1-${pm.id}-${Date.now()}`,
+      type: "status_update",
+      title: `1:1 Prep - ${pm.name}`,
+      content: generateOneOnOnePrepContent(pm),
+      status: "draft",
+      createdAt: now,
+      updatedAt: now,
+      metadata: {
+        featureRequestId: `pm-${pm.id}`,
+        featureRequestTitle: `1:1 Prep for ${pm.name}`,
+        generatedAt: now,
+        generatedBy: "Product Control Tower",
+        pmOwner: pm.name
+      }
+    };
+    setViewingArtifact(oneOnOneArtifact);
+  };
+
+  function generateIDPContent(pm: PMProfile): string {
+    const currentDate = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+    return `# IDP Feedback - ${pm.name}
+
+## Employee Information
+
+**Employee Name / Role:** ${pm.name} - ${pm.role}
+
+**Manager:** Joydeep Sarkar (Director of Products)
+
+**Function:** Product
+
+**Last Update:** ${currentDate}
+
+---
+
+## Strengths
+
+### Key Strengths:
+- [Strength 1: e.g., Ownership]
+- [Strength 2: e.g., Technical Depth]
+- [Strength 3: e.g., Cross-functional Collaboration]
+
+**Evidence/Examples:**
+- Product Charters: ${pm.productCharters.join(", ")}
+- [Add specific examples demonstrating strengths]
+
+---
+
+## Areas for Development
+
+### Primary Development Areas:
+1. [Area 1: e.g., Product Sense & Strategy]
+2. [Area 2: e.g., Domain Knowledge (${pm.productCharters[0]})]
+3. [Area 3: e.g., Stakeholder Communication]
+
+**Why these areas:**
+- [Rationale for each development area]
+
+---
+
+## Development Plan
+
+## Area 1: [Development Area Name]
+
+### Development Goal:
+[Specific, measurable goal]
+
+### Development Actions:
+- [ ] Action 1: [Specific task/milestone]
+- [ ] Action 2: [Specific task/milestone]
+- [ ] Action 3: [Specific task/milestone]
+
+**Timeline:** Q2 2026
+
+**Status:** Not Started
+
+**Success Measure:** [% completion or specific outcome]
+
+---
+
+## Area 2: [Development Area Name]
+
+### Development Goal:
+[Specific, measurable goal]
+
+### Development Actions:
+- [ ] Action 1: [Specific task/milestone]
+- [ ] Action 2: [Specific task/milestone]
+
+**Timeline:** Q2 2026
+
+**Status:** Not Started
+
+**Success Measure:** [% completion or specific outcome]
+
+---
+
+## Brag Sheet (Accomplishments)
+
+Track significant accomplishments and contributions:
+
+| S.No. | Group/Client | Platform | Accomplishment |
+|-------|--------------|----------|----------------|
+| 1 | [Client/Project] | [LOS/LMS/Platform] | [Specific achievement] |
+| 2 | [Client/Project] | [LOS/LMS/Platform] | [Specific achievement] |
+| 3 | [Client/Project] | [LOS/LMS/Platform] | [Specific achievement] |
+
+**Other Contributions:**
+- [Cross-functional work]
+- [Process improvements]
+- [Documentation/enablement work]
+
+---
+
+## Current Quarter Goals/OKRs
+
+| Objective | Weightage | Key Results | Status |
+|-----------|-----------|-------------|--------|
+| [Objective 1] | 30% | [KR with metrics] | [On Track/At Risk/Delayed] |
+| [Objective 2] | 25% | [KR with metrics] | [On Track/At Risk/Delayed] |
+| [Objective 3] | 20% | [KR with metrics] | [On Track/At Risk/Delayed] |
+
+**Total Weightage:** 100%
+
+---
+
+## Monthly 1-on-1 Tracking
+
+## Month 1: [Month Name]
+
+### Review of Last Month:
+- [Accomplishment 1]
+- [Accomplishment 2]
+- [Blocker/Challenge addressed]
+
+### What to Expect This Month:
+- [Goal 1]
+- [Goal 2]
+- [Key deliverable]
+
+---
+
+## Month 2: [Month Name]
+
+### Review of Last Month:
+- [Accomplishment 1]
+- [Accomplishment 2]
+
+### What to Expect This Month:
+- [Goal 1]
+- [Goal 2]
+`;
+  }
+
+  function generateOneOnOnePrepContent(pm: PMProfile): string {
+    const daysSince = getDaysSinceLastOneOnOne(pm.lastOneOnOneDate);
+    const currentDate = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+    return `# 1:1 Preparation - ${pm.name}
+
+**Date:** ${currentDate}
+**Last 1:1:** ${pm.lastOneOnOneDate ? `${daysSince} days ago (${new Date(pm.lastOneOnOneDate).toLocaleDateString()})` : "Never"}
+**Role:** ${pm.role}
+**Product Charters:** ${pm.productCharters.join(", ")}
+
+---
+
+## Agenda
+
+### 1. Review of Last Month
+- [ ] Accomplishments and wins
+- [ ] Challenges faced
+- [ ] Blockers resolved
+
+### 2. Current Work & Portfolio Review
+- [ ] Feature requests status for ${pm.productCharters.join(", ")}
+- [ ] Client escalations
+- [ ] Jira/Confluence updates
+- [ ] Team collaboration
+
+### 3. Goals & Development
+- [ ] Progress on quarterly OKRs
+- [ ] IDP goals review
+- [ ] Skill development opportunities
+
+### 4. Upcoming Priorities
+- [ ] Next month's focus areas
+- [ ] Resource needs
+- [ ] Support required
+
+### 5. Open Discussion
+- [ ] PM's concerns or feedback
+- [ ] Career development
+- [ ] Process improvements
+
+---
+
+## Key Metrics to Discuss
+
+**Feature Request Portfolio:**
+- Active requests: [To be filled from intervention data]
+- Blocked items: [To be filled]
+- Overdue items: [To be filled]
+
+**Delivery Performance:**
+- PRD quality: [To be assessed]
+- Blocker resolution time: [To be measured]
+- Stakeholder satisfaction: [To be discussed]
+
+---
+
+## Notes & Action Items
+
+[Take notes during the 1:1]
+
+**Action Items:**
+- [ ] [Action item 1 - Owner - Due date]
+- [ ] [Action item 2 - Owner - Due date]
+
+**Follow-up:**
+- Next 1:1 scheduled for: [Date]
+`;
+  }
 
   return (
     <div className="min-h-screen bg-warm-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -113,10 +372,16 @@ export default function PeoplePage() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium">
+                      <button
+                        onClick={() => handleOneOnOnePrep(pm)}
+                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+                      >
                         1:1 Prep
                       </button>
-                      <button className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors text-sm font-medium">
+                      <button
+                        onClick={() => handleDraftIDP(pm)}
+                        className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors text-sm font-medium"
+                      >
                         Draft IDP
                       </button>
                     </div>
@@ -128,6 +393,11 @@ export default function PeoplePage() {
         </div>
 
       </div>
+
+      {/* Artifact Viewer Modal */}
+      {viewingArtifact && (
+        <ArtifactViewer artifact={viewingArtifact} onClose={() => setViewingArtifact(null)} />
+      )}
     </div>
   );
 }
