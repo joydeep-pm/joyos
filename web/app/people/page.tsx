@@ -127,17 +127,6 @@ export default function PeoplePage() {
           </div>
         </div>
 
-        {/* Placeholder for Future Features */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-sm font-semibold text-blue-900 mb-2">📝 Coming Soon</h3>
-          <ul className="text-sm text-blue-800 space-y-1">
-            <li>• 1:1 Prep View with PM portfolio and evidence</li>
-            <li>• IDP Feedback drafting (McKinsey format - awaiting your template)</li>
-            <li>• Performance evidence log from feature requests</li>
-            <li>• 1:1 notes tracking with action items</li>
-            <li>• Approval workflow for IDP feedback</li>
-          </ul>
-        </div>
       </div>
     </div>
   );

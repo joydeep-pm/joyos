@@ -473,72 +473,162 @@ export const OKR_UPDATE_TEMPLATE: ArtifactTemplate = {
 };
 
 /**
- * M2P: IDP Feedback Template (McKinsey Format)
- * NOTE: User will provide actual McKinsey IDP format - this is a placeholder structure
+ * M2P: IDP Feedback Template (M2P Format)
+ * Based on M2P's IDP spreadsheet format
  */
 export const IDP_FEEDBACK_TEMPLATE: ArtifactTemplate = {
   type: "idp_feedback",
-  name: "IDP Feedback (McKinsey Format)",
-  description: "Individual Development Plan feedback for PM coaching - McKinsey format",
+  name: "IDP Feedback (M2P Format)",
+  description: "M2P Fintech Individual Development Plan - Performance management and growth tracking",
   sections: [
     {
-      id: "pm_profile",
-      title: "PM Profile",
-      placeholder: "[PM Name] - [Role: SPM/APM/PM]",
+      id: "employee_info",
+      title: "Employee Information",
+      placeholder: `**Employee Name / Role:** [Name - Role]
+
+**Manager:** [Manager Name]
+
+**Function:** [Product / Engineering / Implementation]
+
+**Last Update:** [Date]`,
       required: true,
-      hints: ["PM name", "Current role", "Product charters owned"]
+      hints: ["Basic employee context"]
     },
     {
-      id: "period",
-      title: "Review Period",
-      placeholder: "Q1 2026 / January 2026",
+      id: "strengths",
+      title: "Strengths",
+      placeholder: `### Key Strengths:
+- [Strength 1: e.g., Ownership]
+- [Strength 2: e.g., Technical Depth]
+- [Strength 3: e.g., Cross-functional Collaboration]
+
+**Evidence/Examples:**
+- [Specific examples demonstrating strengths]`,
       required: true,
-      hints: ["What time period does this cover?"]
+      hints: ["Based on observed performance", "Provide specific examples"]
     },
     {
-      id: "feedback_content",
-      title: "Feedback",
-      placeholder: "[TODO: User will provide McKinsey IDP format structure]",
+      id: "areas_for_development",
+      title: "Areas for Development",
+      placeholder: `### Primary Development Areas:
+1. [Area 1: e.g., Product Sense & Strategy]
+2. [Area 2: e.g., LMS Domain Knowledge]
+3. [Area 3: e.g., Communication]
+
+**Why these areas:**
+- [Rationale for each development area]`,
+      required: true,
+      hints: ["Focus on 2-4 key development areas", "Aligned with role expectations and career growth"]
+    },
+    {
+      id: "development_plan",
+      title: "Development Plan",
+      placeholder: `## Area 1: [Development Area Name]
+
+### Development Goal:
+[Specific, measurable goal]
+
+### Development Actions:
+- [ ] Action 1: [Specific task/milestone]
+- [ ] Action 2: [Specific task/milestone]
+- [ ] Action 3: [Specific task/milestone]
+
+**Timeline:** [Quarter / Month]
+
+**Status:** [Not Started / In Progress / Completed]
+
+**Success Measure:** [% completion or specific outcome]
+
+---
+
+## Area 2: [Development Area Name]
+
+### Development Goal:
+[Specific, measurable goal]
+
+### Development Actions:
+- [ ] Action 1: [Specific task/milestone]
+- [ ] Action 2: [Specific task/milestone]
+
+**Timeline:** [Quarter / Month]
+
+**Status:** [Not Started / In Progress / Completed]
+
+**Success Measure:** [% completion or specific outcome]`,
       required: true,
       hints: [
-        "Performance strengths observed",
-        "Development areas identified",
-        "Specific examples from feature requests and delivery",
-        "Coaching recommendations"
+        "Each area should have clear goals and actions",
+        "Include timeline and success measures",
+        "Track progress regularly"
       ]
     },
     {
-      id: "evidence",
-      title: "Evidence from Feature Requests",
-      placeholder: "Examples from recent work",
+      id: "brag_sheet",
+      title: "Brag Sheet (Accomplishments)",
+      placeholder: `Track significant accomplishments and contributions:
+
+| S.No. | Group/Client | Platform | Accomplishment |
+|-------|--------------|----------|----------------|
+| 1 | [Client/Project] | [LOS/LMS/Platform] | [Specific achievement] |
+| 2 | [Client/Project] | [LOS/LMS/Platform] | [Specific achievement] |
+| 3 | [Client/Project] | [LOS/LMS/Platform] | [Specific achievement] |
+
+**Other Contributions:**
+- [Cross-functional work]
+- [Process improvements]
+- [Documentation/enablement work]`,
       required: false,
       hints: [
-        "PRD quality examples",
-        "Blocker resolution examples",
-        "Stakeholder communication examples",
-        "Delivery timeliness patterns"
+        "Evidence for performance reviews",
+        "Update regularly with wins",
+        "Include both project and non-project work"
       ]
     },
     {
-      id: "development_goals",
-      title: "Development Goals",
-      placeholder: "Specific goals for next period",
-      required: true,
-      hints: ["What should they focus on?", "What skills to develop?", "What outcomes expected?"]
-    },
-    {
-      id: "action_items",
-      title: "Action Items",
-      placeholder: "Concrete next steps",
-      required: true,
-      hints: ["What will they do?", "What support is needed?", "Timeline?"]
-    },
-    {
-      id: "follow_up",
-      title: "Follow-up Plan",
-      placeholder: "Next check-in date and format",
+      id: "goals_okrs",
+      title: "Current Quarter Goals/OKRs",
+      placeholder: `| Objective | Weightage | Key Results | Status |
+|-----------|-----------|-------------|--------|
+| [Objective 1] | 30% | [KR with metrics] | [On Track/At Risk/Delayed] |
+| [Objective 2] | 25% | [KR with metrics] | [On Track/At Risk/Delayed] |
+| [Objective 3] | 20% | [KR with metrics] | [On Track/At Risk/Delayed] |
+
+**Total Weightage:** 100%`,
       required: false,
-      hints: ["When to review progress?", "How to measure improvement?"]
+      hints: ["Link to quarterly OKRs", "Ensure weightages add to 100%", "Track progress against each objective"]
+    },
+    {
+      id: "monthly_one_on_one",
+      title: "Monthly 1-on-1 Tracking",
+      placeholder: `## Month 1: [Month Name]
+
+### Review of Last Month:
+- [Accomplishment 1]
+- [Accomplishment 2]
+- [Blocker/Challenge addressed]
+
+### What to Expect This Month:
+- [Goal 1]
+- [Goal 2]
+- [Key deliverable]
+
+---
+
+## Month 2: [Month Name]
+
+### Review of Last Month:
+- [Accomplishment 1]
+- [Accomplishment 2]
+
+### What to Expect This Month:
+- [Goal 1]
+- [Goal 2]`,
+      required: false,
+      hints: [
+        "Track monthly progress and expectations",
+        "Review accomplishments and set forward goals",
+        "Use as discussion guide for 1-on-1s"
+      ]
     }
   ]
 };
