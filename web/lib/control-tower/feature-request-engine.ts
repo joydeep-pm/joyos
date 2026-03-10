@@ -182,9 +182,10 @@ function createFeatureRequest(matchResult: MatchResult): FeatureRequest {
 }
 
 /**
- * Sync and ingest feature requests from all sources
+ * Sync and ingest feature requests from all sources.
+ * When epicKeys are provided, only issues under those epics are fetched from Jira.
  */
-export async function ingestFeatureRequests(options?: { forceSync?: boolean }): Promise<FeatureRequest[]> {
+export async function ingestFeatureRequests(options?: { forceSync?: boolean; epicKeys?: string[] }): Promise<FeatureRequest[]> {
   const featureRequests: FeatureRequest[] = [];
 
   // Fetch or use cached Jira issues
@@ -193,7 +194,7 @@ export async function ingestFeatureRequests(options?: { forceSync?: boolean }): 
     const jiraConfig = getJiraConfig();
     if (jiraConfig) {
       const adapter = createJiraAdapter(jiraConfig);
-      jiraIssues = await adapter.fetchIssues();
+      jiraIssues = await adapter.fetchIssues(options.epicKeys);
       await writeJiraCache(jiraIssues);
     }
   }

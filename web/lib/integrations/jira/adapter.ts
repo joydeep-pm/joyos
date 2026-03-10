@@ -31,6 +31,11 @@ export function normalizeJiraIssue(
   const productCharter = boardInfo.charter;
   const documentType = getDocumentType(boardType);
 
+  // Extract epic/parent info
+  const parentField = fields.parent as { key?: string; fields?: { summary?: string } } | undefined;
+  const epicKey = parentField?.key;
+  const epicName = parentField?.fields?.summary;
+
   // Parse issue links for CSo↔LEN workflow
   const parsedLinks = parseIssueLinks(issue);
   const linkedIssues = parsedLinks.map((link) => ({
@@ -76,6 +81,10 @@ export function normalizeJiraIssue(
       })) ?? [],
     url: `${baseUrl}/browse/${issue.key}`,
 
+    // Epic / parent info
+    epicKey,
+    epicName,
+
     // M2P Board Extensions
     boardId: boardContext?.boardId,
     boardType,
@@ -104,17 +113,19 @@ export class JiraAdapter {
   /**
    * Fetch all issues from configured projects AND boards
    * Supports M2P dual-board workflow (CSo + LEN)
+   * When epicKeys are provided (or configured), only issues under those epics are fetched.
    */
-  async fetchIssues(): Promise<NormalizedJiraIssue[]> {
+  async fetchIssues(epicKeys?: string[]): Promise<NormalizedJiraIssue[]> {
     if (!this.client.isReady()) {
       console.warn("Jira client not ready, returning empty results");
       return [];
     }
 
+    const effectiveEpicKeys = epicKeys ?? this.config.epicKeys;
     const allIssues: NormalizedJiraIssue[] = [];
 
-    // Fetch from projects (original behavior)
-    const projectIssues = await this.client.getAllProjectIssues();
+    // Fetch from projects (original behavior, with optional epic filter)
+    const projectIssues = await this.client.getAllProjectIssues(effectiveEpicKeys);
     const normalizedProjectIssues = projectIssues.map((issue) =>
       normalizeJiraIssue(issue, this.baseUrl, {
         charterMapping: this.config.charterMapping

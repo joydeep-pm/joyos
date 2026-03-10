@@ -5,12 +5,12 @@
  * Triggers sync from Jira and Confluence
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { ingestFeatureRequests, writeFeatureRequestCache } from "@/lib/control-tower";
 import { isJiraConfigured } from "@/lib/integrations/jira";
 import { isConfluenceConfigured } from "@/lib/integrations/confluence";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     const jiraConfigured = isJiraConfigured();
     const confluenceConfigured = isConfluenceConfigured();
@@ -25,8 +25,19 @@ export async function POST() {
       );
     }
 
-    // Ingest and sync
-    const featureRequests = await ingestFeatureRequests({ forceSync: true });
+    // Parse optional epic keys from request body
+    let epicKeys: string[] | undefined;
+    try {
+      const body = await request.json();
+      if (Array.isArray(body?.epicKeys) && body.epicKeys.length > 0) {
+        epicKeys = body.epicKeys.map((k: string) => k.trim()).filter(Boolean);
+      }
+    } catch {
+      // No body or invalid JSON — use config defaults
+    }
+
+    // Ingest and sync (with optional epic filter override)
+    const featureRequests = await ingestFeatureRequests({ forceSync: true, epicKeys });
 
     // Write to cache
     await writeFeatureRequestCache(featureRequests);

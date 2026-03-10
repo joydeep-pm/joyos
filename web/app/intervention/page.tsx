@@ -16,6 +16,8 @@ export default function InterventionPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedFeatureRequest, setSelectedFeatureRequest] = useState<FeatureRequestWithIntervention | null>(null);
+  const [epicFilter, setEpicFilter] = useState("");
+  const [showEpicFilter, setShowEpicFilter] = useState(false);
 
   useEffect(() => {
     fetchBrief();
@@ -67,7 +69,17 @@ export default function InterventionPage() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch("/api/control-tower/feature-requests/sync", { method: "POST" });
+
+      const epicKeys = epicFilter
+        .split(",")
+        .map((k) => k.trim())
+        .filter(Boolean);
+
+      const response = await fetch("/api/control-tower/feature-requests/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(epicKeys.length > 0 ? { epicKeys } : {})
+      });
       const data = await response.json();
 
       if (!data.success) {
@@ -139,23 +151,71 @@ export default function InterventionPage() {
                 })}
               </p>
             </div>
-            <button
-              onClick={handleSync}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-              Sync Now
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowEpicFilter(!showEpicFilter)}
+                className={`px-3 py-2 border rounded-lg text-sm transition-colors flex items-center gap-1.5 ${
+                  epicFilter
+                    ? "border-blue-300 bg-blue-50 text-blue-700"
+                    : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
+                }`}
+                title="Filter sync by epic keys"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                Epics
+                {epicFilter && <span className="w-2 h-2 rounded-full bg-blue-500" />}
+              </button>
+              <button
+                onClick={handleSync}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                Sync Now
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Epic Filter Panel */}
+      {showEpicFilter && (
+        <div className="bg-blue-50 border-b border-blue-200">
+          <div className="max-w-7xl mx-auto px-8 py-3">
+            <div className="flex items-center gap-3">
+              <label className="text-sm font-medium text-blue-800 whitespace-nowrap">
+                Filter by Epics:
+              </label>
+              <input
+                type="text"
+                value={epicFilter}
+                onChange={(e) => setEpicFilter(e.target.value)}
+                placeholder="e.g. CSO-123, LEN-456"
+                className="flex-1 px-3 py-1.5 text-sm border border-blue-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              {epicFilter && (
+                <button
+                  onClick={() => setEpicFilter("")}
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                >
+                  Clear
+                </button>
+              )}
+              <span className="text-xs text-blue-600">
+                Comma-separated epic keys. Leave empty to sync all.
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Summary */}
       <div className="max-w-7xl mx-auto px-8 py-6">

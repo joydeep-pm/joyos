@@ -72,7 +72,8 @@ export class JiraClient {
             "labels",
             "comment",
             "issuelinks",
-            "sprint"
+            "sprint",
+            "parent"
           ]
         };
 
@@ -133,23 +134,27 @@ export class JiraClient {
   }
 
   /**
-   * Get issues for configured projects updated after a certain date
+   * Get issues for configured projects updated after a certain date.
+   * When epicKeys are provided, only issues belonging to those epics are returned.
    */
-  async getRecentIssues(updatedAfter?: string): Promise<JiraIssue[]> {
+  async getRecentIssues(updatedAfter?: string, epicKeys?: string[]): Promise<JiraIssue[]> {
     const projectKeys = this.config.projectKeys;
     const projectFilter = `project in (${projectKeys.join(", ")})`;
     const dateFilter = updatedAfter ? ` AND updated >= "${updatedAfter}"` : "";
-    const jql = `${projectFilter}${dateFilter} ORDER BY updated DESC`;
+    const epicFilter = epicKeys && epicKeys.length > 0
+      ? ` AND parentEpic in (${epicKeys.join(", ")})`
+      : "";
+    const jql = `${projectFilter}${dateFilter}${epicFilter} ORDER BY updated DESC`;
 
     const result = await this.searchIssues(jql, { maxResults: 500 });
     return result?.issues ?? [];
   }
 
   /**
-   * Get all issues for configured projects
+   * Get all issues for configured projects, optionally filtered by epics
    */
-  async getAllProjectIssues(): Promise<JiraIssue[]> {
-    return this.getRecentIssues();
+  async getAllProjectIssues(epicKeys?: string[]): Promise<JiraIssue[]> {
+    return this.getRecentIssues(undefined, epicKeys);
   }
 
   /**

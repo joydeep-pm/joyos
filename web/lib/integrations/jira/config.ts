@@ -29,6 +29,7 @@ export interface JiraConfig {
   apiToken: string;
   projectKeys: string[];
   boardIds: number[];           // Board IDs to query
+  epicKeys?: string[];          // Epic keys to filter by (e.g., ["CSO-123", "LEN-456"])
   customFilters?: string[];     // Existing custom filters support
   charterMapping?: CharterMapping; // Charter mapping config
 }
@@ -61,6 +62,7 @@ export function getJiraConfig(): JiraConfig | null {
   }
 
   const boardIds = process.env.JIRA_BOARD_IDS?.split(",").map((id) => parseInt(id.trim(), 10)).filter((id) => !isNaN(id)) || [];
+  const epicKeys = process.env.JIRA_EPIC_KEYS?.split(",").map((k) => k.trim()).filter(Boolean) || undefined;
   const customFilters = process.env.JIRA_CUSTOM_FILTERS?.split(",").map((f) => f.trim());
   const charterMapping = loadCharterMapping();
 
@@ -70,6 +72,7 @@ export function getJiraConfig(): JiraConfig | null {
     apiToken,
     projectKeys,
     boardIds,
+    epicKeys,
     customFilters,
     charterMapping: charterMapping || undefined
   };

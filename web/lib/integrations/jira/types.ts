@@ -140,6 +140,10 @@ export interface NormalizedJiraIssue {
   }[];
   url: string;
 
+  // Epic / parent info
+  epicKey?: string;           // Parent epic issue key
+  epicName?: string;          // Parent epic summary/name
+
   // M2P Board Integration Extensions
   boardId?: number;           // Which board this issue belongs to
   boardType?: BoardType;      // CSo (Eng→PM) or LEN (PM→Eng) workflow
