@@ -42,41 +42,55 @@ export class JiraClient {
   }
 
   /**
-   * Search for issues using JQL
+   * Search for issues using JQL (enhanced search endpoint)
    */
-  async searchIssues(jql: string, options?: { maxResults?: number; startAt?: number }): Promise<JiraSearchResult | null> {
+  async searchIssues(jql: string, options?: { maxResults?: number }): Promise<JiraSearchResult | null> {
     if (!this.client) {
       console.error("Jira client not initialized");
       return null;
     }
 
     try {
-      const result = await this.client.issueSearch.searchForIssuesUsingJql({
-        jql,
-        maxResults: options?.maxResults ?? 100,
-        startAt: options?.startAt ?? 0,
-        fields: [
-          "summary",
-          "description",
-          "status",
-          "priority",
-          "assignee",
-          "reporter",
-          "created",
-          "updated",
-          "duedate",
-          "labels",
-          "comment",
-          "issuelinks",
-          "sprint"
-        ]
-      });
+      const allIssues: JiraIssue[] = [];
+      let nextPageToken: string | undefined;
+      const maxResults = options?.maxResults ?? 100;
+
+      do {
+        const params: { jql: string; maxResults: number; fields: string[]; nextPageToken?: string } = {
+          jql,
+          maxResults: Math.min(maxResults - allIssues.length, 100),
+          fields: [
+            "summary",
+            "description",
+            "status",
+            "priority",
+            "assignee",
+            "reporter",
+            "created",
+            "updated",
+            "duedate",
+            "labels",
+            "comment",
+            "issuelinks",
+            "sprint"
+          ]
+        };
+
+        if (nextPageToken) {
+          params.nextPageToken = nextPageToken;
+        }
+
+        const result = await this.client.issueSearch.searchForIssuesUsingJqlEnhancedSearch(params);
+        const issues = (result.issues ?? []) as unknown as JiraIssue[];
+        allIssues.push(...issues);
+        nextPageToken = result.nextPageToken ?? undefined;
+      } while (nextPageToken && allIssues.length < maxResults);
 
       return {
-        issues: result.issues as unknown as JiraIssue[],
-        total: result.total ?? 0,
-        maxResults: result.maxResults ?? 0,
-        startAt: result.startAt ?? 0
+        issues: allIssues,
+        total: allIssues.length,
+        maxResults,
+        startAt: 0
       };
     } catch (error) {
       console.error("Failed to search Jira issues:", error);

@@ -17,7 +17,7 @@
     "clsx": "^2.1.1",
     "confluence.js": "^1.7.4",
     "gray-matter": "^4.0.3",
-    "jira.js": "^4.0.1",
+    "jira.js": "^5.3.1",
     "js-yaml": "^4.1.1",
     "lucide-react": "^0.577.0",
     "next": "^15.5.12",
