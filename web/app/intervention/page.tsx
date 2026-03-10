@@ -71,7 +71,7 @@ export default function InterventionPage() {
       const data = await response.json();
 
       if (!data.success) {
-        throw new Error(data.error || "Failed to sync");
+        throw new Error(data.error || data.details || "Failed to sync");
       }
 
       // Refresh brief after sync

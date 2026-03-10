@@ -41,12 +41,14 @@ export async function POST() {
       }
     });
   } catch (error) {
-    console.error("Failed to sync feature requests:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
+    const stack = error instanceof Error ? error.stack : undefined;
+    console.error("Failed to sync feature requests:", message, stack);
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to sync feature requests",
-        details: error instanceof Error ? error.message : "Unknown error"
+        error: `Sync failed: ${message}`,
+        details: message
       },
       { status: 500 }
     );

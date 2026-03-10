@@ -4,8 +4,7 @@
  * Caches feature requests to local filesystem for fast access.
  */
 
-import path from "node:path";
-import { readJsonFile, writeJsonFile } from "@/lib/assistant/storage";
+import { readJsonFile, writeJsonFile, getAssistantCachePath } from "@/lib/assistant/storage";
 import type { FeatureRequest, FeatureRequestCache } from "./types";
 import { readJiraCache } from "@/lib/integrations/jira";
 import { readConfluenceCache } from "@/lib/integrations/confluence";
@@ -16,9 +15,7 @@ const CACHE_FILE = "feature-requests.json";
  * Get the path to the feature request cache file
  */
 function getFeatureRequestCachePath(): string {
-  const projectRoot = process.cwd();
-  const cacheDir = path.join(projectRoot, "..", ".cache");
-  return path.join(cacheDir, CACHE_FILE);
+  return getAssistantCachePath(CACHE_FILE);
 }
 
 /**

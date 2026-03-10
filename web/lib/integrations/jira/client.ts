@@ -4,12 +4,12 @@
  * Provides a simplified interface to the Jira API with error handling and retry logic.
  */
 
-import { Version3Client } from "jira.js";
+import { Version2Client } from "jira.js";
 import type { JiraConfig } from "./config";
 import type { JiraIssue, JiraSearchResult } from "./types";
 
 export class JiraClient {
-  private client: Version3Client | null = null;
+  private client: Version2Client | null = null;
   private config: JiraConfig;
 
   constructor(config: JiraConfig) {
@@ -19,7 +19,7 @@ export class JiraClient {
 
   private initializeClient(): void {
     try {
-      this.client = new Version3Client({
+      this.client = new Version2Client({
         host: this.config.baseUrl,
         authentication: {
           basic: {
@@ -67,9 +67,8 @@ export class JiraClient {
           "duedate",
           "labels",
           "comment",
-          "issuelinks",    // For CSo↔LEN linking
-          "sprint",        // For LEN sprint tracking
-          "customfield_*"  // Include custom fields
+          "issuelinks",
+          "sprint"
         ]
       });
 
@@ -81,7 +80,7 @@ export class JiraClient {
       };
     } catch (error) {
       console.error("Failed to search Jira issues:", error);
-      return null;
+      throw error;
     }
   }
 

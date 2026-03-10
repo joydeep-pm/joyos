@@ -63,3 +63,4 @@ test_*.py
 # Local derived data
 .cache/
 .claude/settings.local.json
+.vercel

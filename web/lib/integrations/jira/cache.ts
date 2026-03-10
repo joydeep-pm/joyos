@@ -4,8 +4,7 @@
  * Caches Jira issues to local filesystem for fast access.
  */
 
-import path from "node:path";
-import { readJsonFile, writeJsonFile } from "@/lib/assistant/storage";
+import { readJsonFile, writeJsonFile, getAssistantCachePath } from "@/lib/assistant/storage";
 import type { NormalizedJiraIssue } from "./types";
 
 const CACHE_FILE = "jira-issues.json";
@@ -21,9 +20,7 @@ export interface JiraCache {
  * Get the path to the Jira cache file
  */
 function getJiraCachePath(): string {
-  const projectRoot = process.cwd();
-  const cacheDir = path.join(projectRoot, "..", ".cache");
-  return path.join(cacheDir, CACHE_FILE);
+  return getAssistantCachePath(CACHE_FILE);
 }
 
 /**
