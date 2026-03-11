@@ -64,3 +64,24 @@ test_*.py
 .cache/
 .claude/settings.local.json
 .vercel
+
+# ── GSD baseline (auto-generated) ──
+.gsd/activity/
+.gsd/runtime/
+.gsd/worktrees/
+.gsd/auto.lock
+.gsd/metrics.json
+.gsd/STATE.md
+Thumbs.db
+*.code-workspace
+.env.*
+!.env.example
+node_modules/
+.next/
+dist/
+build/
+*.pyc
+target/
+vendor/
+coverage/
+tmp/
