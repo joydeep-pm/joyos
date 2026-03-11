@@ -33,6 +33,35 @@ export type RiskSeverity = "high" | "medium" | "low" | "none";
 
 export type BlockerType = "engineering" | "pm" | "client" | "other";
 
+export type FeatureRequestReadinessVerdict = "ready" | "low_readiness" | "blocked";
+
+export type FeatureRequestReadinessDimensionName =
+  | "documentation"
+  | "scope"
+  | "stage"
+  | "unblock_status"
+  | "prioritization"
+  | "freshness";
+
+export type FeatureRequestReadinessDimensionStatus = "pass" | "warn" | "fail";
+
+export type FeatureRequestReadinessMissingInputCode =
+  | "documentation_missing"
+  | "scope_signal_missing"
+  | "stage_signal_missing"
+  | "stale_update";
+
+export type FeatureRequestReadinessBlockerClass =
+  | "none"
+  | "product_dependency"
+  | "external_dependency"
+  | "delivery_blocked";
+
+export type FeatureRequestPrioritizationPosture =
+  | "scheduled"
+  | "needs_triage"
+  | "expedite_blocker_resolution";
+
 export interface FeatureRequestBlocker {
   type: BlockerType;
   description: string;
@@ -115,6 +144,21 @@ export interface FeatureRequest {
 /**
  * Feature Request Cache
  */
+export interface FeatureRequestReadinessDimension {
+  name: FeatureRequestReadinessDimensionName;
+  status: FeatureRequestReadinessDimensionStatus;
+  rationale: string;
+}
+
+export interface FeatureRequestReadinessEvaluation {
+  verdict: FeatureRequestReadinessVerdict;
+  dimensions: FeatureRequestReadinessDimension[];
+  missingInputs: FeatureRequestReadinessMissingInputCode[];
+  blockerClass: FeatureRequestReadinessBlockerClass;
+  prioritizationPosture: FeatureRequestPrioritizationPosture;
+  recommendedNextStep: string;
+}
+
 export interface FeatureRequestCache {
   version: number;
   generatedAt: string;

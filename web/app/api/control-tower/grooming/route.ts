@@ -15,7 +15,7 @@ export async function GET() {
     // Ingest feature requests
     const featureRequests = await ingestFeatureRequests();
 
-    // Generate grooming summary
+    // Generate grooming summary with serialized readiness diagnostics
     const summary = generateGroomingSummary(featureRequests);
 
     return NextResponse.json(summary);

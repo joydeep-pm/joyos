@@ -1,0 +1,16 @@
+# Decisions Register
+
+<!-- Append-only. Never edit or remove existing rows.
+     To reverse a decision, add a new row that supersedes it.
+     Read this file at the start of any planning or research phase. -->
+
+| # | When | Scope | Decision | Choice | Rationale | Revisable? |
+|---|------|-------|----------|--------|-----------|------------|
+| D001 | M001 | scope | Product sequencing | Use four milestones: decision/review operating system, people management intelligence, approval-governed automation, expanded orchestration | Matches the current repo state and sequences the next value-bearing capabilities without shrinking the full vision | Yes — if implementation reality or user priorities change |
+| D002 | M001 | scope | M001 focus | Prioritize decision and review workflows over people-management or broader automation | Existing V1 already covers sync, intervention, and artifact drafting; the next value gap is operational decision-making before grooming | Yes — if the user explicitly re-prioritizes |
+| D003 | M001 | arch | Product framing | Keep the system anchored on the feature-request-centric Product Control Tower model | This preserves the accepted product direction and avoids regression to a generic task planner | No |
+| D004 | M001 | convention | Systems-of-record boundary | Continue treating Jira as execution truth, Confluence as documentation truth, and Personal OS as private orchestration overlay | This matches the user’s explicit trust model and keeps writeback safely approval-gated | No |
+| D005 | M001 | pattern | M001 planning pattern | Treat prior V1 capabilities as established and plan M001 as the next milestone rather than re-planning already built work | The repo already contains implemented control-tower foundations, so the roadmap should advance from current reality | No |
+| D006 | M001/S01 | verification | S01 proof strategy | Prove S01 through contract and integration tests anchored on a new readiness evaluator plus typecheck, without claiming browser/UAT completion in this slice | The slice owns the readiness model and grooming wiring, but durable decision storage and full operating-loop validation belong to later slices | Yes |
+| D007 | M001/S01 | pattern | Readiness modeling seam | Introduce grooming readiness as a derived evaluator module consumed by the grooming engine and route, instead of expanding coarse bucket logic directly inside `grooming-engine.ts` | This creates a stable machine-readable contract that downstream slices can reuse for decision tracking and follow-up flows | No |
+| D008 | M001/S01 | ui-boundary | Grooming page import boundary | Keep `app/grooming/page.tsx` importing only browser-safe control-tower modules (`types` and `grooming-engine`) instead of the barrel export | The barrel also re-exports server-only cache and ingestion modules, which pull `fs` into the client bundle and break the real grooming page | No |
