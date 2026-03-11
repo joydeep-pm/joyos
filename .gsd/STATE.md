@@ -1,9 +1,9 @@
 # GSD State
 
-**Active Milestone:** M001 — Decision and review operating system
-**Active Slice:** Complete
-**Active Task:** Complete
-**Phase:** M001 complete
+**Active Milestone:** M002 — People management intelligence
+**Active Slice:** Not started
+**Active Task:** Not started
+**Phase:** Ready for M002 planning
 
 ## Recent Decisions
 - Sequence the product as four milestones from decision/review through broader orchestration
@@ -29,4 +29,4 @@
 - None
 
 ## Next Action
-Begin planning M002, using the completed M001 control-tower review and approval patterns as the baseline for people-management intelligence work.
+Plan M002, reusing the assembled feature-request, overlay persistence, and approval-gated workflow patterns proven in M001 where they fit the people-management operating layer.

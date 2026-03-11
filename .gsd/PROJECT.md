@@ -26,3 +26,9 @@ See `.gsd/REQUIREMENTS.md` for the explicit capability contract, requirement sta
 - [ ] M002: People management intelligence — Add 1:1 prep, coaching evidence, feedback synthesis, and IDP drafting for PM management.
 - [ ] M003: Approval-governed automation — Add approval envelopes, auditable action pipelines, and safe writeback into official systems.
 - [ ] M004: Expanded orchestration and intelligence — Extend ingestion, continuity, and cross-channel automation for a more autonomous control tower.
+
+## What Changed in M001
+
+M001 is now closed with milestone-level verification. The product no longer stops at visibility and drafting: it now supports a real pre-grooming operating loop. Directors can inspect readiness verdicts and missing inputs, capture durable review decisions on feature requests, refresh intervention state from assembled server-side workflow data, generate review-aware follow-up artifacts, and hand those artifacts into the approval-gated comms draft flow without sending.
+
+This milestone also established the main implementation seams future milestones should reuse: derived evaluators for operational judgments, overlay persistence for private orchestration data, assembled feature-request reads for runtime workflow state, stable route failure codes plus diagnostics, and approval-envelope behavior for outward actions.
