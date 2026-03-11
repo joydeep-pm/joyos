@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import type { Artifact, ArtifactType } from "@/lib/control-tower/artifacts/types";
 import { X, Copy, Download, Edit2, Check, Send } from "lucide-react";
 import { canSendViaComms, artifactToCommsDraft } from "@/lib/control-tower/artifacts/comms-integration";
@@ -33,6 +33,8 @@ export function ArtifactViewer({ artifact, onClose, onEdit }: ArtifactViewerProp
   const [editedContent, setEditedContent] = useState(artifact.content);
   const [copySuccess, setCopySuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionMessage, setSubmissionMessage] = useState<string | null>(null);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   const handleCopy = async () => {
     try {
@@ -66,31 +68,37 @@ export function ArtifactViewer({ artifact, onClose, onEdit }: ArtifactViewerProp
 
   const handleSubmitForApproval = async () => {
     setIsSubmitting(true);
+    setSubmissionMessage(null);
+    setSubmissionError(null);
+
     try {
-      // Update artifact content if edited
       const currentArtifact = isEditing
         ? { ...artifact, content: editedContent, updatedAt: new Date().toISOString() }
         : artifact;
 
-      // Convert to comms draft
       const commsDraft = artifactToCommsDraft(currentArtifact);
 
-      // Submit to comms system
       const response = await fetch("/api/assistant/comms/draft", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(commsDraft)
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to submit for approval");
+      const payload = await response.json().catch(() => null);
+
+      if (!response.ok || !payload?.ok || !payload?.data) {
+        const errorCode = payload?.error?.code;
+        const errorMessage = payload?.error?.message ?? "Failed to submit for approval.";
+        throw new Error(errorCode ? `${errorMessage} (${errorCode})` : errorMessage);
       }
 
-      alert("Artifact submitted for approval! Check the /assistant page to approve and send.");
-      onClose();
+      const createdDraft = payload.data;
+      setSubmissionMessage(
+        `Draft ${createdDraft.id} created for ${createdDraft.destination}. Approval is still required before send.`
+      );
     } catch (error) {
       console.error("Error submitting for approval:", error);
-      alert("Failed to submit for approval");
+      setSubmissionError(error instanceof Error ? error.message : "Failed to submit for approval.");
     } finally {
       setIsSubmitting(false);
     }
@@ -136,9 +144,20 @@ export function ArtifactViewer({ artifact, onClose, onEdit }: ArtifactViewerProp
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-200 bg-gray-50">
+        <div className="flex flex-col gap-2 px-4 py-2 border-b border-gray-200 bg-gray-50">
+          {submissionMessage && (
+            <div className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
+              {submissionMessage}
+            </div>
+          )}
+          {submissionError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+              {submissionError}
+            </div>
+          )}
           {!isEditing ? (
             <>
+              <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsEditing(true)}
                 className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
@@ -170,9 +189,10 @@ export function ArtifactViewer({ artifact, onClose, onEdit }: ArtifactViewerProp
                   {isSubmitting ? "Submitting..." : "Submit for Approval"}
                 </button>
               )}
+              </div>
             </>
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <button
                 onClick={handleSaveEdit}
                 className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
@@ -189,7 +209,7 @@ export function ArtifactViewer({ artifact, onClose, onEdit }: ArtifactViewerProp
               >
                 Cancel
               </button>
-            </>
+            </div>
           )}
         </div>
 

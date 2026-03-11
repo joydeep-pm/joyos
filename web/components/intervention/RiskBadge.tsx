@@ -2,6 +2,7 @@
  * Risk Severity Badge Component
  */
 
+import React from "react";
 import type { RiskSeverity } from "@/lib/control-tower";
 
 interface RiskBadgeProps {

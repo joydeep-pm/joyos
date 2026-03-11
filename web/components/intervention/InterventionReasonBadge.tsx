@@ -2,6 +2,7 @@
  * Intervention Reason Badge Component
  */
 
+import React from "react";
 import type { InterventionReason } from "@/lib/control-tower/intervention-engine";
 
 interface InterventionReasonBadgeProps {

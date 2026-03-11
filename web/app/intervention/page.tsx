@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PmOwnerGroup } from "@/components/intervention/PmOwnerGroup";
 import { FeatureRequestDetail } from "@/components/intervention/FeatureRequestDetail";
 import type { InterventionBrief, FeatureRequestWithIntervention } from "@/lib/control-tower/intervention-engine";
@@ -35,8 +35,10 @@ export default function InterventionPage() {
       }
 
       setBrief(data.brief);
+      return data.brief as InterventionBrief;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load intervention brief");
+      return null;
     } finally {
       setLoading(false);
     }
@@ -53,16 +55,26 @@ export default function InterventionPage() {
     }
   }
 
-  function handleDraftFollowup(id: string) {
-    alert(`Draft follow-up for ${id} - Coming in next task`);
-  }
+  function handleDraftFollowup(_id: string) {}
 
-  function handleRequestClarification(id: string) {
-    alert(`Request clarification for ${id} - Coming in next task`);
-  }
+  function handleRequestClarification(_id: string) {}
 
-  function handleAddNote(id: string) {
-    alert(`Add director note for ${id} - Coming in next task`);
+  function handleAddNote(_id: string) {}
+
+  async function handleReviewSaved(featureRequestId: string) {
+    const refreshedBrief = await fetchBrief();
+
+    if (!refreshedBrief) {
+      return;
+    }
+
+    for (const group of refreshedBrief.pmGroups ?? []) {
+      const refreshedFeatureRequest = group.featureRequests.find((featureRequest) => featureRequest.id === featureRequestId);
+      if (refreshedFeatureRequest) {
+        setSelectedFeatureRequest(refreshedFeatureRequest);
+        return;
+      }
+    }
   }
 
   async function handleSync() {
@@ -268,6 +280,7 @@ export default function InterventionPage() {
           onDraftFollowup={handleDraftFollowup}
           onRequestClarification={handleRequestClarification}
           onAddNote={handleAddNote}
+          onReviewSaved={handleReviewSaved}
         />
       )}
     </div>

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "drafts": [
+    {
+      "id": "comms-c9384e06-c8c1-4f05-b2a7-b7f047bfd17e",
+      "type": "blocked_followup",
+      "status": "draft",
+      "destination": "alice@example.com",
+      "subject": "Clarification Needed: Payment reversal dashboard",
+      "body": "Hi Alice,\n\nPlease confirm the rollout owner before we schedule grooming.\n\n- Pending decision: rollout owner\n- Next action: implementation lead follow-up",
+      "requiresApproval": true,
+      "createdAt": "2026-03-11T10:00:00.000Z",
+      "sourceDate": "2026-03-11T10:00:00.000Z"
+    }
+  ],
+  "audit": [
+    {
+      "draftId": "comms-c9384e06-c8c1-4f05-b2a7-b7f047bfd17e",
+      "event": "draft_created",
+      "actor": "assistant",
+      "details": "blocked_followup created for alice@example.com",
+      "id": "audit_36c58fc9-f887-4b79-b5c6-b05815de1f47",
+      "timestamp": "2026-03-11T10:00:00.000Z"
+    }
+  ]
+}

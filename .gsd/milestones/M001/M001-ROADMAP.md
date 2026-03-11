@@ -50,7 +50,7 @@ This milestone is complete only when all are true:
   > After this: a real feature request can be evaluated for readiness, missing inputs, blockers, and prioritization posture through a substantive decision rubric.
 - [x] **S02: Decision tracking in feature request workflows** `risk:medium` `depends:[S01]`
   > After this: review outcomes, pending decisions, and next actions are recorded on feature requests and visible in intervention and detail views.
-- [ ] **S03: Pre-grooming operating loop integration** `risk:medium` `depends:[S01,S02]`
+- [x] **S03: Pre-grooming operating loop integration** `risk:medium` `depends:[S01,S02]`
   > After this: the live app supports an end-to-end pre-grooming flow that combines synthesized context, review decisions, and artifact follow-up preparation.
 
 ## Boundary Map

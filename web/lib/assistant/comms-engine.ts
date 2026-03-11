@@ -84,57 +84,84 @@ function buildStakeholderBody(input: {
 }
 
 export async function createCommsDraft(input: {
+  id?: string;
   type?: "stakeholder_update" | "blocked_followup";
+  status?: CommsDraft["status"];
   destination?: string;
   date?: string;
   actor?: string;
+  subject?: string;
+  body?: string;
+  sourceDate?: string;
+  requiresApproval?: boolean;
 }): Promise<CommsDraft> {
   const state = await readState();
   const date = input.date ?? new Date().toISOString().slice(0, 10);
   const type = input.type ?? "stakeholder_update";
+  const faithfulDestination = typeof input.destination === "string" ? input.destination.trim() : "";
+  const faithfulSubject = typeof input.subject === "string" ? input.subject.trim() : "";
+  const faithfulBody = typeof input.body === "string" ? input.body.trim() : "";
+  const hasFaithfulPayload =
+    faithfulDestination.length > 0 && faithfulSubject.length > 0 && faithfulBody.length > 0;
 
-  const [brief, context] = await Promise.all([generateDailyBrief(date), getAssistantContext()]);
+  let draft: CommsDraft;
 
-  const objective =
-    brief.topOutcomes[0]?.goalReference ||
-    context.context.goals[0]?.summary ||
-    "Advance weekly execution outcomes and remove blockers.";
+  if (hasFaithfulPayload) {
+    draft = {
+      id: input.id ?? `draft_${crypto.randomUUID()}`,
+      type,
+      status: input.status ?? "draft",
+      destination: faithfulDestination,
+      subject: faithfulSubject,
+      body: faithfulBody,
+      requiresApproval: input.requiresApproval ?? true,
+      createdAt: nowIso(),
+      sourceDate: input.sourceDate ?? date
+    };
+  } else {
+    const [brief, context] = await Promise.all([generateDailyBrief(date), getAssistantContext()]);
 
-  const riskLines = context.context.driftAlerts.slice(0, 3).map((alert) => alert.message);
+    const objective =
+      brief.topOutcomes[0]?.goalReference ||
+      context.context.goals[0]?.summary ||
+      "Advance weekly execution outcomes and remove blockers.";
 
-  const outcomes = brief.topOutcomes.map(
-    (outcome) => `${outcome.title} (${outcome.priority}) -> ${outcome.whyNow}`
-  );
+    const riskLines = context.context.driftAlerts.slice(0, 3).map((alert) => alert.message);
 
-  const asks =
-    type === "blocked_followup"
-      ? context.context.driftAlerts
-          .filter((alert) => alert.type === "blocked_stale")
-          .map((alert) => `Need unblock support for: ${alert.message}`)
-      : ["Confirm decision on outstanding dependencies for this week's outcomes."];
+    const outcomes = brief.topOutcomes.map(
+      (outcome) => `${outcome.title} (${outcome.priority}) -> ${outcome.whyNow}`
+    );
 
-  const draft: CommsDraft = {
-    id: `draft_${crypto.randomUUID()}`,
-    type,
-    status: "draft",
-    destination: input.destination ?? "stakeholders@local",
-    subject:
+    const asks =
       type === "blocked_followup"
-        ? `Blocked follow-up (${date})`
-        : `Execution update (${date})`,
-    body: redactSensitiveContent(
-      buildStakeholderBody({
-        date,
-        objective,
-        outcomes,
-        risks: riskLines,
-        asks
-      })
-    ),
-    requiresApproval: true,
-    createdAt: nowIso(),
-    sourceDate: date
-  };
+        ? context.context.driftAlerts
+            .filter((alert) => alert.type === "blocked_stale")
+            .map((alert) => `Need unblock support for: ${alert.message}`)
+        : ["Confirm decision on outstanding dependencies for this week's outcomes."];
+
+    draft = {
+      id: input.id ?? `draft_${crypto.randomUUID()}`,
+      type,
+      status: input.status ?? "draft",
+      destination: input.destination ?? "stakeholders@local",
+      subject:
+        type === "blocked_followup"
+          ? `Blocked follow-up (${date})`
+          : `Execution update (${date})`,
+      body: redactSensitiveContent(
+        buildStakeholderBody({
+          date,
+          objective,
+          outcomes,
+          risks: riskLines,
+          asks
+        })
+      ),
+      requiresApproval: input.requiresApproval ?? true,
+      createdAt: nowIso(),
+      sourceDate: input.sourceDate ?? date
+    };
+  }
 
   state.drafts.push(draft);
   pushAudit(state, {

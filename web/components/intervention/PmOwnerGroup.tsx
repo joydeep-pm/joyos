@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { FeatureRequestCard } from "./FeatureRequestCard";
 import type { PmOwnerGroup } from "@/lib/control-tower/intervention-engine";
 

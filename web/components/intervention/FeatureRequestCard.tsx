@@ -4,6 +4,7 @@
 
 "use client";
 
+import React from "react";
 import { RiskBadge } from "./RiskBadge";
 import { InterventionReasonBadge } from "./InterventionReasonBadge";
 import { getStageLabel, getStageColor, getStageMetadata } from "@/lib/control-tower/stage-config";

@@ -27,14 +27,14 @@ Guidelines:
 
 ### R002 — Feature-request-centric workspace
 - Class: core-capability
-- Status: active
+- Status: validated
 - Description: The top-level object is a feature request that merges execution, documentation, and local synthesis context rather than raw task lists.
 - Why it matters: This is the core domain model around which all intervention, review, and drafting workflows depend.
 - Source: user
 - Primary owning slice: validated in prior implementation
 - Supporting slices: M001/S01, M001/S02, M001/S03
-- Validation: partial
-- Notes: Existing V1 already established the feature request model; M001 extends its decision and review state.
+- Validation: validated
+- Notes: Prior implementation established the feature-request model, and M001 completed the operational layer by keeping review capture, assembled intervention/detail refresh, and review-aware artifact handoff on the same enriched feature-request contract.
 
 ### R003 — PM blocker and execution visibility
 - Class: failure-visibility
@@ -50,25 +50,25 @@ Guidelines:
 
 ### R007 — Approval-gated output and writeback behavior
 - Class: constraint
-- Status: active
+- Status: validated
 - Description: Any writeback, commitment, communication, prioritization, assignment, or formal record storage requires human review before execution.
 - Why it matters: This is a hard trust and governance boundary stated by the user.
 - Source: user
 - Primary owning slice: validated in prior implementation
 - Supporting slices: M001/S03, M003/S01
-- Validation: partial
-- Notes: Existing approval behavior exists for communication drafts; later milestones extend this to broader writeback paths.
+- Validation: validated
+- Notes: S03 proved the current communication path preserves generated follow-up content as a draft, returns inspectable draft metadata, and still stops short of approval/send; later milestones extend the same boundary to broader writeback paths.
 
 ### R008 — Systems-of-record overlay model
 - Class: integration
-- Status: active
+- Status: validated
 - Description: Jira remains the execution system of record, Confluence remains the documentation system of record, and Personal OS remains the private synthesis and orchestration layer.
 - Why it matters: This prevents scope confusion and preserves trust in official systems.
 - Source: user
 - Primary owning slice: validated in prior implementation
 - Supporting slices: M001/S01, M004/S01
-- Validation: partial
-- Notes: M001 should continue building on top of this model rather than replacing it.
+- Validation: validated
+- Notes: M001 completed without mutating source records: readiness stayed derived, review decisions persisted in the local overlay store, and comms submission remained an approval-gated draft layer on top of the assembled feature-request workflow.
 
 ## Validated
 
@@ -202,13 +202,13 @@ Guidelines:
 | ID | Class | Status | Primary owner | Supporting | Proof |
 |---|---|---|---|---|---|
 | R001 | primary-user-loop | active | validated in prior implementation | M001/S01, M001/S02 | partial |
-| R002 | core-capability | active | validated in prior implementation | M001/S01, M001/S02, M001/S03 | partial |
+| R002 | core-capability | validated | validated in prior implementation | M001/S01, M001/S02, M001/S03 | validated |
 | R003 | failure-visibility | active | validated in prior implementation | M001/S01, M001/S02 | partial |
 | R004 | core-capability | validated | validated in prior implementation | M001/S02 | validated |
 | R005 | core-capability | validated | M001/S01 | M001/S02, M001/S03 | validated |
 | R006 | operability | validated | M001/S02 | M001/S03 | validated |
-| R007 | constraint | active | validated in prior implementation | M001/S03, M003/S01 | partial |
-| R008 | integration | active | validated in prior implementation | M001/S01, M004/S01 | partial |
+| R007 | constraint | validated | validated in prior implementation | M001/S03, M003/S01 | validated |
+| R008 | integration | validated | validated in prior implementation | M001/S01, M004/S01 | validated |
 | R101 | integration | validated | prior implementation | none | validated |
 | R102 | primary-user-loop | validated | prior implementation | none | validated |
 | R103 | core-capability | validated | prior implementation | none | validated |
@@ -220,7 +220,7 @@ Guidelines:
 
 ## Coverage Summary
 
-- Active requirements: 5
-- Mapped to slices: 5
-- Validated: 6
+- Active requirements: 2
+- Mapped to slices: 2
+- Validated: 9
 - Unmapped active requirements: 0

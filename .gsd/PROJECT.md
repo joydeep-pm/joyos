@@ -10,7 +10,7 @@ The one thing that must work is a trustworthy director operating layer that show
 
 ## Current State
 
-A first usable version already exists. The repo contains a Next.js web app with Jira and Confluence sync, a normalized feature-request model, intervention views grouped by PM owner and risk severity, and an artifact drafting workspace for PRDs, user stories, follow-ups, clarifications, status updates, leadership updates, and client summaries. Approval-gated communication flows exist for outbound draft handling. M001/S01 and M001/S02 are now complete: the control tower can derive grooming readiness verdicts, rubric dimensions, missing inputs, blocker classes, prioritization posture, and recommended next steps for feature requests, then persist private director review decisions as a local overlay and assemble them server-side with readiness/intervention state for intervention APIs, detail rendering, and artifact drafting. The next step is S03: connect live review capture and follow-up preparation into an end-to-end pre-grooming operating loop.
+A first usable version already exists. The repo contains a Next.js web app with Jira and Confluence sync, a normalized feature-request model, intervention views grouped by PM owner and risk severity, and an artifact drafting workspace for PRDs, user stories, follow-ups, clarifications, status updates, leadership updates, and client summaries. Approval-gated communication flows exist for outbound draft handling. M001 is now complete: the control tower can derive grooming readiness verdicts, rubric dimensions, missing inputs, blocker classes, prioritization posture, and recommended next steps for feature requests; persist private director review decisions as a local overlay; assemble that review state server-side into intervention/detail and artifact flows; and execute a live pre-grooming loop where a director saves a review, sees refreshed assembled state, generates a review-aware follow-up, and submits it into an approval-gated comms draft without sending.
 
 ## Architecture / Key Patterns
 
@@ -22,7 +22,7 @@ See `.gsd/REQUIREMENTS.md` for the explicit capability contract, requirement sta
 
 ## Milestone Sequence
 
-- [ ] M001: Decision and review operating system — Make intervention outputs operational by supporting grooming readiness, prioritization, and review-grade decision workflows.
+- [x] M001: Decision and review operating system — Make intervention outputs operational by supporting grooming readiness, prioritization, and review-grade decision workflows.
 - [ ] M002: People management intelligence — Add 1:1 prep, coaching evidence, feedback synthesis, and IDP drafting for PM management.
 - [ ] M003: Approval-governed automation — Add approval envelopes, auditable action pipelines, and safe writeback into official systems.
 - [ ] M004: Expanded orchestration and intelligence — Extend ingestion, continuity, and cross-channel automation for a more autonomous control tower.

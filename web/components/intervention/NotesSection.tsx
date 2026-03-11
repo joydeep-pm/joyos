@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Trash2, Edit2, Check, X } from "lucide-react";
 import type { DirectorNote } from "@/lib/control-tower/notes";
 
