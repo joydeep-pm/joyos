@@ -4,7 +4,14 @@
  * Determines where director intervention is needed and generates the daily intervention brief.
  */
 
-import type { FeatureRequest, RiskSeverity } from "./types";
+import { evaluateReadiness } from "./readiness-evaluator";
+import type {
+  EnrichedFeatureRequest,
+  FeatureRequest,
+  FeatureRequestReviewOverlay,
+  FeatureRequestReviewRecord,
+  RiskSeverity
+} from "./types";
 
 export type InterventionReasonType =
   | "pm_blocked"
@@ -22,7 +29,7 @@ export interface InterventionReason {
   daysSince?: number;
 }
 
-export interface FeatureRequestWithIntervention extends FeatureRequest {
+export interface FeatureRequestWithIntervention extends EnrichedFeatureRequest {
   interventionReasons: InterventionReason[];
   requiresIntervention: boolean;
   interventionPriority: number; // Higher = more urgent
@@ -43,6 +50,44 @@ export interface InterventionBrief {
   totalFeatureRequests: number;
   totalRequiringIntervention: number;
   summary: string;
+}
+
+export interface InterventionAnalysisOptions {
+  reviewsByFeatureRequestId?: Record<string, FeatureRequestReviewRecord>;
+}
+
+function buildReviewOverlay(
+  featureRequestId: string,
+  options?: InterventionAnalysisOptions
+): FeatureRequestReviewOverlay {
+  const review = options?.reviewsByFeatureRequestId?.[featureRequestId] ?? null;
+
+  return review
+    ? {
+        present: true,
+        record: review
+      }
+    : {
+        present: false,
+        record: null
+      };
+}
+
+function buildFallbackReadiness(featureRequest: FeatureRequest): EnrichedFeatureRequest["readiness"] {
+  return evaluateReadiness(featureRequest);
+}
+
+function ensureEnrichedFeatureRequest(
+  featureRequest: FeatureRequest,
+  options?: InterventionAnalysisOptions
+): EnrichedFeatureRequest {
+  const candidate = featureRequest as Partial<EnrichedFeatureRequest>;
+
+  return {
+    ...featureRequest,
+    readiness: candidate.readiness ?? buildFallbackReadiness(featureRequest),
+    review: candidate.review ?? buildReviewOverlay(featureRequest.id, options)
+  };
 }
 
 /**
@@ -127,8 +172,14 @@ export function detectInterventionReasons(fr: FeatureRequest): InterventionReaso
   }
 
   // 6. Grooming readiness issue
-  if (
-    (fr.stage === "estimation" || fr.stage === "director_review") &&
+  if (fr.stage === "director_review") {
+    reasons.push({
+      type: "grooming_readiness",
+      severity: "low",
+      message: "May not be ready for grooming"
+    });
+  } else if (
+    fr.stage === "estimation" &&
     (fr.confluencePages.length === 0 || fr.blockerSummary.hasBlockers)
   ) {
     reasons.push({
@@ -185,13 +236,17 @@ function calculateInterventionPriority(reasons: InterventionReason[]): number {
 /**
  * Add intervention analysis to feature requests
  */
-export function analyzeForIntervention(featureRequests: FeatureRequest[]): FeatureRequestWithIntervention[] {
-  return featureRequests.map((fr) => {
-    const interventionReasons = detectInterventionReasons(fr);
+export function analyzeForIntervention(
+  featureRequests: FeatureRequest[],
+  options?: InterventionAnalysisOptions
+): FeatureRequestWithIntervention[] {
+  return featureRequests.map((featureRequest) => {
+    const enriched = ensureEnrichedFeatureRequest(featureRequest, options);
+    const interventionReasons = detectInterventionReasons(enriched);
     const interventionPriority = calculateInterventionPriority(interventionReasons);
 
     return {
-      ...fr,
+      ...enriched,
       interventionReasons,
       requiresIntervention: interventionReasons.length > 0,
       interventionPriority
@@ -248,8 +303,11 @@ function riskSeverityScore(severity: RiskSeverity): number {
 /**
  * Generate intervention brief
  */
-export function generateInterventionBrief(featureRequests: FeatureRequest[]): InterventionBrief {
-  const analyzed = analyzeForIntervention(featureRequests);
+export function generateInterventionBrief(
+  featureRequests: FeatureRequest[],
+  options?: InterventionAnalysisOptions
+): InterventionBrief {
+  const analyzed = analyzeForIntervention(featureRequests, options);
   const pmGroups = groupByPmOwner(analyzed);
 
   // Sort PM groups by total requiring intervention (descending)

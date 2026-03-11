@@ -30,10 +30,63 @@ export function createTemplateContext(fr: FeatureRequestWithIntervention): Templ
     riskFactors: fr.riskSummary.factors,
     blockers: fr.blockerSummary.blockers,
     interventionReasons: fr.interventionReasons,
+    readinessVerdict: fr.readiness.verdict,
+    readinessRecommendedNextStep: fr.readiness.recommendedNextStep,
+    reviewPresent: fr.review.present,
+    reviewStatus: fr.review.record?.reviewStatus,
+    reviewDecisionSummary: fr.review.record?.decisionSummary,
+    reviewDecisionRationale: fr.review.record?.decisionRationale,
+    reviewPendingDecisions: fr.review.record?.pendingDecisions ?? [],
+    reviewNextActions: fr.review.record?.nextActions ?? [],
+    reviewReviewedBy: fr.review.record?.reviewedBy,
+    reviewLastReviewedAt: fr.review.record?.lastReviewedAt,
     createdAt: fr.createdAt,
     updatedAt: fr.updatedAt,
     lastSyncedAt: fr.lastSyncedAt
   };
+}
+
+function appendReviewContext(content: string, context: TemplateContext): string {
+  if (!context.reviewPresent) {
+    return content;
+  }
+
+  let next = content;
+  next += `## Director Review Context\n\n`;
+
+  if (context.reviewStatus) {
+    next += `**Review Status:** ${context.reviewStatus}\n\n`;
+  }
+
+  if (context.reviewDecisionSummary) {
+    next += `**Decision Summary:** ${context.reviewDecisionSummary}\n\n`;
+  }
+
+  if (context.reviewDecisionRationale) {
+    next += `**Decision Rationale:** ${context.reviewDecisionRationale}\n\n`;
+  }
+
+  if (context.reviewReviewedBy) {
+    next += `**Reviewed By:** ${context.reviewReviewedBy}\n\n`;
+  }
+
+  if (context.reviewPendingDecisions.length > 0) {
+    next += `**Pending Decisions:**\n`;
+    context.reviewPendingDecisions.forEach((decision) => {
+      next += `- ${decision}\n`;
+    });
+    next += `\n`;
+  }
+
+  if (context.reviewNextActions.length > 0) {
+    next += `**Next Actions:**\n`;
+    context.reviewNextActions.forEach((action) => {
+      next += `- ${action}\n`;
+    });
+    next += `\n`;
+  }
+
+  return next;
 }
 
 /**
@@ -68,6 +121,7 @@ function generatePRDContent(context: TemplateContext): string {
     content += `\n`;
   }
   content += `[TODO: Add business context and motivation]\n\n`;
+  content = appendReviewContext(content, context);
 
   // Objectives
   content += `## Objectives\n\n`;
@@ -136,6 +190,9 @@ function generateUserStoryContent(context: TemplateContext): string {
   if (context.jiraKeys.length > 0) {
     content += `**Jira:** ${context.jiraKeys.join(", ")}\n\n`;
   }
+  if (context.reviewPresent && context.reviewDecisionSummary) {
+    content += `**Director Review:** ${context.reviewDecisionSummary}\n\n`;
+  }
   content += `[TODO: Add additional context]\n\n`;
 
   content += `## Acceptance Criteria\n\n`;
@@ -170,6 +227,9 @@ function generateFollowUpContent(context: TemplateContext, recipientName: string
   if (context.jiraKeys.length > 0) {
     content += `- Jira: ${context.jiraKeys.join(", ")} (${context.jiraStatus[0] || "Unknown"})\n`;
   }
+  if (context.readinessRecommendedNextStep) {
+    content += `- Recommended next step: ${context.readinessRecommendedNextStep}\n`;
+  }
   content += `\n`;
 
   if (context.blockers.length > 0) {
@@ -188,8 +248,31 @@ function generateFollowUpContent(context: TemplateContext, recipientName: string
     content += `\n`;
   }
 
+  if (context.reviewPresent) {
+    if (context.reviewStatus) {
+      content += `**Director Review:** ${context.reviewStatus}\n`;
+    }
+    if (context.reviewDecisionSummary) {
+      content += `**Decision Summary:** ${context.reviewDecisionSummary}\n`;
+    }
+    if (context.reviewPendingDecisions.length > 0) {
+      content += `**Pending Decisions:** ${context.reviewPendingDecisions.join(", ")}\n`;
+    }
+    if (context.reviewNextActions.length > 0) {
+      content += `**Director Next Actions:** ${context.reviewNextActions.join(", ")}\n`;
+    }
+    content += `\n`;
+  }
+
   content += `**Next Steps:**\n`;
-  content += `[TODO: Add specific next steps and timeline]\n\n`;
+  if (context.reviewNextActions.length > 0) {
+    context.reviewNextActions.forEach((action) => {
+      content += `- ${action}\n`;
+    });
+  } else {
+    content += `[TODO: Add specific next steps and timeline]\n`;
+  }
+  content += `\n`;
 
   content += `Let me know if you have any questions or need additional information.\n\n`;
 
@@ -207,19 +290,45 @@ function generateClarificationRequestContent(context: TemplateContext, recipient
   content += `Regarding **${context.featureRequestTitle}**, I need clarification on the following:\n\n`;
 
   content += `**Questions:**\n`;
+  const clarificationQuestions: string[] = [];
+
   if (context.confluencePageTitles.length === 0) {
-    content += `1. Are there existing requirement documents I should review?\n`;
+    clarificationQuestions.push("Are there existing requirement documents I should review?");
   }
-  content += `2. [TODO: Add specific questions]\n\n`;
+  context.reviewPendingDecisions.forEach((decision) => {
+    clarificationQuestions.push(decision);
+  });
+  if (clarificationQuestions.length === 0) {
+    clarificationQuestions.push("[TODO: Add specific questions]");
+  }
+
+  clarificationQuestions.forEach((question, index) => {
+    content += `${index + 1}. ${question}\n`;
+  });
+  content += `\n`;
 
   content += `**Context:**\n`;
   content += `- Current Stage: ${context.stage}\n`;
   if (context.jiraKeys.length > 0) {
     content += `- Related Jira: ${context.jiraKeys.join(", ")}\n`;
   }
+  if (context.reviewDecisionSummary) {
+    content += `- Director review summary: ${context.reviewDecisionSummary}\n`;
+  }
+  if (context.reviewDecisionRationale) {
+    content += `- Decision rationale: ${context.reviewDecisionRationale}\n`;
+  }
   content += `\n`;
 
   content += `This information will help us proceed with implementation planning and ensure we're aligned on requirements.\n\n`;
+
+  if (context.reviewNextActions.length > 0) {
+    content += `**Requested Next Actions Once Clarified:**\n`;
+    context.reviewNextActions.forEach((action) => {
+      content += `- ${action}\n`;
+    });
+    content += `\n`;
+  }
 
   content += `Could you provide this information by [TODO: Add date]?\n\n`;
 
@@ -247,13 +356,34 @@ function generateStatusUpdateContent(context: TemplateContext): string {
   content += `**Status:** ${status}\n\n`;
 
   content += `## Summary\n\n`;
-  content += `[TODO: Brief status summary]\n\n`;
+  if (context.reviewDecisionSummary) {
+    content += `${context.reviewDecisionSummary}\n\n`;
+  } else {
+    content += `[TODO: Brief status summary]\n\n`;
+  }
 
   content += `## Progress\n\n`;
   content += `[TODO: What has been accomplished]\n\n`;
 
   content += `## Current Work\n\n`;
   content += `[TODO: Work in progress]\n\n`;
+
+  if (context.reviewPresent) {
+    content += `## Review Decision\n\n`;
+    if (context.reviewStatus) {
+      content += `**Review Status:** ${context.reviewStatus}\n\n`;
+    }
+    if (context.reviewDecisionRationale) {
+      content += `**Decision Rationale:** ${context.reviewDecisionRationale}\n\n`;
+    }
+    if (context.reviewPendingDecisions.length > 0) {
+      content += `**Pending Decisions:**\n`;
+      context.reviewPendingDecisions.forEach((decision) => {
+        content += `- ${decision}\n`;
+      });
+      content += `\n`;
+    }
+  }
 
   if (context.blockers.length > 0 || context.riskFactors.length > 0) {
     content += `## Blockers & Risks\n\n`;
@@ -274,7 +404,14 @@ function generateStatusUpdateContent(context: TemplateContext): string {
   }
 
   content += `## Next Steps\n\n`;
-  content += `[TODO: Upcoming work and timeline]\n\n`;
+  if (context.reviewNextActions.length > 0) {
+    context.reviewNextActions.forEach((action) => {
+      content += `- ${action}\n`;
+    });
+    content += `\n`;
+  } else {
+    content += `[TODO: Upcoming work and timeline]\n\n`;
+  }
 
   return content;
 }
@@ -299,10 +436,8 @@ export function generateArtifactContent(
     case "status_update":
       return generateStatusUpdateContent(context);
     case "leadership_update":
-      // For now, use status update as base
       return generateStatusUpdateContent(context);
     case "client_summary":
-      // For now, use status update as base
       return generateStatusUpdateContent(context);
     default:
       throw new Error(`Unknown artifact type: ${type}`);

@@ -62,6 +62,13 @@ export type FeatureRequestPrioritizationPosture =
   | "needs_triage"
   | "expedite_blocker_resolution";
 
+export type FeatureRequestReviewStatus =
+  | "approved_for_grooming"
+  | "needs_follow_up"
+  | "rejected";
+
+export type FeatureRequestReviewSource = "director_review" | "system_backfill";
+
 export interface FeatureRequestBlocker {
   type: BlockerType;
   description: string;
@@ -157,6 +164,39 @@ export interface FeatureRequestReadinessEvaluation {
   blockerClass: FeatureRequestReadinessBlockerClass;
   prioritizationPosture: FeatureRequestPrioritizationPosture;
   recommendedNextStep: string;
+}
+
+export interface FeatureRequestReviewRecord {
+  id: string;
+  featureRequestId: string;
+  reviewStatus: FeatureRequestReviewStatus;
+  decisionSummary: string;
+  decisionRationale: string;
+  pendingDecisions: string[];
+  nextActions: string[];
+  reviewedBy: string;
+  source: FeatureRequestReviewSource;
+  createdAt: string;
+  updatedAt: string;
+  lastReviewedAt: string;
+}
+
+export interface FeatureRequestReviewOverlay {
+  present: boolean;
+  record: FeatureRequestReviewRecord | null;
+}
+
+export interface EnrichedFeatureRequest extends FeatureRequest {
+  readiness: FeatureRequestReadinessEvaluation;
+  review: FeatureRequestReviewOverlay;
+}
+
+export interface FeatureRequestAssemblyDiagnostic {
+  code: "review_feature_request_missing";
+  severity: "error";
+  featureRequestId: string;
+  reviewId: string;
+  message: string;
 }
 
 export interface FeatureRequestCache {

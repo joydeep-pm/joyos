@@ -9,9 +9,24 @@ import {
   groupByPmOwner,
   generateInterventionBrief
 } from "@/lib/control-tower/intervention-engine";
-import type { FeatureRequest } from "@/lib/control-tower";
+import type { FeatureRequest, FeatureRequestReviewRecord } from "@/lib/control-tower";
 
 describe("Intervention Engine", () => {
+  const baseReview: FeatureRequestReviewRecord = {
+    id: "review-001",
+    featureRequestId: "fr-test-001",
+    reviewStatus: "needs_follow_up",
+    decisionSummary: "Needs dependency confirmation.",
+    decisionRationale: "Backend owner has not confirmed API delivery.",
+    pendingDecisions: ["Confirm backend owner"],
+    nextActions: ["Escalate in delivery sync"],
+    reviewedBy: "Director",
+    source: "director_review",
+    createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    lastReviewedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+  };
+
   const baseFeatureRequest: FeatureRequest = {
     id: "fr-test-001",
     title: "Test Feature Request",
@@ -169,6 +184,34 @@ describe("Intervention Engine", () => {
       expect(analyzed[0].interventionReasons).toBeDefined();
       expect(analyzed[0].requiresIntervention).toBe(true);
       expect(analyzed[0].interventionPriority).toBeGreaterThan(0);
+      expect(analyzed[0].review).toEqual({
+        present: false,
+        record: null
+      });
+    });
+
+    it("attaches persisted review state to downstream intervention results", () => {
+      const frs: FeatureRequest[] = [
+        {
+          ...baseFeatureRequest,
+          blockerSummary: {
+            hasBlockers: true,
+            blockerCount: 1,
+            blockers: [{ type: "pm", description: "Blocked", daysOpen: 5 }]
+          }
+        }
+      ];
+
+      const analyzed = analyzeForIntervention(frs, {
+        reviewsByFeatureRequestId: {
+          [baseReview.featureRequestId]: baseReview
+        }
+      });
+
+      expect(analyzed[0].review).toEqual({
+        present: true,
+        record: baseReview
+      });
     });
   });
 
@@ -251,6 +294,40 @@ describe("Intervention Engine", () => {
       expect(brief.totalFeatureRequests).toBe(2);
       expect(brief.pmGroups).toHaveLength(2);
       expect(brief.summary).toBeDefined();
+      expect(brief.pmGroups[0].featureRequests[0].review).toEqual({
+        present: false,
+        record: null
+      });
+    });
+
+    it("surfaces persisted review context inside the intervention brief", () => {
+      const frs: FeatureRequest[] = [
+        {
+          ...baseFeatureRequest,
+          id: "fr-1",
+          pmOwner: "Alice",
+          riskSummary: { severity: "high", factors: ["Overdue"] },
+          updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ];
+
+      const brief = generateInterventionBrief(frs, {
+        reviewsByFeatureRequestId: {
+          "fr-1": {
+            ...baseReview,
+            featureRequestId: "fr-1"
+          }
+        }
+      });
+
+      expect(brief.pmGroups[0].featureRequests[0].review).toEqual({
+        present: true,
+        record: expect.objectContaining({
+          reviewStatus: "needs_follow_up",
+          pendingDecisions: ["Confirm backend owner"],
+          nextActions: ["Escalate in delivery sync"]
+        })
+      });
     });
 
     it("should generate appropriate summary for healthy state", () => {

@@ -9,7 +9,7 @@ import { RiskBadge } from "./RiskBadge";
 import { InterventionReasonBadge } from "./InterventionReasonBadge";
 import { NotesSection } from "./NotesSection";
 import { ArtifactViewer } from "../artifacts/ArtifactViewer";
-import { getStageLabel, getStageColor, getStageMetadata } from "@/lib/control-tower/stage-config";
+import { getStageLabel, getStageMetadata } from "@/lib/control-tower/stage-config";
 import type { FeatureRequestWithIntervention } from "@/lib/control-tower/intervention-engine";
 import type { Artifact, ArtifactType } from "@/lib/control-tower/artifacts/types";
 
@@ -19,6 +19,39 @@ interface FeatureRequestDetailProps {
   onDraftFollowup?: (id: string) => void;
   onRequestClarification?: (id: string) => void;
   onAddNote?: (id: string) => void;
+}
+
+const reviewStatusMeta: Record<
+  NonNullable<FeatureRequestWithIntervention["review"]["record"]>["reviewStatus"],
+  { label: string; classes: string; description: string }
+> = {
+  approved_for_grooming: {
+    label: "Approved for grooming",
+    classes: "bg-green-100 text-green-800 border border-green-200",
+    description: "Director review cleared the request for the next grooming step."
+  },
+  needs_follow_up: {
+    label: "Needs follow-up",
+    classes: "bg-amber-100 text-amber-800 border border-amber-200",
+    description: "Open decisions or missing inputs still need an owner and follow-up."
+  },
+  rejected: {
+    label: "Rejected",
+    classes: "bg-red-100 text-red-800 border border-red-200",
+    description: "Director review rejected the request in its current form."
+  }
+};
+
+function formatReviewStatus(status?: NonNullable<FeatureRequestWithIntervention["review"]["record"]>["reviewStatus"]) {
+  return status ? reviewStatusMeta[status] : null;
+}
+
+function formatDateTime(value?: string) {
+  if (!value) {
+    return "Not recorded";
+  }
+
+  return new Date(value).toLocaleString();
 }
 
 export function FeatureRequestDetail({
@@ -33,6 +66,7 @@ export function FeatureRequestDetail({
   const [isGenerating, setIsGenerating] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const notesRef = useRef<HTMLDivElement>(null);
+  const reviewMeta = formatReviewStatus(fr.review.record?.reviewStatus);
 
   useEffect(() => {
     if (showNotes && notesRef.current) {
@@ -53,12 +87,12 @@ export function FeatureRequestDetail({
         })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to generate artifact");
+        throw new Error(data.error || data.code || "Failed to generate artifact");
       }
 
-      const data = await response.json();
       setGeneratedArtifact(data.artifact);
     } catch (error) {
       console.error("Error generating artifact:", error);
@@ -71,10 +105,12 @@ export function FeatureRequestDetail({
   const handleDraftPRD = () => handleGenerateArtifact("prd");
   const handleDraftUserStory = () => handleGenerateArtifact("user_story");
   const handleDraftFollowUp = () => {
+    onDraftFollowup?.(fr.id);
     const pmOwner = fr.pmOwner || "Team";
     handleGenerateArtifact("follow_up", pmOwner);
   };
   const handleDraftClarification = () => {
+    onRequestClarification?.(fr.id);
     const pmOwner = fr.pmOwner || "Team";
     handleGenerateArtifact("clarification_request", pmOwner);
   };
@@ -127,6 +163,11 @@ export function FeatureRequestDetail({
               >
                 {getStageLabel(fr.stage)} ({stageMetadata.group.replace('-', ' ')})
               </span>
+              {reviewMeta && (
+                <span className={`px-2 py-1 text-xs font-medium rounded ${reviewMeta.classes}`}>
+                  {reviewMeta.label}
+                </span>
+              )}
             </div>
           </div>
           <button
@@ -181,7 +222,10 @@ export function FeatureRequestDetail({
                 {isGenerating ? "Generating..." : "Draft Status Update"}
               </button>
               <button
-                onClick={() => setShowNotes(!showNotes)}
+                onClick={() => {
+                  onAddNote?.(fr.id);
+                  setShowNotes(!showNotes);
+                }}
                 className={`px-4 py-2 ${showNotes ? "bg-gray-700" : "bg-gray-600"} text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium`}
               >
                 {showNotes ? "Hide Notes" : "Director Notes"}
@@ -212,6 +256,94 @@ export function FeatureRequestDetail({
               </div>
             </div>
           </div>
+
+          {/* Review Decision */}
+          <section className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900">Review Decision</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  {reviewMeta?.description ?? "No persisted review decision has been recorded yet."}
+                </p>
+              </div>
+              {reviewMeta ? (
+                <span className={`px-3 py-1 text-xs font-semibold rounded-full ${reviewMeta.classes}`}>
+                  {reviewMeta.label}
+                </span>
+              ) : (
+                <span className="px-3 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700 border border-gray-200">
+                  Awaiting review
+                </span>
+              )}
+            </div>
+
+            {fr.review.present && fr.review.record ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div className="bg-white rounded-lg border border-slate-200 p-3">
+                    <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">Reviewed by</p>
+                    <p className="font-medium text-gray-900">{fr.review.record.reviewedBy}</p>
+                  </div>
+                  <div className="bg-white rounded-lg border border-slate-200 p-3">
+                    <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">Last reviewed</p>
+                    <p className="font-medium text-gray-900">{formatDateTime(fr.review.record.lastReviewedAt)}</p>
+                  </div>
+                  <div className="bg-white rounded-lg border border-slate-200 p-3">
+                    <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">Review updated</p>
+                    <p className="font-medium text-gray-900">{formatDateTime(fr.review.record.updatedAt)}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-900 mb-2">Decision summary</h4>
+                  <p className="text-sm text-gray-700 leading-6">{fr.review.record.decisionSummary}</p>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-900 mb-2">Rationale</h4>
+                  <p className="text-sm text-gray-700 leading-6">{fr.review.record.decisionRationale}</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white rounded-lg border border-slate-200 p-4">
+                    <h4 className="text-sm font-semibold text-gray-900 mb-2">Pending decisions</h4>
+                    {fr.review.record.pendingDecisions.length > 0 ? (
+                      <ul className="space-y-2 text-sm text-gray-700">
+                        {fr.review.record.pendingDecisions.map((decision, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-amber-500" />
+                            <span>{decision}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-sm text-gray-500">No pending director decisions.</p>
+                    )}
+                  </div>
+
+                  <div className="bg-white rounded-lg border border-slate-200 p-4">
+                    <h4 className="text-sm font-semibold text-gray-900 mb-2">Recommended next actions</h4>
+                    {fr.review.record.nextActions.length > 0 ? (
+                      <ul className="space-y-2 text-sm text-gray-700">
+                        {fr.review.record.nextActions.map((action, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-blue-500" />
+                            <span>{action}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-sm text-gray-500">No review follow-up actions captured yet.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-lg border border-dashed border-slate-300 bg-white p-4 text-sm text-gray-600">
+                Persist a director review to capture decision rationale, pending decisions, and workflow next actions for this request.
+              </div>
+            )}
+          </section>
 
           {/* Intervention Reasons */}
           {fr.interventionReasons.length > 0 && (

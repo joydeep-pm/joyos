@@ -68,7 +68,32 @@ describe("Artifact Generator", () => {
     interventionPriority: 25,
     createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-    lastSyncedAt: new Date().toISOString()
+    lastSyncedAt: new Date().toISOString(),
+    readiness: {
+      verdict: "ready",
+      dimensions: [],
+      missingInputs: [],
+      blockerClass: "none",
+      prioritizationPosture: "scheduled",
+      recommendedNextStep: "Schedule for engineering grooming"
+    },
+    review: {
+      present: true,
+      record: {
+        id: "review-001",
+        featureRequestId: "fr-test-001",
+        reviewStatus: "needs_follow_up",
+        decisionSummary: "Need confirmation on rollout sequence.",
+        decisionRationale: "Dependencies are clear but launch ownership is not.",
+        pendingDecisions: ["Confirm rollout owner"],
+        nextActions: ["Follow up with implementation lead"],
+        reviewedBy: "Director",
+        source: "director_review",
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        lastReviewedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    }
   };
 
   describe("createTemplateContext", () => {
@@ -89,6 +114,16 @@ describe("Artifact Generator", () => {
       expect(context.riskFactors).toEqual(["Client escalation", "Overdue by 10 days"]);
       expect(context.blockers).toHaveLength(1);
       expect(context.interventionReasons).toHaveLength(1);
+      expect(context.readinessVerdict).toBe("ready");
+      expect(context.readinessRecommendedNextStep).toBe("Schedule for engineering grooming");
+      expect(context.reviewPresent).toBe(true);
+      expect(context.reviewStatus).toBe("needs_follow_up");
+      expect(context.reviewDecisionSummary).toBe("Need confirmation on rollout sequence.");
+      expect(context.reviewDecisionRationale).toBe("Dependencies are clear but launch ownership is not.");
+      expect(context.reviewPendingDecisions).toEqual(["Confirm rollout owner"]);
+      expect(context.reviewNextActions).toEqual(["Follow up with implementation lead"]);
+      expect(context.reviewReviewedBy).toBe("Director");
+      expect(context.reviewLastReviewedAt).toBe(baseFeatureRequest.review.record?.lastReviewedAt);
     });
 
     it("should handle feature request with no Jira or Confluence", () => {
@@ -121,6 +156,13 @@ describe("Artifact Generator", () => {
       expect(content).toContain("**Related Jira Issues:** PROJ-123");
       expect(content).toContain("**Related Documentation:**");
       expect(content).toContain("Requirements Doc");
+      expect(content).toContain("## Director Review Context");
+      expect(content).toContain("**Review Status:** needs_follow_up");
+      expect(content).toContain("**Decision Summary:** Need confirmation on rollout sequence.");
+      expect(content).toContain("**Decision Rationale:** Dependencies are clear but launch ownership is not.");
+      expect(content).toContain("**Reviewed By:** Director");
+      expect(content).toContain("**Pending Decisions:**");
+      expect(content).toContain("Confirm rollout owner");
       expect(content).toContain("## Risk Assessment");
       expect(content).toContain("**Risk Level:** HIGH");
     });
@@ -137,6 +179,7 @@ describe("Artifact Generator", () => {
       expect(content).toContain("So that [benefit]");
       expect(content).toContain("## Acceptance Criteria");
       expect(content).toContain("**Jira:** PROJ-123");
+      expect(content).toContain("**Director Review:** Need confirmation on rollout sequence.");
     });
 
     it("should generate follow-up content with recipient name", () => {
@@ -150,9 +193,16 @@ describe("Artifact Generator", () => {
       expect(content).toContain("**Current Status:**");
       expect(content).toContain("- Stage: in_delivery");
       expect(content).toContain("- Jira: PROJ-123");
+      expect(content).toContain("- Recommended next step: Schedule for engineering grooming");
       expect(content).toContain("**Current Blockers:**");
       expect(content).toContain("Waiting for backend API (8 days open)");
       expect(content).toContain("**Action Items:**");
+      expect(content).toContain("**Director Review:** needs_follow_up");
+      expect(content).toContain("**Decision Summary:** Need confirmation on rollout sequence.");
+      expect(content).toContain("**Pending Decisions:** Confirm rollout owner");
+      expect(content).toContain("**Director Next Actions:** Follow up with implementation lead");
+      expect(content).toContain("**Next Steps:**");
+      expect(content).toContain("- Follow up with implementation lead");
     });
 
     it("should generate clarification request content", () => {
@@ -165,8 +215,13 @@ describe("Artifact Generator", () => {
       expect(content).toContain("Regarding **Co-lending repayment strategy**");
       expect(content).toContain("I need clarification on the following:");
       expect(content).toContain("**Questions:**");
+      expect(content).toContain("1. Confirm rollout owner");
       expect(content).toContain("**Context:**");
       expect(content).toContain("- Current Stage: in_delivery");
+      expect(content).toContain("- Director review summary: Need confirmation on rollout sequence.");
+      expect(content).toContain("- Decision rationale: Dependencies are clear but launch ownership is not.");
+      expect(content).toContain("**Requested Next Actions Once Clarified:**");
+      expect(content).toContain("- Follow up with implementation lead");
     });
 
     it("should generate status update content with risk indicator", () => {
@@ -178,9 +233,15 @@ describe("Artifact Generator", () => {
       expect(content).toContain("**Jira:** PROJ-123");
       expect(content).toContain("**Stage:** in_delivery");
       expect(content).toContain("**Status:** 🔴 Red");
+      expect(content).toContain("## Summary");
+      expect(content).toContain("Need confirmation on rollout sequence.");
+      expect(content).toContain("## Review Decision");
+      expect(content).toContain("**Decision Rationale:** Dependencies are clear but launch ownership is not.");
       expect(content).toContain("## Blockers & Risks");
       expect(content).toContain("**Active Blockers:**");
       expect(content).toContain("**Risk Factors:**");
+      expect(content).toContain("## Next Steps");
+      expect(content).toContain("- Follow up with implementation lead");
     });
 
     it("should show green status for low-risk items", () => {

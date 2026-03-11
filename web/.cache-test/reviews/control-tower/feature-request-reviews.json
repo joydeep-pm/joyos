@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-03-11T10:00:00.000Z",
+  "reviews": [
+    {
+      "id": "review-1KNzZ-77bB",
+      "featureRequestId": "fr-123",
+      "reviewStatus": "approved_for_grooming",
+      "decisionSummary": "Ready.",
+      "decisionRationale": "All dependencies resolved.",
+      "pendingDecisions": [],
+      "nextActions": [
+        "Book grooming"
+      ],
+      "reviewedBy": "Director",
+      "source": "director_review",
+      "createdAt": "2026-03-11T10:00:00.000Z",
+      "updatedAt": "2026-03-11T10:00:00.000Z",
+      "lastReviewedAt": "2026-03-11T10:00:00.000Z"
+    },
+    {
+      "id": "review-QrGLc5y03s",
+      "featureRequestId": "fr-999",
+      "reviewStatus": "rejected",
+      "decisionSummary": "Not proceeding.",
+      "decisionRationale": "Does not align to roadmap.",
+      "pendingDecisions": [],
+      "nextActions": [
+        "Close request"
+      ],
+      "reviewedBy": "Director",
+      "source": "director_review",
+      "createdAt": "2026-03-11T10:00:00.000Z",
+      "updatedAt": "2026-03-11T10:00:00.000Z",
+      "lastReviewedAt": "2026-03-11T10:00:00.000Z"
+    }
+  ]
+}

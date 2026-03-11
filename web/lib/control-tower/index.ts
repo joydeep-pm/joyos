@@ -13,3 +13,5 @@ export * from "./cache";
 export * from "./intervention-engine";
 export * from "./readiness-evaluator";
 export * from "./grooming-engine";
+export * from "./feature-request-assembler";
+export * from "./reviews";

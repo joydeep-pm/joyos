@@ -47,27 +47,6 @@ Guidelines:
 - Validation: partial
 - Notes: Existing V1 shows blockers; M001 should add review readiness and prioritization context.
 
-### R004 — Structured artifact drafting from context
-- Class: core-capability
-- Status: active
-- Description: The system can draft PRDs, user stories, status updates, leadership updates, and related product artifacts from linked feature request context and templates.
-- Why it matters: Draft acceleration and consistency are one of the highest-value user outcomes.
-- Source: user
-- Primary owning slice: validated in prior implementation
-- Supporting slices: M001/S02
-- Validation: partial
-- Notes: Existing artifact generation is present; M001 connects it more directly to decision and review workflows.
-
-### R006 — Explicit decision tracking for director review
-- Class: operability
-- Status: active
-- Description: The system records review outcomes, pending decisions, decision rationale, and recommended next actions at the feature-request level.
-- Why it matters: Visibility alone is insufficient; Joydeep needs a durable operating layer for decisions and follow-through.
-- Source: inferred
-- Primary owning slice: M001/S02
-- Supporting slices: M001/S03
-- Validation: mapped
-- Notes: Derived from the shift from dashboarding to an operating system for review and action.
 
 ### R007 — Approval-gated output and writeback behavior
 - Class: constraint
@@ -137,6 +116,28 @@ Guidelines:
 - Validation: validated
 - Notes: S01 proved the derived readiness evaluator, grooming summary wiring, machine-readable diagnostics, and actionable grooming UI/rendering contract through tests and typecheck.
 
+### R004 — Structured artifact drafting from context
+- Class: core-capability
+- Status: validated
+- Description: The system can draft PRDs, user stories, status updates, leadership updates, and related product artifacts from linked feature request context and templates.
+- Why it matters: Draft acceleration and consistency are one of the highest-value user outcomes.
+- Source: user
+- Primary owning slice: validated in prior implementation
+- Supporting slices: M001/S02
+- Validation: validated
+- Notes: Prior implementation proved baseline artifact generation; S02 proved review-aware drafting by routing artifact generation through the shared assembler and extending template context with persisted review decisions, pending decisions, and next actions.
+
+### R006 — Explicit decision tracking for director review
+- Class: operability
+- Status: validated
+- Description: The system records review outcomes, pending decisions, decision rationale, and recommended next actions at the feature-request level.
+- Why it matters: Visibility alone is insufficient; Joydeep needs a durable operating layer for decisions and follow-through.
+- Source: inferred
+- Primary owning slice: M001/S02
+- Supporting slices: M001/S03
+- Validation: validated
+- Notes: S02 proved durable local review persistence, server-side assembly onto feature requests, intervention/detail visibility, review-aware drafting inputs, and stable diagnostics for orphaned review state.
+
 ## Deferred
 
 ### R201 — PM people-management operating layer
@@ -203,9 +204,9 @@ Guidelines:
 | R001 | primary-user-loop | active | validated in prior implementation | M001/S01, M001/S02 | partial |
 | R002 | core-capability | active | validated in prior implementation | M001/S01, M001/S02, M001/S03 | partial |
 | R003 | failure-visibility | active | validated in prior implementation | M001/S01, M001/S02 | partial |
-| R004 | core-capability | active | validated in prior implementation | M001/S02 | partial |
+| R004 | core-capability | validated | validated in prior implementation | M001/S02 | validated |
 | R005 | core-capability | validated | M001/S01 | M001/S02, M001/S03 | validated |
-| R006 | operability | active | M001/S02 | M001/S03 | mapped |
+| R006 | operability | validated | M001/S02 | M001/S03 | validated |
 | R007 | constraint | active | validated in prior implementation | M001/S03, M003/S01 | partial |
 | R008 | integration | active | validated in prior implementation | M001/S01, M004/S01 | partial |
 | R101 | integration | validated | prior implementation | none | validated |
@@ -219,7 +220,7 @@ Guidelines:
 
 ## Coverage Summary
 
-- Active requirements: 7
-- Mapped to slices: 7
-- Validated: 4
+- Active requirements: 5
+- Mapped to slices: 5
+- Validated: 6
 - Unmapped active requirements: 0

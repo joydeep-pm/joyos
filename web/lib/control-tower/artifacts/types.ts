@@ -97,6 +97,20 @@ export interface TemplateContext {
     severity: string;
   }>;
 
+  // Readiness Context
+  readinessVerdict?: string;
+  readinessRecommendedNextStep?: string;
+
+  // Review Context
+  reviewPresent: boolean;
+  reviewStatus?: string;
+  reviewDecisionSummary?: string;
+  reviewDecisionRationale?: string;
+  reviewPendingDecisions: string[];
+  reviewNextActions: string[];
+  reviewReviewedBy?: string;
+  reviewLastReviewedAt?: string;
+
   // Timestamps
   createdAt: string;
   updatedAt: string;
