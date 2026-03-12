@@ -15,6 +15,23 @@ export interface PMProfile {
   nextOneOnOneDate?: string;
 }
 
+export interface PeopleRecord {
+  id: string;
+  pmName: string;
+  lastOneOnOneDate?: string;
+  nextOneOnOneDate?: string;
+  coachingFocus: string[];
+  privateNotes: string;
+  lastUpdatedBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PeopleRecordOverlay {
+  present: boolean;
+  record: PeopleRecord | null;
+}
+
 export interface OneOnOneNote {
   id: string;
   pmId: string;

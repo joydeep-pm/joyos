@@ -1,9 +1,9 @@
 # GSD State
 
-**Active Milestone:** M002 — People management intelligence
+**Active Milestone:** M003 — Approval-governed automation
 **Active Slice:** Not started
 **Active Task:** Not started
-**Phase:** Ready for M002 planning
+**Phase:** Ready for M003 planning
 
 ## Recent Decisions
 - Sequence the product as four milestones from decision/review through broader orchestration
@@ -24,9 +24,11 @@
 - Add review creation/editing through a dedicated control-tower review mutation API and refresh runtime state from assembled feature-request reads instead of client-local patching or raw-cache access
 - Preserve generated artifact subject/body/destination when creating comms drafts so the approval gate operates on the actual drafted follow-up
 - Refresh the intervention detail modal from the assembled intervention API after review save so status badges, timestamps, and rendered review content stay server-authored instead of locally patched
+- Plan M002 around a server-side assembled PM intelligence model instead of extending the current mock `/people` page in place
+- Keep people-management state private and local-first, using the same overlay and approval-boundary discipline proven in M001
 
 ## Blockers
 - None
 
 ## Next Action
-Plan M002, reusing the assembled feature-request, overlay persistence, and approval-gated workflow patterns proven in M001 where they fit the people-management operating layer.
+Plan M003, reusing the assembled workflow, overlay persistence, and draft-safe route patterns proven in M001 and M002 to add approval envelopes and audited writeback-capable actions.

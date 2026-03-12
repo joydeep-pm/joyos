@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-03-14T08:15:00.000Z",
+  "records": [
+    {
+      "id": "pm-record-3nTPDQQqp3",
+      "pmName": "Alice",
+      "lastOneOnOneDate": "2026-03-01",
+      "coachingFocus": [
+        "Improve prioritization narratives",
+        "Escalate blockers earlier"
+      ],
+      "privateNotes": "Needs more concise weekly risk summaries.",
+      "lastUpdatedBy": "Joydeep",
+      "createdAt": "2026-03-12T09:00:00.000Z",
+      "updatedAt": "2026-03-14T08:15:00.000Z",
+      "nextOneOnOneDate": "2026-03-31"
+    }
+  ]
+}

@@ -142,14 +142,14 @@ Guidelines:
 
 ### R201 — PM people-management operating layer
 - Class: admin/support
-- Status: deferred
+- Status: validated
 - Description: The system supports 1:1 preparation, PM coaching evidence, feedback synthesis, and IDP draft generation.
 - Why it matters: This is valuable but not the immediate next milestone focus.
 - Source: user
 - Primary owning slice: M002/S01
-- Supporting slices: M002/S02
-- Validation: unmapped
-- Notes: Explicitly deferred into the next milestone sequence.
+- Supporting slices: M002/S02, M002/S03
+- Validation: validated
+- Notes: M002 proved the live people workspace, persisted private PM coaching/1:1 state, and server-backed 1:1 plus IDP drafting loop through tests, typecheck, and real browser verification.
 
 ### R202 — Broader automation and audited writeback
 - Class: operability
@@ -212,7 +212,7 @@ Guidelines:
 | R101 | integration | validated | prior implementation | none | validated |
 | R102 | primary-user-loop | validated | prior implementation | none | validated |
 | R103 | core-capability | validated | prior implementation | none | validated |
-| R201 | admin/support | deferred | M002/S01 | M002/S02 | unmapped |
+| R201 | admin/support | validated | M002/S01 | M002/S02, M002/S03 | validated |
 | R202 | operability | deferred | M003/S01 | M003/S02 | unmapped |
 | R203 | integration | deferred | M004/S01 | none | unmapped |
 | R301 | anti-feature | out-of-scope | none | none | n/a |
@@ -222,5 +222,5 @@ Guidelines:
 
 - Active requirements: 2
 - Mapped to slices: 2
-- Validated: 9
+- Validated: 10
 - Unmapped active requirements: 0
