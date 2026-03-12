@@ -94,6 +94,9 @@ export async function createCommsDraft(input: {
   body?: string;
   sourceDate?: string;
   requiresApproval?: boolean;
+  approvedAt?: string;
+  approvedBy?: string;
+  approvalToken?: string;
 }): Promise<CommsDraft> {
   const state = await readState();
   const date = input.date ?? new Date().toISOString().slice(0, 10);
@@ -116,6 +119,9 @@ export async function createCommsDraft(input: {
       body: faithfulBody,
       requiresApproval: input.requiresApproval ?? true,
       createdAt: nowIso(),
+      approvedAt: input.approvedAt,
+      approvedBy: input.approvedBy,
+      approvalToken: input.approvalToken,
       sourceDate: input.sourceDate ?? date
     };
   } else {

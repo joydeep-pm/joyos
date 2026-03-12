@@ -153,14 +153,14 @@ Guidelines:
 
 ### R202 — Broader automation and audited writeback
 - Class: operability
-- Status: deferred
+- Status: validated
 - Description: The system can package reviewed actions into auditable approval envelopes and safely write back to Jira, Confluence, or communication channels after approval.
 - Why it matters: This is the trust-preserving path toward greater automation.
 - Source: user
 - Primary owning slice: M003/S01
-- Supporting slices: M003/S02
-- Validation: unmapped
-- Notes: Not the focus of M001 even though some approval primitives already exist.
+- Supporting slices: M003/S02, M003/S03
+- Validation: validated
+- Notes: M003 proved the reusable approval-envelope lifecycle, stable diagnostics, durable audit state, and one real comms action family executing through the approval model in the live `/assistant` UI.
 
 ### R203 — Deeper Teams ingestion and channel orchestration
 - Class: integration
@@ -213,7 +213,7 @@ Guidelines:
 | R102 | primary-user-loop | validated | prior implementation | none | validated |
 | R103 | core-capability | validated | prior implementation | none | validated |
 | R201 | admin/support | validated | M002/S01 | M002/S02, M002/S03 | validated |
-| R202 | operability | deferred | M003/S01 | M003/S02 | unmapped |
+| R202 | operability | validated | M003/S01 | M003/S02, M003/S03 | validated |
 | R203 | integration | deferred | M004/S01 | none | unmapped |
 | R301 | anti-feature | out-of-scope | none | none | n/a |
 | R302 | anti-feature | out-of-scope | none | none | n/a |
@@ -222,5 +222,5 @@ Guidelines:
 
 - Active requirements: 2
 - Mapped to slices: 2
-- Validated: 10
+- Validated: 11
 - Unmapped active requirements: 0

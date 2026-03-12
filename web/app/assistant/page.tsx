@@ -1,10 +1,12 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/client-api";
 import { EmptyState, PriorityBadge } from "@/components/ui";
 import type {
+  ApprovalEnvelopeRecord,
   AssistantAlert,
   AssistantCommsHistory,
   AssistantContext,
@@ -46,6 +48,8 @@ export default function AssistantPage() {
   const [review, setReview] = useState<WeeklyReview | null>(null);
   const [kpi, setKpi] = useState<OutcomeClosureKpi | null>(null);
   const [alerts, setAlerts] = useState<AssistantAlert[]>([]);
+  const [approvalEnvelopes, setApprovalEnvelopes] = useState<ApprovalEnvelopeRecord[]>([]);
+  const [selectedEnvelopeId, setSelectedEnvelopeId] = useState<string | null>(null);
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
   const [destination, setDestination] = useState("stakeholders@local");
@@ -61,14 +65,15 @@ export default function AssistantPage() {
   const load = async () => {
     setLoading(true);
 
-    const [contextRes, briefRes, queueRes, commsRes, reviewRes, alertsRes, kpiRes] = await Promise.all([
+    const [contextRes, briefRes, queueRes, commsRes, reviewRes, alertsRes, kpiRes, envelopesRes] = await Promise.all([
       api.getAssistantContext(),
       api.getAssistantBrief(date),
       api.getAssistantQueue(),
       api.getCommsHistory(),
       api.getAssistantReview(weekId),
       api.getAssistantAlerts(date),
-      api.getOutcomeClosureKpi(weekId)
+      api.getOutcomeClosureKpi(weekId),
+      api.getApprovalEnvelopes()
     ]);
 
     if (contextRes.ok && contextRes.data) setContext(contextRes.data);
@@ -108,7 +113,16 @@ export default function AssistantPage() {
       setKpi(null);
     }
 
-    const responseErrors = [contextRes, briefRes, queueRes, commsRes, reviewRes, alertsRes, kpiRes]
+    if (envelopesRes.ok && Array.isArray(envelopesRes.data)) {
+      const envelopeData = envelopesRes.data;
+      setApprovalEnvelopes(envelopeData);
+      setSelectedEnvelopeId((current) => {
+        if (current && envelopeData.some((entry) => entry.id === current)) return current;
+        return envelopeData[0]?.id ?? null;
+      });
+    }
+
+    const responseErrors = [contextRes, briefRes, queueRes, commsRes, reviewRes, alertsRes, kpiRes, envelopesRes]
       .map((entry) => entry.error)
       .filter((entry): entry is { code: string; message: string } => entry !== undefined && entry.code !== "FEATURE_DISABLED");
 
@@ -125,6 +139,10 @@ export default function AssistantPage() {
 
   const top3Selected = useMemo(() => selectedTaskIds.slice(0, 3), [selectedTaskIds]);
   const latestDraft = comms?.drafts[0];
+  const selectedEnvelope = useMemo(
+    () => approvalEnvelopes.find((envelope) => envelope.id === selectedEnvelopeId) ?? null,
+    [approvalEnvelopes, selectedEnvelopeId]
+  );
 
   const commitDayPlan = async () => {
     setBusy("commit");
@@ -217,6 +235,91 @@ export default function AssistantPage() {
     }
     setMessage(response.data?.message ?? "Send attempted.");
     await load();
+    setBusy(null);
+  };
+
+  const createApprovalEnvelope = async (draftId: string) => {
+    const approvedDraft = comms?.drafts.find((draft) => draft.id === draftId && draft.status === "approved");
+
+    if (!approvedDraft) {
+      setMessage("Approve the draft before creating an approval envelope.");
+      return;
+    }
+
+    setBusy(`envelope:create:${draftId}`);
+    const response = await api.createApprovalEnvelope({
+      actionType: "comms_send",
+      targetType: "comms_draft",
+      targetId: draftId,
+      summary: `Send stakeholder update draft ${draftId}`,
+      evidence: [
+        "Draft created from reviewed artifact",
+        `Approved by ${approvedDraft.approvedBy ?? "user"}`,
+        `Approval token present: ${approvedDraft.approvalToken ? "yes" : "no"}`
+      ],
+      proposedBy: "assistant"
+    });
+
+    if (!response.ok || !response.data) {
+      setMessage(response.error?.message ?? "Unable to create approval envelope.");
+      setBusy(null);
+      return;
+    }
+
+    upsertApprovalEnvelope(response.data);
+    setMessage(`Approval envelope created for ${draftId}.`);
+    setBusy(null);
+  };
+
+  const refreshApprovalEnvelope = async (id: string): Promise<ApprovalEnvelopeRecord | null> => {
+    const response = await api.getApprovalEnvelope(id);
+    if (!response.ok || !response.data) {
+      return null;
+    }
+
+    setApprovalEnvelopes((current) => [response.data!, ...current.filter((entry) => entry.id !== id)]);
+    setSelectedEnvelopeId(id);
+    return response.data;
+  };
+
+  const upsertApprovalEnvelope = (envelope: ApprovalEnvelopeRecord) => {
+    setApprovalEnvelopes((current) => [envelope, ...current.filter((entry) => entry.id !== envelope.id)]);
+    setSelectedEnvelopeId(envelope.id);
+  };
+
+  const transitionApprovalEnvelope = async (id: string, action: "approve" | "execute") => {
+    setBusy(`envelope:${action}:${id}`);
+    const response = await api.transitionApprovalEnvelope(id, { action, actor: "user" });
+
+    if (!response.ok) {
+      const refreshed = await refreshApprovalEnvelope(id);
+      if (refreshed?.status === "failed") {
+        setMessage(
+          refreshed.failureMessage
+            ? `${response.error?.message ?? "Approval envelope transition failed."} ${refreshed.failureMessage}`
+            : response.error?.message ?? "Approval envelope transition failed."
+        );
+      } else {
+        setMessage(response.error?.message ?? "Approval envelope transition failed.");
+      }
+      setBusy(null);
+      return;
+    }
+
+    if (response.data) {
+      upsertApprovalEnvelope(response.data);
+    }
+
+    const latest = await refreshApprovalEnvelope(id);
+    if (action === "approve") {
+      setMessage("Approval envelope approved.");
+    } else if (latest?.status === "executed") {
+      setMessage("Approval envelope executed.");
+    } else if (latest?.status === "failed") {
+      setMessage(latest.failureMessage ?? "Approval envelope execution failed.");
+    } else {
+      setMessage("Approval envelope updated.");
+    }
     setBusy(null);
   };
 
@@ -503,6 +606,116 @@ export default function AssistantPage() {
                           Send
                         </button>
                       </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
+              <h3 className="text-lg font-semibold">Approval workflow</h3>
+              {!latestDraft ? (
+                <p className="mt-2 text-sm text-ink/65">Create a draft to prepare an approval envelope.</p>
+              ) : (
+                <>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void createApprovalEnvelope(latestDraft.id)}
+                      disabled={latestDraft.status !== "approved" || busy === `envelope:create:${latestDraft.id}`}
+                      className="rounded-xl border border-ink/20 bg-cloud px-3 py-2 text-sm font-semibold text-ink disabled:opacity-50"
+                    >
+                      Create approval envelope
+                    </button>
+                  </div>
+
+                  {approvalEnvelopes.length === 0 ? (
+                    <p className="mt-3 text-sm text-ink/65">No approval envelope yet.</p>
+                  ) : (
+                    <div className="mt-4 space-y-3">
+                      <div className="space-y-2">
+                        {approvalEnvelopes.map((envelope) => (
+                          <button
+                            key={envelope.id}
+                            type="button"
+                            onClick={() => setSelectedEnvelopeId(envelope.id)}
+                            className={`w-full rounded-xl border px-3 py-2 text-left ${
+                              envelope.id === selectedEnvelopeId
+                                ? "border-ink bg-cloud/80"
+                                : "border-ink/10 bg-cloud/50"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="text-sm font-semibold text-ink">{envelope.summary}</span>
+                              <span className="text-xs text-ink/60">{envelope.status.toUpperCase()}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+
+                      {selectedEnvelope && (
+                        <div className="rounded-xl border border-ink/10 bg-cloud/60 p-3">
+                          <p className="text-xs text-ink/60">{selectedEnvelope.status.toUpperCase()}</p>
+                          <p className="mt-1 text-sm font-semibold text-ink">{selectedEnvelope.summary}</p>
+                          <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-ink/75">
+                            {selectedEnvelope.evidence.map((item) => (
+                              <li key={item}>{item}</li>
+                            ))}
+                          </ul>
+
+                          <div className="mt-3 flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => void transitionApprovalEnvelope(selectedEnvelope.id, "approve")}
+                              disabled={selectedEnvelope.status !== "proposed" || busy === `envelope:approve:${selectedEnvelope.id}`}
+                              className="rounded-lg bg-ink px-3 py-1 text-xs font-semibold text-cloud disabled:opacity-50"
+                            >
+                              Approve envelope
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => void transitionApprovalEnvelope(selectedEnvelope.id, "execute")}
+                              disabled={selectedEnvelope.status !== "approved" || busy === `envelope:execute:${selectedEnvelope.id}`}
+                              className="rounded-lg bg-mint px-3 py-1 text-xs font-semibold text-ink disabled:opacity-50"
+                            >
+                              Execute envelope
+                            </button>
+                          </div>
+
+                          <div className="mt-4 space-y-2 text-xs text-ink/70">
+                            <p>
+                              <span className="font-semibold text-ink">Status:</span> {selectedEnvelope.status}
+                            </p>
+                            {selectedEnvelope.executedAt && (
+                              <p>
+                                <span className="font-semibold text-ink">Executed at:</span> {selectedEnvelope.executedAt}
+                              </p>
+                            )}
+                            {selectedEnvelope.failedAt && (
+                              <p>
+                                <span className="font-semibold text-ink">Failed at:</span> {selectedEnvelope.failedAt}
+                              </p>
+                            )}
+                            {selectedEnvelope.failureCode && (
+                              <p className="font-mono text-[11px] text-rose-700">{selectedEnvelope.failureCode}</p>
+                            )}
+                            {selectedEnvelope.failureMessage && (
+                              <p className="text-sm text-rose-800">{selectedEnvelope.failureMessage}</p>
+                            )}
+                          </div>
+
+                          <div className="mt-4">
+                            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate">Audit</p>
+                            <ul className="mt-2 space-y-1 text-xs text-ink/70">
+                              {selectedEnvelope.audit.map((entry) => (
+                                <li key={entry.id}>
+                                  {entry.event} — {entry.actor}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </>

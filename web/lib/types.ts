@@ -172,6 +172,10 @@ export type CorrectiveActionType =
   | "mark_awaiting_input"
   | "draft_blocker_followup"
   | "seed_next_day";
+export type ApprovalEnvelopeStatus = "proposed" | "approved" | "denied" | "executed" | "failed";
+export type ApprovalEnvelopeActionType = "comms_send" | "jira_writeback" | "confluence_writeback";
+export type ApprovalEnvelopeTargetType = "comms_draft" | "jira_issue" | "confluence_page";
+export type ApprovalEnvelopeAuditEvent = "proposed" | "approved" | "denied" | "executed" | "execution_failed" | "transition_rejected";
 
 export interface GoalSignal {
   id: string;
@@ -265,6 +269,45 @@ export interface DailyBrief {
   predictedRisks: DriftAlert[];
   middayCheckpoint: string;
   eveningClosurePrompt: string;
+}
+
+export interface ApprovalEnvelopeAuditEntry {
+  id: string;
+  event: ApprovalEnvelopeAuditEvent;
+  actor: string;
+  timestamp: string;
+  details?: string;
+}
+
+export interface ApprovalEnvelopeRecord {
+  id: string;
+  status: ApprovalEnvelopeStatus;
+  actionType: ApprovalEnvelopeActionType;
+  targetType: ApprovalEnvelopeTargetType;
+  targetId: string;
+  summary: string;
+  evidence: string[];
+  proposedBy: string;
+  createdAt: string;
+  updatedAt: string;
+  approvedAt?: string;
+  approvedBy?: string;
+  deniedAt?: string;
+  deniedBy?: string;
+  denialReason?: string;
+  executedAt?: string;
+  executedBy?: string;
+  failedAt?: string;
+  failedBy?: string;
+  failureCode?: string;
+  failureMessage?: string;
+  audit: ApprovalEnvelopeAuditEntry[];
+}
+
+export interface ApprovalEnvelopeTransitionPayload {
+  action: "approve" | "deny" | "execute";
+  actor: string;
+  reason?: string;
 }
 
 export interface AssistantQueueItem {

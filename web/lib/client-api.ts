@@ -18,7 +18,9 @@ import type {
   TaskDocument,
   TaskStatus,
   TrendPoint,
-  WeeklyReview
+  WeeklyReview,
+  ApprovalEnvelopeRecord,
+  ApprovalEnvelopeTransitionPayload
 } from "@/lib/types";
 
 interface ApiResponse<T> {
@@ -113,6 +115,26 @@ export const api = {
       body: JSON.stringify({ actor })
     }),
   getCommsHistory: () => request<AssistantCommsHistory>("/api/assistant/comms/history"),
+  getApprovalEnvelopes: () => request<ApprovalEnvelopeRecord[]>("/api/assistant/approval-envelopes"),
+  createApprovalEnvelope: (payload: {
+    actionType: "comms_send" | "jira_writeback" | "confluence_writeback";
+    targetType: "comms_draft" | "jira_issue" | "confluence_page";
+    targetId: string;
+    summary: string;
+    evidence: string[];
+    proposedBy: string;
+  }) =>
+    request<ApprovalEnvelopeRecord>("/api/assistant/approval-envelopes", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  getApprovalEnvelope: (id: string) =>
+    request<ApprovalEnvelopeRecord>(`/api/assistant/approval-envelopes/${encodeURIComponent(id)}`),
+  transitionApprovalEnvelope: (id: string, payload: ApprovalEnvelopeTransitionPayload) =>
+    request<ApprovalEnvelopeRecord>(`/api/assistant/approval-envelopes/${encodeURIComponent(id)}`, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
   chatCopilot: (message: string) =>
     request<CopilotReply>("/api/copilot/chat", {
       method: "POST",

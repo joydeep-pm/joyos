@@ -174,4 +174,23 @@ describe("assistant queue and comms", () => {
     expect(events).toContain("send_denied");
     expect(events).toContain("sent");
   });
+
+  it("keeps direct comms send blocked until S02 routes execution through approval envelopes", async () => {
+    await createTask({
+      title: "Ship release notes draft",
+      category: "writing",
+      priority: "P1"
+    });
+
+    const draft = await createCommsDraft({
+      type: "stakeholder_update",
+      destination: "leader@local"
+    });
+
+    const firstAttempt = await sendCommsDraft(draft.id, "user");
+    expect(firstAttempt.status).toBe("blocked");
+
+    const history = await getCommsHistory();
+    expect(history.audit.filter((entry) => entry.draftId === draft.id && entry.event === "send_denied")).toHaveLength(1);
+  });
 });
