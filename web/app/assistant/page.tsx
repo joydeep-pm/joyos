@@ -554,13 +554,17 @@ export default function AssistantPage() {
             <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="text-lg font-semibold">Meeting continuity review</h3>
-                {context && <span className="text-xs text-ink/60">Open commitments: {context.stats.openMeetingCommitments}</span>}
+                {context && (
+                  <span className="text-xs text-ink/60">
+                    Open commitments: {context.stats?.openMeetingCommitments ?? 0}
+                  </span>
+                )}
               </div>
-              {!context || context.meetingContinuity.length === 0 ? (
+              {!context || (context.meetingContinuity ?? []).length === 0 ? (
                 <p className="mt-2 text-sm text-ink/65">No unresolved meeting commitments are visible yet.</p>
               ) : (
                 <ul className="mt-3 space-y-3">
-                  {context.meetingContinuity
+                  {(context.meetingContinuity ?? [])
                     .filter((item) => item.status !== "resolved")
                     .slice(0, 4)
                     .map((item) => {
