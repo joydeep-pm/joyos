@@ -3,49 +3,47 @@
 # Personal OS Setup Script
 # Creates directories, copies templates, and guides you through goals creation
 #
-# ┌─────────────────────────────────────────────────────────────────────┐
-# │ AGENT INSTRUCTIONS                                                  │
-# │                                                                     │
-# │ If you are an AI agent (e.g. Claude Code) reading this file:        │
-# │ Do NOT execute this script as bash. Instead, walk through the       │
-# │ setup interactively using your tools. Use AskUserQuestion (or your  │
-# │ equivalent interactive tool) to gather answers from the user.       │
-# │                                                                     │
-# │ Follow these steps:                                                 │
-# │                                                                     │
-# │ 1. CREATE WORKSPACE STRUCTURE                                       │
-# │    - Ensure these directories exist: Tasks/, Knowledge/             │
-# │    - If AGENTS.md doesn't exist, copy from core/templates/AGENTS.md │
-# │    - If .gitignore doesn't exist, copy from core/templates/gitignore│
-# │    - If BACKLOG.md doesn't exist, create it with a short intro      │
-# │                                                                     │
-# │ 2. ASK THE USER THESE 5 QUESTIONS (use AskUserQuestion if you      │
-# │    have it, otherwise ask inline):                                  │
-# │    Q1: "What's your current role?"                                  │
-# │        Example: Product Manager, Senior Engineer, Founder, VP       │
-# │    Q2: "What's your primary professional vision?                    │
-# │         What are you building toward?"                              │
-# │        Example: Become VP Product, Launch a successful product      │
-# │    Q3: "In 12 months, what would make you think                     │
-# │         'this was a successful year'?"                              │
-# │        Example: Shipped 3 major features, Built a team of 10       │
-# │    Q4: "What are your objectives for THIS QUARTER (next 90 days)?" │
-# │        Example: Launch new feature, Improve activation by 20%      │
-# │    Q5: "What are your top 3 priorities right now?                   │
-# │         (Be brutally honest)"                                       │
-# │        Example: 1. Ship Q1 roadmap, 2. Build thought leadership    │
-# │                                                                     │
-# │ 3. GENERATE GOALS.md                                                │
-# │    Use the answers to populate GOALS.md following the template      │
-# │    defined at the bottom of this script (search for "cat > GOALS") │
-# │                                                                     │
-# │ 4. SUMMARIZE                                                        │
-# │    Tell the user what was created and suggest next steps:           │
-# │    - Review GOALS.md and refine as needed                           │
-# │    - Read AGENTS.md to understand how the AI agent works            │
-# │    - Start adding tasks or notes to BACKLOG.md                      │
-# │    - Say "process my backlog" to begin triage                       │
-# └─────────────────────────────────────────────────────────────────────┘
+# ┌────────────────────────────────────────────────────────────────────────────┐
+# │ AGENT INSTRUCTIONS                                                         │
+# │                                                                            │
+# │ If you are an AI agent (e.g. Claude Code) reading this file:               │
+# │ Do NOT execute this script as bash. Instead, walk through the              │
+# │ setup interactively using your tools. Use AskUserQuestion (or your         │
+# │ equivalent interactive tool) to gather answers from the user.              │
+# │                                                                            │
+# │ Follow these steps:                                                        │
+# │                                                                            │
+# │ 1. CREATE WORKSPACE STRUCTURE                                              │
+# │    - Ensure these directories exist: Tasks/, Knowledge/                    │
+# │    - If AGENTS.md doesn't exist, copy from core/templates/AGENTS.md        │
+# │    - If .gitignore doesn't exist, copy from core/templates/gitignore       │
+# │    - If BACKLOG.md doesn't exist, create it with a short intro             │
+# │                                                                            │
+# │ 2. ASK THE USER THESE 5 QUESTIONS (use AskUserQuestion if you              │
+# │    have it, otherwise ask inline):                                         │
+# │    Q1: "What product charter, business area, or scope do you own?"        │
+# │        Example: Core lending suite, BNPL, platform risk, platform infra    │
+# │    Q2: "What would success look like this year across Documentation,       │
+# │         Stability, and New Business?"                                     │
+# │    Q3: "What are your most important objectives for THIS QUARTER           │
+# │         (next 90 days)?"                                                   │
+# │    Q4: "What leadership artifacts or recurring reviews do you need         │
+# │         to stay ahead of?"                                                 │
+# │        Example: monthly leadership updates, grooming, roadmap reviews      │
+# │    Q5: "What are the top 3 interventions or priorities on your plate       │
+# │         right now?"                                                        │
+# │                                                                            │
+# │ 3. GENERATE GOALS.md                                                       │
+# │    Use the answers to populate GOALS.md following the template             │
+# │    defined at the bottom of this script (search for "cat > GOALS")        │
+# │                                                                            │
+# │ 4. SUMMARIZE                                                               │
+# │    Tell the user what was created and suggest next steps:                  │
+# │    - Review GOALS.md and refine as needed                                  │
+# │    - Read AGENTS.md to understand the Director-of-Products workflow        │
+# │    - Start adding tasks or notes to BACKLOG.md                             │
+# │    - Say "process my backlog" or "what needs my intervention today?"      │
+# └────────────────────────────────────────────────────────────────────────────┘
 
 set -e
 
@@ -80,26 +78,12 @@ ask_question() {
     local example="$2"
     local response=""
 
-    # Print prompt to terminal (stderr so it's not captured)
     echo "" >&2
     echo "$prompt" >&2
     if [ -n "$example" ]; then
         echo -e "${BLUE}$example${NC}" >&2
     fi
     read -r response
-    # Return answer to stdout (gets captured)
-    echo "$response"
-}
-
-ask_multiline() {
-    local prompt="$1"
-    local response=""
-
-    echo ""
-    echo "$prompt"
-    echo "(Type your answer, then press Ctrl+D when done)"
-    echo ""
-    response=$(cat)
     echo "$response"
 }
 
@@ -109,10 +93,10 @@ print_header "Welcome to Personal OS Setup"
 
 echo "This setup will help you:"
 echo "  1. Create your workspace structure"
-echo "  2. Define your goals and priorities"
-echo "  3. Configure your AI assistant"
+echo "  2. Define your operating goals and intervention priorities"
+echo "  3. Configure your AI assistant for a Director-of-Products workflow"
 echo ""
-echo "Takes about 2 minutes. Be honest and specific."
+echo "Takes about 2 minutes. Be specific and practical."
 echo ""
 read -p "Press Enter to begin..."
 
@@ -145,185 +129,193 @@ else
     print_info "File exists: .gitignore (preserving your version)"
 fi
 
-# Create BACKLOG.md
 if [ ! -f "BACKLOG.md" ]; then
     cat > "BACKLOG.md" << 'EOF'
 # Backlog
 
-Drop raw notes or todos here. Say `process my backlog` when you're ready for triage.
+Drop raw notes, escalations, follow-ups, and half-formed ideas here. Say `process my backlog` when you're ready to triage.
 EOF
     print_success "Created: BACKLOG.md"
 else
     print_info "File exists: BACKLOG.md"
 fi
 
+print_header "Seeding Knowledge Structure"
+
+for subdir in "Feature-Requests" "People" "Learnings"; do
+    target_dir="Knowledge/$subdir"
+    template_readme="core/templates/Knowledge/$subdir/README.md"
+    target_readme="$target_dir/README.md"
+
+    if [ -d "$target_dir" ]; then
+        print_info "Directory exists: $target_dir/"
+    else
+        mkdir -p "$target_dir"
+        print_success "Created: $target_dir/"
+    fi
+
+    if [ ! -f "$target_readme" ] && [ -f "$template_readme" ]; then
+        cp "$template_readme" "$target_readme"
+        print_success "Copied: $target_readme"
+    elif [ -f "$target_readme" ]; then
+        print_info "File exists: $target_readme (preserving your version)"
+    else
+        print_warning "Template missing: $template_readme"
+    fi
+done
+
 # Goals creation
-print_header "Building Your Personal Goals"
+print_header "Building Your Operating Goals"
 
-echo "Now let's create your GOALS.md - the heart of your Personal OS."
+echo "Now let's create your GOALS.md - the operating core of this Personal OS."
 echo ""
-echo "I'll ask you about your goals and priorities."
-echo "This helps your AI agent make smarter decisions about task priorities."
+echo "This helps your AI assistant prioritize Documentation, Stability, New Business, and leadership interventions."
 echo ""
-echo "Be honest and specific - this is for you, not anyone else."
-echo "You can always edit GOALS.md later to refine your thinking."
+echo "You can refine GOALS.md later as your priorities shift."
 echo ""
-read -p "Ready to dive in? Press Enter to start..."
+read -p "Ready to start? Press Enter..."
 
-# Collect answers (keeping it short - 5 essential questions)
-
-# Section 1: Current Situation
-print_header "1. Current Situation"
+print_header "1. Role And Scope"
 
 ans_role=$(ask_question \
     "What's your current role?" \
-    "Product Manager, Senior Engineer, Founder, VP Product")
+    "Director of Products, VP Product, Group PM")
 
-# Section 2: Vision
-print_header "2. Your Vision"
+ans_scope=$(ask_question \
+    "What product charter, business area, or scope do you own?" \
+    "Core lending suite, BNPL, co-lending, platform infra, collections")
 
-ans_vision=$(ask_question \
-    "What's your primary professional vision? What are you building toward?" \
-    "Become VP Product, Launch a successful product, Build a thriving consultancy")
+print_header "2. Operating Success"
 
-# Section 3: Success This Year
-print_header "3. Success This Year"
+ans_success_year=$(ask_question \
+    "What would success look like this year across Documentation, Stability, and New Business?" \
+    "Cleaner PRDs and updates, fewer surprises in delivery, stronger client and revenue impact")
 
-ans_success_12mo=$(ask_question \
-    "In 12 months, what would make you think 'this was a successful year'?" \
-    "Shipped 3 major features, Built a team of 10, Became recognized expert in my field")
+print_header "3. This Quarter"
 
-# Section 4: This Quarter
-print_header "4. This Quarter"
+ans_qtr=$(ask_question \
+    "What are your most important objectives for THIS QUARTER (next 90 days)?" \
+    "Improve grooming readiness, reduce implementation churn, move priority client asks")
 
-ans_q1_goals=$(ask_question \
-    "What are your objectives for THIS QUARTER (next 90 days)?" \
-    "Launch new feature, Improve activation by 20%, Build PM practice")
+print_header "4. Leadership Rhythm"
 
-# Section 5: Top Priorities
-print_header "5. Top Priorities"
+ans_artifacts=$(ask_question \
+    "What leadership artifacts or recurring reviews do you need to stay ahead of?" \
+    "Monthly leadership updates, grooming reviews, roadmap reviews, PM 1:1s")
+
+print_header "5. Current Interventions"
 
 ans_top3=$(ask_question \
-    "What are your top 3 priorities right now? (Be brutally honest)" \
-    "1. Ship Q1 roadmap, 2. Build thought leadership, 3. Develop AI product skills")
-
-# Set empty placeholders for sections user can fill in later
-ans_company=""
-ans_vision_why=""
-ans_success_5yr=""
-ans_current_focus=""
-ans_q1_metrics=""
-ans_skills=""
-ans_relationships=""
-ans_challenges=""
-ans_opportunities=""
-
-# Generate GOALS.md
-print_header "Generating Your GOALS.md"
+    "What are the top 3 interventions or priorities on your plate right now?" \
+    "1. Resolve stale client escalation, 2. Finish leadership update, 3. Unblock grooming readiness")
 
 CURRENT_DATE=$(date +"%B %d, %Y")
 
+print_header "Generating Your GOALS.md"
+
 cat > "GOALS.md" << EOF
-# Goals & Strategic Direction
+# Goals & Operating Direction
 
 *Last updated: ${CURRENT_DATE}*
 
 ## Current Context
 
-### What's your current role?
-${ans_role}${ans_company:+ at }${ans_company}
+### Role
+${ans_role}
 
-### What's your primary professional vision? What are you building toward?
-${ans_vision}
+### Product Scope / Charter
+${ans_scope}
 
-${ans_vision_why:+**Why this matters:**
-${ans_vision_why}}
+## Operating Goals
 
-## Success Criteria
+### Documentation
+Keep product artifacts crisp, current, and useful:
+- PRDs
+- user stories
+- leadership updates
+- status summaries
+- grooming-ready documentation
 
-### In 12 months, what would make you think 'this was a successful year'?
-${ans_success_12mo}
+### Stability
+Reduce delivery surprises and execution risk:
+- blockers surfaced early
+- implementation gaps identified before escalation
+- stale dependencies followed through
+- recurring failure patterns tracked
 
-### What's your 5-year north star? Where do you want to be?
-${ans_success_5yr}
+### New Business
+Keep product opportunities and client-driven asks moving:
+- feature requests scoped clearly
+- sales / RFP asks answered well
+- client escalations handled without drift
+- roadmap opportunities made visible early
 
-## Current Focus Areas
+### Team Leadership
+Support PM execution quality and growth:
+- 1:1s prepared with evidence
+- recurring coaching themes captured
+- support needs surfaced before they become misses
 
-### What are you actively working on right now?
-${ans_current_focus}
+## What would success look like this year?
+${ans_success_year}
 
-### What are your objectives for THIS QUARTER (next 90 days)?
-${ans_q1_goals}
+## Quarterly Priorities
+${ans_qtr}
 
-${ans_q1_metrics:+**How will you measure success on those quarterly objectives?**
-${ans_q1_metrics}}
+## Leadership Rhythm
+${ans_artifacts}
 
-### What skills do you need to develop to achieve your vision?
-${ans_skills}
-
-### What key relationships or network do you need to build?
-${ans_relationships}
-
-## Strategic Context
-
-### What's currently blocking you or slowing you down?
-${ans_challenges}
-
-### What opportunities are you exploring or considering?
-${ans_opportunities}
+## Today’s Three Rule
+When planning each day:
+- focus on no more than three meaningful priorities
+- prefer interventions and unblockers over busywork
+- on heavy meeting days, reduce focus to one or two high-leverage moves
 
 ## Priority Framework
 
-When evaluating new tasks and commitments:
+**P0 (Critical / Director attention now)**
+- urgent client or business risk
+- stale blocker that needs intervention
+- leadership artifact due soon
+- issue directly affecting Documentation, Stability, or New Business this week
 
-**P0 (Critical/Urgent)** - Must do THIS WEEK:
-- Directly advances quarterly objectives
-- Time-sensitive opportunities
-- Critical stakeholder communication
-- Immediate blockers to remove
+**P1 (Important this week)**
+- meaningful progress on charter priorities
+- PM or stakeholder follow-up with clear downstream impact
+- grooming or planning preparation that prevents future churn
 
-**P1 (Important)** - This month:
-- Builds key skills or expertise
-- Advances product strategy
-- Significant career development
-- High-value learning opportunities
+**P2 (Scheduled work)**
+- normal planning, writing, research, and operational work
+- tasks that support the goals but do not need immediate intervention
 
-**P2 (Normal)** - Scheduled work:
-- Supports broader objectives
-- Maintains stakeholder relationships
-- Operational efficiency
-- General learning and exploration
+**P3 (Someday / maybe)**
+- low-leverage admin
+- speculative ideas without a clear near-term payoff
+- work that does not currently move the operating goals
 
-**P3 (Low)** - Nice to have:
-- Administrative tasks
-- Speculative projects
-- Activities without clear advancement value
-
-## What are your top 3 priorities right now?
-
+## Current Top 3 Interventions / Priorities
 ${ans_top3}
 
 ---
 
-**Your AI assistant uses this document to prioritize tasks and suggest what to work on each day.**
+**Your AI assistant uses this document to prioritize work, surface what needs intervention, and suggest Today’s Three.**
 
-*Review and update this weekly as your priorities shift.*
-
+*Review this weekly as your charter, pressure points, and leadership needs evolve.*
 EOF
 
 print_success "Created: GOALS.md"
 
-# Final summary
 print_header "Setup Complete!"
 
-echo "Your Personal OS is ready to use."
+echo "Your Director-of-Products Personal OS is ready to use."
 echo ""
 echo "📋 Next Steps:"
 echo ""
-echo "1. Review GOALS.md and refine as needed"
-echo "2. Read AGENTS.md to understand how your AI agent works"
-echo "3. Start adding tasks or notes to BACKLOG.md"
-echo "4. Tell your AI: 'Read AGENTS.md and help me process my backlog'"
+echo "1. Review GOALS.md and refine the language as needed"
+echo "2. Read AGENTS.md to understand how the assistant now prioritizes interventions"
+echo "3. Start adding tasks, follow-ups, or escalations to BACKLOG.md"
+echo "4. Create durable notes under Knowledge/ for feature requests, meetings, people, and learnings"
+echo "5. Tell your AI: 'What needs my intervention today?' or 'Process my backlog'"
 echo ""
-print_success "Happy organizing!"
+print_success "Happy operating!"
 echo ""

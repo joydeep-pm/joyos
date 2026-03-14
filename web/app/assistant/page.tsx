@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/client-api";
 import { EmptyState, PriorityBadge } from "@/components/ui";
+import { presentBriefOutcome, presentMeetingContinuityItem } from "@/lib/intervention-presenters";
 import type {
   ApprovalEnvelopeRecord,
   AssistantAlert,
@@ -328,10 +329,10 @@ export default function AssistantPage() {
       <div className="rounded-3xl border border-ink/10 bg-white/85 p-6 shadow-panel">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate">Execution assistant</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Daily brief and action queue</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate">Director intervention workspace</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Daily intervention brief and action queue</h2>
             <p className="mt-2 text-sm text-ink/65">
-              Commit top outcomes, track drift during the day, and draft outbound updates with explicit approval.
+              Review today&apos;s intervention candidates, commit the right outcomes, track drift during the day, and draft outbound updates with explicit approval.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -357,7 +358,7 @@ export default function AssistantPage() {
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-2xl border border-ink/10 bg-white/85 p-4 shadow-card">
           <div className="flex items-center justify-between gap-3">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate">This week</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate">Weekly operating signal</h3>
             <Link href="/review" className="text-xs font-semibold text-ink underline-offset-2 hover:underline">
               Open weekly review
             </Link>
@@ -394,7 +395,7 @@ export default function AssistantPage() {
         </div>
 
         <div className="rounded-2xl border border-ink/10 bg-white/85 p-4 shadow-card">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate">Top alerts</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate">Intervention alerts</h3>
           {!alertsEnabled ? (
             <p className="mt-2 text-sm text-ink/65">Alerts are disabled by feature flag.</p>
           ) : alerts.length === 0 ? (
@@ -445,7 +446,7 @@ export default function AssistantPage() {
           <div className="space-y-6">
             <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h3 className="text-lg font-semibold">Morning brief: top outcomes</h3>
+                <h3 className="text-lg font-semibold">Today&apos;s intervention candidates</h3>
                 <button
                   type="button"
                   onClick={commitDayPlan}
@@ -457,7 +458,7 @@ export default function AssistantPage() {
               </div>
 
               {brief.topOutcomes.length === 0 ? (
-                <p className="mt-3 text-sm text-ink/65">No candidate outcomes found. Triage backlog and activate key tasks.</p>
+                <p className="mt-3 text-sm text-ink/65">No intervention candidates found. Triage backlog and activate key tasks.</p>
               ) : (
                 <ul className="mt-4 space-y-3">
                   {brief.topOutcomes.map((outcome) => (
@@ -480,8 +481,8 @@ export default function AssistantPage() {
                             <span className="mono text-xs text-ink/60">score {outcome.score}</span>
                           </div>
                           <h4 className="font-semibold text-ink">{outcome.title}</h4>
-                          <p className="text-sm text-ink/70">{outcome.whyNow}</p>
-                          <p className="text-xs text-ink/60">{outcome.goalReference}</p>
+                          <p className="text-sm text-ink/70">{presentBriefOutcome(outcome).reason}</p>
+                          <p className="text-xs text-ink/60">{presentBriefOutcome(outcome).goalSignal}</p>
                         </div>
                       </div>
                     </li>
@@ -495,12 +496,12 @@ export default function AssistantPage() {
                 className="mt-4 min-h-20 w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm"
                 placeholder="Optional commitment notes"
               />
-              <p className="mt-2 text-xs text-ink/55">Midday checkpoint: {brief.middayCheckpoint}</p>
-              <p className="mt-1 text-xs text-ink/55">Evening closure: {brief.eveningClosurePrompt}</p>
+              <p className="mt-2 text-xs text-ink/55">Midday intervention check: {brief.middayCheckpoint}</p>
+              <p className="mt-1 text-xs text-ink/55">Evening closure prompt: {brief.eveningClosurePrompt}</p>
             </div>
 
             <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
-              <h3 className="text-lg font-semibold">Action queue</h3>
+              <h3 className="text-lg font-semibold">Committed action queue</h3>
               {queue.length === 0 ? (
                 <p className="mt-3 text-sm text-ink/65">No queued items yet. Commit the day plan to seed execution.</p>
               ) : (
@@ -536,7 +537,7 @@ export default function AssistantPage() {
 
           <aside className="space-y-6">
             <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
-              <h3 className="text-lg font-semibold">Risk and drift</h3>
+              <h3 className="text-lg font-semibold">Risk and drift requiring attention</h3>
               {!context || context.driftAlerts.length === 0 ? (
                 <p className="mt-2 text-sm text-ink/65">No drift alert active.</p>
               ) : (
@@ -546,6 +547,44 @@ export default function AssistantPage() {
                       {alert.message}
                     </li>
                   ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-lg font-semibold">Meeting continuity review</h3>
+                {context && <span className="text-xs text-ink/60">Open commitments: {context.stats.openMeetingCommitments}</span>}
+              </div>
+              {!context || context.meetingContinuity.length === 0 ? (
+                <p className="mt-2 text-sm text-ink/65">No unresolved meeting commitments are visible yet.</p>
+              ) : (
+                <ul className="mt-3 space-y-3">
+                  {context.meetingContinuity
+                    .filter((item) => item.status !== "resolved")
+                    .slice(0, 4)
+                    .map((item) => {
+                      const view = presentMeetingContinuityItem(item);
+                      return (
+                        <li key={item.id} className="rounded-2xl border border-ink/10 bg-cloud/60 p-4">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="rounded-full border border-ink/15 bg-white px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate">
+                              {view.statusLabel}
+                            </span>
+                            {item.date && <span className="text-xs text-ink/55">{item.date}</span>}
+                          </div>
+                          <h4 className="mt-2 font-semibold text-ink">{view.heading}</h4>
+                          <p className="mt-2 text-sm text-ink/70">{view.summary}</p>
+                          {item.blockers.length > 0 && (
+                            <p className="mt-2 text-xs text-rose-800">Blocker: {item.blockers[0]}</p>
+                          )}
+                          {item.openQuestions.length > 0 && (
+                            <p className="mt-1 text-xs text-amber-800">Ambiguity: {item.openQuestions[0]}</p>
+                          )}
+                          <p className="mt-2 text-xs text-ink/60">Suggested route: {view.nextStepLabel}</p>
+                        </li>
+                      );
+                    })}
                 </ul>
               )}
             </div>

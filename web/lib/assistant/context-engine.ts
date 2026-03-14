@@ -11,6 +11,10 @@ import type {
   GoalSignal,
   KnowledgeSignal,
   LinkMode,
+  MeetingArtifactLink,
+  MeetingContinuityItem,
+  MeetingContinuitySourceType,
+  MeetingRoutingTarget,
   TaskDocument,
   TaskGoalLink,
   TaskPriority,
@@ -258,6 +262,133 @@ function buildKnowledgeSignals(rawKnowledge: { file: string; content: string }[]
   });
 }
 
+function getSectionContent(markdown: string, heading: string): string {
+  const escapedHeading = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = `(?:^|\\n)##\\s+${escapedHeading}\\s*\\n([\\s\\S]*?)(?=\\n##\\s+|$)`;
+  const match = markdown.match(new RegExp(pattern));
+  return match?.[1]?.trim() ?? "";
+}
+
+function getBulletItems(section: string): string[] {
+  return section
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => /^-\s+/.test(line))
+    .map((line) => line.replace(/^-\s+/, "").trim())
+    .filter(Boolean);
+}
+
+function getPlainLines(section: string): string[] {
+  return section
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .filter((line) => !line.startsWith("- "));
+}
+
+function inferMeetingSourceType(relativePath: string): MeetingContinuitySourceType {
+  return relativePath.includes("Knowledge/Transcripts/") ? "transcript" : "meeting_note";
+}
+
+function inferRoutingTargets(markdown: string, openCommitments: string[], blockers: string[], openQuestions: string[]): MeetingRoutingTarget[] {
+  const targets: MeetingRoutingTarget[] = [];
+  const lowered = markdown.toLowerCase();
+
+  if (openCommitments.length > 0) {
+    targets.push({ type: "task", label: "Task follow-up" });
+  }
+
+  if (/feature-request|feature request|grooming|scope|acceptance criteria|client ask/.test(lowered)) {
+    targets.push({ type: "feature_request", label: "Feature request update", pathHint: "Knowledge/Feature-Requests/..." });
+  }
+
+  if (/pm owner|stakeholder|coaching|support needs|1:1|one-on-one|owner/.test(lowered)) {
+    targets.push({ type: "people_note", label: "People note update", pathHint: "Knowledge/People/..." });
+  }
+
+  if (/repeated|pattern|again|recurring/.test(lowered) || (blockers.length > 0 && openQuestions.length > 0)) {
+    targets.push({ type: "learning_note", label: "Learning note update", pathHint: "Knowledge/Learnings/..." });
+  }
+
+  if (/leadership|monthly update|status update|escalation summary/.test(lowered)) {
+    targets.push({ type: "leadership_update", label: "Leadership update input" });
+  }
+
+  return targets.filter((target, index, array) => array.findIndex((candidate) => candidate.type === target.type) === index);
+}
+
+function inferLinkedArtifacts(markdown: string): MeetingArtifactLink[] {
+  const links: MeetingArtifactLink[] = [];
+  const taskMatches = markdown.match(/Tasks\/[A-Za-z0-9_\-\/\.]+\.md/g) ?? [];
+  const knowledgeMatches = markdown.match(/Knowledge\/[A-Za-z0-9_\-\/\.]+\.md/g) ?? [];
+
+  for (const path of taskMatches) {
+    links.push({ type: "task", path });
+  }
+
+  for (const path of knowledgeMatches) {
+    links.push({ type: "knowledge", path });
+  }
+
+  return links.filter((link, index, array) => array.findIndex((candidate) => candidate.type === link.type && candidate.path === link.path) === index);
+}
+
+function buildMeetingContinuityItem(file: string, content: string, root: string): MeetingContinuityItem | null {
+  const relativePath = path.relative(root, file).replace(/\\/g, "/");
+  if (!relativePath.includes("Knowledge/Meetings/") && !relativePath.includes("Knowledge/Transcripts/")) {
+    return null;
+  }
+
+  const lines = content.split("\n").map((line) => line.trim());
+  const title = lines.find((line) => line.startsWith("# "))?.replace(/^#\s*/, "").trim() ?? path.basename(file, ".md");
+  const date = getPlainLines(getSectionContent(content, "Date"))[0];
+  const attendees = getBulletItems(getSectionContent(content, "Attendees"));
+  const decisions = getBulletItems(getSectionContent(content, "Decisions"));
+  const openCommitments = getBulletItems(getSectionContent(content, "Action Items"));
+  const blockers = [
+    ...getBulletItems(getSectionContent(content, "Risks / Blockers")),
+    ...getBulletItems(getSectionContent(content, "Risks / unresolved questions"))
+  ];
+  const openQuestions = getBulletItems(getSectionContent(content, "Open Questions"));
+  const ambiguityFlags = [
+    ...(date ? [] : ["missing_date"]),
+    ...(attendees.length > 0 ? [] : ["missing_attendees"]),
+    ...(openQuestions.length > 0 ? ["open_questions_present"] : []),
+    ...(/ambiguous|unclear|not explicit|not fully explicit/i.test(content) ? ["ambiguity_detected"] : [])
+  ];
+
+  const routingTargets = inferRoutingTargets(content, openCommitments, blockers, openQuestions);
+  const linkedArtifacts = inferLinkedArtifacts(content);
+
+  const status = openCommitments.length === 0 && blockers.length === 0
+    ? (ambiguityFlags.length > 0 ? "ambiguous" : "resolved")
+    : (ambiguityFlags.length > 0 ? "ambiguous" : "open");
+
+  return {
+    id: slugify(`${relativePath}-${title}`),
+    sourcePath: relativePath,
+    sourceType: inferMeetingSourceType(relativePath),
+    title,
+    date,
+    attendees,
+    decisions,
+    openCommitments,
+    blockers,
+    openQuestions,
+    routingTargets,
+    linkedArtifacts,
+    ambiguityFlags,
+    status
+  };
+}
+
+function buildMeetingContinuity(rawKnowledge: { file: string; content: string }[], root: string): MeetingContinuityItem[] {
+  return rawKnowledge
+    .map(({ file, content }) => buildMeetingContinuityItem(file, content, root))
+    .filter((item): item is MeetingContinuityItem => item !== null)
+    .sort((left, right) => left.sourcePath.localeCompare(right.sourcePath));
+}
+
 function inferTaskGoalLinks(taskSignals: TaskSignal[], goals: GoalSignal[]): TaskGoalLink[] {
   const links: TaskGoalLink[] = [];
 
@@ -410,6 +541,7 @@ async function buildContext(): Promise<AssistantContext> {
   );
 
   const knowledgeSignals = buildKnowledgeSignals(rawKnowledge, workspace.root);
+  const meetingContinuity = buildMeetingContinuity(rawKnowledge, workspace.root);
 
   for (const task of taskSignals) {
     for (const signal of knowledgeSignals) {
@@ -445,13 +577,15 @@ async function buildContext(): Promise<AssistantContext> {
     goals: goalSignals,
     tasks: taskSignals,
     knowledge: knowledgeSignals,
+    meetingContinuity,
     links,
     driftAlerts,
     stats: {
       activeTasks: taskSignals.filter((task) => task.status !== "d").length,
       linkedHighPriorityTasks: activeHighPriority.filter((task) => task.goalIds.length > 0).length,
       unlinkedHighPriorityTasks: activeHighPriority.filter((task) => task.goalIds.length === 0).length,
-      staleBlockedTasks: driftAlerts.filter((alert) => alert.type === "blocked_stale").length
+      staleBlockedTasks: driftAlerts.filter((alert) => alert.type === "blocked_stale").length,
+      openMeetingCommitments: meetingContinuity.reduce((count, item) => count + item.openCommitments.length, 0)
     }
   };
 

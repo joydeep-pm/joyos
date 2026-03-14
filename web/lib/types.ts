@@ -209,6 +209,38 @@ export interface KnowledgeSignal {
   linkedTaskIds: string[];
 }
 
+export type MeetingContinuitySourceType = "meeting_note" | "transcript";
+export type MeetingContinuityStatus = "open" | "resolved" | "ambiguous";
+export type MeetingRoutingTargetType = "task" | "feature_request" | "people_note" | "learning_note" | "leadership_update";
+
+export interface MeetingRoutingTarget {
+  type: MeetingRoutingTargetType;
+  label: string;
+  pathHint?: string;
+}
+
+export interface MeetingArtifactLink {
+  type: "task" | "knowledge";
+  path: string;
+}
+
+export interface MeetingContinuityItem {
+  id: string;
+  sourcePath: string;
+  sourceType: MeetingContinuitySourceType;
+  title: string;
+  date?: string;
+  attendees: string[];
+  decisions: string[];
+  openCommitments: string[];
+  blockers: string[];
+  openQuestions: string[];
+  routingTargets: MeetingRoutingTarget[];
+  linkedArtifacts: MeetingArtifactLink[];
+  ambiguityFlags: string[];
+  status: MeetingContinuityStatus;
+}
+
 export interface TaskGoalLink {
   taskId: string;
   goalId: string;
@@ -229,6 +261,7 @@ export interface AssistantContextStats {
   linkedHighPriorityTasks: number;
   unlinkedHighPriorityTasks: number;
   staleBlockedTasks: number;
+  openMeetingCommitments: number;
 }
 
 export interface AssistantContext {
@@ -237,6 +270,7 @@ export interface AssistantContext {
   goals: GoalSignal[];
   tasks: TaskSignal[];
   knowledge: KnowledgeSignal[];
+  meetingContinuity: MeetingContinuityItem[];
   links: TaskGoalLink[];
   driftAlerts: DriftAlert[];
   stats: AssistantContextStats;

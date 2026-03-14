@@ -8,6 +8,7 @@ Sync your [Granola.ai](https://granola.ai) meeting notes and transcripts into yo
 - **Sync meeting notes** to your local `Knowledge/Transcripts/` folder
 - **Morning planning** includes recent meeting context
 - **Pattern analysis** across your meetings (topics, frequency, participants)
+- **Meeting follow-up workflow** can turn synced notes into tasks, blockers, feature-request updates, people-note updates, and learnings
 
 ## Prerequisites
 
@@ -134,6 +135,14 @@ Sync my Granola meetings
 ```
 Search my meetings for "product roadmap"
 ```
+
+### Process a meeting into follow-ups
+
+```
+Turn this meeting note into follow-ups
+```
+
+Use the synced transcript or exported meeting note as input, then route the outputs into tasks, `Knowledge/Feature-Requests/`, `Knowledge/People/`, or `Knowledge/Learnings/` as appropriate.
 
 ### Morning planning with meetings
 

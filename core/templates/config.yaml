@@ -1,21 +1,22 @@
 # Task Management System Configuration
-# Copy to config.yaml and customize for your workflow
+# Copy to config.yaml and customize for your Director-of-Products workflow
 
-# Task categories - modify based on your needs
+# Task categories
 categories:
-  - technical      # Development, coding, debugging
-  - outreach       # Emails, meetings, networking
-  - research       # Learning, analysis, investigation
-  - writing        # Documentation, blogs, reports
-  - admin          # Administrative, organizational
+  - technical      # Engineering dependencies, tooling, implementation gaps
+  - outreach       # Client/stakeholder follow-ups, escalation communication, sales asks
+  - research       # Discovery, analysis, investigation, competitive work
+  - writing        # PRDs, user stories, leadership updates, summaries
+  - admin          # Scheduling, approvals, operational coordination
+  - people         # 1:1 prep, coaching notes, team development
   - other          # Miscellaneous
 
 # Priority levels
 priorities:
-  - P0  # Critical/Urgent - do immediately
-  - P1  # Important - has deadlines
-  - P2  # Normal - regular work
-  - P3  # Low - nice to have
+  - P0  # Critical / director attention now
+  - P1  # Important this week
+  - P2  # Scheduled work
+  - P3  # Someday / maybe
 
 # Status codes
 statuses:
@@ -26,65 +27,85 @@ statuses:
 
 # Deduplication settings
 deduplication:
-  similarity_threshold: 0.6  # How similar before flagging (0-1)
-  check_categories: true     # Consider category in matching
-  check_keywords: true       # Use keyword overlap
+  similarity_threshold: 0.6
+  check_categories: true
+  check_keywords: true
 
 # Priority limits (warning thresholds)
 priority_limits:
-  P0: 3  # Warn if more than 3 P0 tasks
-  P1: 5  # Warn if more than 5 P1 tasks
+  P0: 3
+  P1: 7
 
 # Task aging (in days)
 task_aging:
-  prune_completed_after: 30  # Delete done tasks after 30 days
-  flag_stale_after: 14       # Flag inactive tasks after 14 days
+  prune_completed_after: 30
+  flag_stale_after: 7
 
 # Category keywords for auto-categorization
 category_keywords:
   technical:
-    - code
-    - api
-    - database
-    - deploy
-    - fix
     - bug
-    - implement
-    - develop
-    - debug
-    - server
+    - blocker
+    - dependency
+    - engineering
+    - implementation
+    - api
+    - integration
+    - fix
+    - scope
   outreach:
+    - client
+    - stakeholder
+    - follow-up
+    - escalation
     - email
-    - contact
-    - reach
-    - meeting
     - call
-    - follow
-    - introduce
-    - connect
+    - meeting
+    - sales
+    - leadership
   research:
-    - research
-    - study
-    - learn
-    - investigate
     - analyze
-    - explore
-    - understand
+    - research
+    - investigate
     - evaluate
+    - compare
+    - understand
+    - validate
+    - explore
   writing:
-    - write
+    - prd
+    - story
     - draft
+    - write
     - document
-    - blog
-    - article
-    - report
-    - proposal
-    - outline
+    - update
+    - summary
+    - roadmap
+    - review
   admin:
     - schedule
     - organize
-    - expense
-    - invoice
+    - approve
+    - coordinate
     - calendar
-    - filing
-    - review
+    - plan
+  people:
+    - 1:1
+    - coaching
+    - feedback
+    - team
+    - support
+    - manager
+
+# Operating-goal guidance
+operating_goals:
+  - Documentation
+  - Stability
+  - New Business
+  - Team Leadership
+
+# Daily planning defaults
+daily_planning:
+  max_focus_items: 3
+  prefer_intervention_brief: true
+  reduce_focus_on_meeting_heavy_days: true

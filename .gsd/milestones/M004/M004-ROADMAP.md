@@ -46,12 +46,12 @@ This milestone is complete only when all are true:
 
 ## Slices
 
-- [ ] **S01: Rich signal ingestion and normalization** `risk:high` `depends:[]`
-  > After this: one richer signal source or normalization seam is live and inspectable through stable contracts, proving the control tower can reason over more than the current baseline inputs.
-- [ ] **S02: Cross-surface continuity assembly** `risk:medium` `depends:[S01]`
-  > After this: one assembled continuity contract connects intervention, people, and assistant state in a demoable server-authored workflow instead of UI-local stitching.
-- [ ] **S03: Live orchestration workflow proof** `risk:medium` `depends:[S01,S02]`
-  > After this: the running app proves one end-to-end orchestration workflow in the browser using the richer signals and shared continuity state.
+- [x] **S01: Director-of-products role scaffolding and workflow uplift** `risk:medium` `depends:[]`
+  > After this: the markdown Personal OS has a coherent Director-of-Products operating contract, intervention-first workflows, and continuity scaffolds that future setup or app work can build on.
+- [x] **S02: Role-aware setup and template alignment** `risk:medium` `depends:[S01]`
+  > After this: new workspaces and reusable templates scaffold the Director-of-Products operating model instead of the old generic task-management defaults.
+- [x] **S03: Minimal markdown runtime proof** `risk:low` `depends:[S01,S02]`
+  > After this: the markdown/setup path is closed with automatic role-specific Knowledge scaffolding and a truthful post-setup verification runbook.
 
 ## Boundary Map
 

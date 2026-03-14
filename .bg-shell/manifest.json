@@ -1,14 +1,1 @@
-[
-  {
-    "id": "5b5f7528",
-    "label": "web-dev-m002-s03",
-    "command": "cd /Users/joy/Projects/joy-portfolio/Personal\\ OS/personal-os/web && npm run dev",
-    "cwd": "/Users/joy/Projects/joy-portfolio/Personal OS/personal-os",
-    "startedAt": 1773279612726,
-    "processType": "server",
-    "group": "m002-s03",
-    "readyPattern": null,
-    "readyPort": 3000,
-    "pid": 85802
-  }
-]
+[]

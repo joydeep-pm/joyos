@@ -1,129 +1,187 @@
 # Weekly Review Workflow
 
-A 15-30 minute session to reflect on progress and plan ahead.
+A 20-30 minute Director-of-Products review to reflect, learn, and prepare the next week.
+
+## Goal
+
+Use the week’s tasks, meetings, feature requests, blockers, and people notes to answer:
+- what moved
+- what stalled
+- where intervention was needed
+- what the system should learn
+- what matters most next week
 
 ## When to Do It
 
-- Friday afternoon (reflect while fresh)
-- Sunday evening (prep for the week)
-- Monday morning (start week with clarity)
+- Friday afternoon
+- Sunday evening
+- Monday morning before the week fully starts
 
-## The Prompts
+## Review Sequence
 
-### Step 1: Review Completed Work
+### Step 1: What moved this week?
 
-```
-What did I accomplish this week?
-```
+Prompt:
 
-**Example response:**
-
-This week you completed 12 tasks:
-
-**By Goal Alignment:**
-- "Ship Q1 roadmap": 4 tasks (roadmap presentation, 2 specs, stakeholder review)
-- "Improve activation": 2 tasks (checkout flow analysis, user interviews)
-- "Build thought leadership": 1 task (blog post published)
-- Maintenance/admin: 5 tasks
-
-**Highlights:**
-- Finished Q1 roadmap presentation (P0) - major milestone
-- Published your first blog post of the quarter
-- Cleared 5 admin tasks that were piling up
-
-**Time invested:** ~18 hours of focused work logged
-
----
-
-### Step 2: Check Goal Progress
-
-```
-How am I tracking against my quarterly goals?
+```text
+What moved this week across Documentation, Stability, New Business, and Team Leadership?
 ```
 
-**Example response:**
+The response should group progress by operating goal, not just by raw task count.
 
-**Q1 Goals Progress (Week 3 of 12):**
+Look for:
+- PRDs, user stories, updates, and artifacts completed
+- stability issues resolved or prevented
+- client or sales-driven asks advanced
+- PM coaching, support, or 1:1 prep completed
 
-| Goal | Status | Notes |
-|------|--------|-------|
-| Ship Q1 roadmap | 🟢 On track | Presentation done, specs 60% complete |
-| Improve activation by 20% | 🟡 Needs attention | Research done, no implementation started |
-| Build thought leadership | 🟢 On track | 1 of 4 planned posts published |
+### Step 2: Where did Joydeep have to intervene?
 
-**Recommendations:**
-- Activation goal needs more focus next week
-- Consider adding a P1 task to kick off checkout improvements
+Prompt:
 
----
-
-### Step 3: Identify Blockers
-
-```
-What's blocked or stalled?
+```text
+Where did I have to intervene this week, and why?
 ```
 
-**Example response:**
+Organize this by:
+- PM owner
+- client
+- feature request / initiative
+- blocker type
 
-**Blocked tasks (3):**
-1. "API integration spec" - waiting on engineering estimates (5 days)
-   → Suggest: Follow up with James Monday AM
+Typical categories:
+- engineering dependency stale
+- unclear PRD or story
+- client escalation aging
+- leadership artifact due
+- implementation gap surfaced late
+- prioritization ambiguity
 
-2. "User research synthesis" - waiting on transcripts (3 days)
-   → Suggest: Check with research team
+### Step 3: What is blocked, stale, or drifting?
 
-3. "Mobile prototype review" - waiting on design (7 days)
-   → Suggest: Escalate to design lead
+Prompt:
 
-**Stalled tasks (started but no progress this week):**
-1. "Competitive analysis doc" - started 2 weeks ago, 20% complete
-   → Is this still a priority?
-
----
-
-### Step 4: Plan Next Week
-
-```
-Help me plan next week. What should my top priorities be?
+```text
+What is blocked, stale, or likely to become a problem next week?
 ```
 
-**Example response:**
+Surface:
+- blocked tasks
+- stale feature requests
+- unresolved follow-ups from meetings
+- documentation gaps
+- PMs who need support
+- risks that may show up in leadership conversations
 
-Based on your goals and current tasks, here's a suggested focus:
+For each item, suggest the likely next move:
+- escalate
+- clarify
+- draft
+- delegate
+- follow up
+- deprioritize
 
-**Must do (P0/P1):**
-1. Unblock API integration - follow up Monday
-2. Start checkout flow implementation planning
-3. Write next blog post (due Friday)
+### Step 4: What patterns repeated?
 
-**Should do (P2):**
-4. Finish competitive analysis
-5. Prep for Thursday's product review
+Prompt:
 
-**If time allows:**
-6. Research AI search feature idea
-7. Clean up documentation backlog
+```text
+What patterns repeated this week across blockers, PM coaching, client asks, or documentation quality?
+```
 
-**Time budget:**
-- Deep work available: ~15 hours
-- Meetings: ~10 hours  
-- Buffer for urgent items: ~5 hours
+Look for recurring themes such as:
+- the same engineering bottleneck across multiple items
+- PMs bringing work too late for grooming
+- user stories lacking clarity
+- repeated stability issues in the same area
+- leadership updates requiring last-minute assembly
 
-Does this feel right, or should we adjust priorities?
+### Step 5: What should the system learn?
 
----
+Prompt:
+
+```text
+What should this Personal OS learn from this week?
+```
+
+Capture improvements for `Knowledge/Learnings/`, including:
+- repeated prompting failures
+- workflow friction
+- note structures missing from `Knowledge/`
+- templates that should be created
+- recurring blocker patterns worth tracking explicitly
+
+### Step 6: Plan next week
+
+Prompt:
+
+```text
+Help me plan next week. What are the priority interventions and must-win outcomes?
+```
+
+Recommend:
+- top 3-5 priorities for next week
+- critical meetings to prep for
+- blockers to clear early
+- leadership or client artifacts to draft ahead of time
+- people-management conversations that need attention
+
+## Example Output
+
+### Progress by Operating Goal
+
+**Documentation**
+- Finalized 2 user-story sets for LAS and BNPL
+- Drafted the monthly product update outline
+
+**Stability**
+- Surfaced 3 implementation gaps before grooming
+- Closed one stale blocker with engineering on charge waiver logic
+
+**New Business**
+- Advanced one client ask into a scoped feature-request note
+- Responded to an RFP-related product clarification
+
+**Team Leadership**
+- Prepared and completed 2 PM 1:1s
+- Captured one recurring coaching theme around grooming readiness
+
+### Intervention Summary
+
+- PM A needed help with a stale engineering dependency
+- One client escalation required director-level clarification
+- Leadership update prep became urgent mid-week because source notes were fragmented
+
+### Repeating Patterns
+
+- Stories are reaching grooming without enough clarity
+- Meeting follow-ups are not being converted into tasks consistently
+- Stability-related asks are split across notes without one durable feature-request record
+
+### System Learnings
+
+- Add a reusable meeting follow-up workflow
+- Keep one durable note per feature request in `Knowledge/Feature-Requests/`
+- Capture PM coaching themes in people notes before 1:1s get close
+
+### Next Week Priorities
+
+1. Clear grooming-readiness gaps for top BNPL and co-lending items
+2. Prepare the full monthly leadership update by Wednesday
+3. Review stale client escalations and force next-owner clarity
+4. Prep direct-report 1:1 talking points before the week gets crowded
 
 ## Quick Version (5 minutes)
 
-If you're short on time:
+If time is tight:
 
-```
-Quick weekly review: What did I finish, what's blocked, what's most important next week?
+```text
+Quick weekly review: What moved, what stalled, what repeated, and what are next week's must-win interventions?
 ```
 
 ## Tips
 
-- Block 30 minutes on your calendar for this
-- Do it in a quiet space, not between meetings
-- Be honest about what's stalled - it's data, not judgment
-- Update GOALS.md if priorities have shifted
+- Do not optimize for task volume; optimize for decision quality and risk visibility.
+- Use `Knowledge/Meetings/`, `Knowledge/Feature-Requests/`, `Knowledge/People/`, and `Knowledge/Learnings/` during the review.
+- If the same blocker appears twice in a month, treat it as a system issue, not a one-off.
+- End with a short list of next week’s must-win outcomes, not a long list of chores.

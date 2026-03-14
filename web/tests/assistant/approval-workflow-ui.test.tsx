@@ -18,13 +18,15 @@ const context: AssistantContext = {
   goals: [],
   tasks: [],
   knowledge: [],
+  meetingContinuity: [],
   links: [],
   driftAlerts: [],
   stats: {
     activeTasks: 0,
     linkedHighPriorityTasks: 0,
     unlinkedHighPriorityTasks: 0,
-    staleBlockedTasks: 0
+    staleBlockedTasks: 0,
+    openMeetingCommitments: 0
   }
 };
 
