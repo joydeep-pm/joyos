@@ -1,10 +1,10 @@
 # GSD State
 
-**Active Milestone:** None
-**Active Slice:** None
+**Active Milestone:** M008 — Navigation and route coherence for the director operating model
+**Active Slice:** S01 — Promote Today and Assistant in primary navigation
 **Active Task:** None
-**Phase:** Milestone complete
-**Next Action:** Choose the next milestone. Recommended follow-up: add low-friction actions from the meeting continuity review surface or extend `/today` with the highest-risk meeting-derived commitment.
+**Phase:** Slice complete
+**Next Action:** Plan M008/S02 to decide how legacy `/intervention` should remain reachable while no longer competing with Today and Assistant.
 
 ## Recent Decisions
 

@@ -1,11 +1,13 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 const links = [
-  { href: "/intervention", label: "Intervention" },
+  { href: "/today", label: "Today" },
+  { href: "/assistant", label: "Assistant" },
   { href: "/grooming", label: "Grooming" },
   { href: "/people", label: "People" },
   { href: "/settings", label: "Settings" }

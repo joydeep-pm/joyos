@@ -27,7 +27,8 @@ See `.gsd/REQUIREMENTS.md` for the explicit capability contract, requirement sta
 - [x] M003: Approval-governed automation — Add approval envelopes, auditable action pipelines, and safe writeback into official systems.
 - [x] M004: Director-of-Products markdown operating system alignment — Align docs, workflows, setup, templates, and generated workspace scaffolding around Joydeep’s role-specific operating model.
 - [x] M005: Director-of-Products web-app alignment — Align the Product Control Tower UI with the new markdown operating model, starting with the daily intervention brief.
-- [ ] M006: Meeting intelligence and follow-up orchestration — Turn meeting notes and transcripts into durable follow-ups, blockers, and operating-context updates.
+- [x] M006: Meeting intelligence and follow-up orchestration — Turn meeting notes and transcripts into durable follow-ups, blockers, and operating-context updates.
+- [ ] M008: Navigation and route coherence for the director operating model — Foreground Today and Assistant, de-emphasize legacy Intervention, and align route discovery with the new operating workflow.
 
 ## What Changed in M001
 
