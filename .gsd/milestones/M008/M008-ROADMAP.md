@@ -42,9 +42,9 @@ This milestone is complete only when all are true:
 
 ## Slices
 
-- [ ] **S01: Promote Today and Assistant in primary navigation** `risk:low` `depends:[]`
+- [x] **S01: Promote Today and Assistant in primary navigation** `risk:low` `depends:[]`
   > After this: the top nav clearly exposes the current daily workflow surfaces.
-- [ ] **S02: Make Today the landing route and de-emphasize legacy Intervention** `risk:low` `depends:[S01]`
+- [x] **S02: Make Today the landing route and de-emphasize legacy Intervention** `risk:low` `depends:[S01]`
   > After this: opening the app starts in the right place and `/intervention` stops competing as the default.
-- [ ] **S03: Verify coherent discovery across nav and routes** `risk:low` `depends:[S01,S02]`
+- [x] **S03: Verify coherent discovery across nav and routes** `risk:low` `depends:[S01,S02]`
   > After this: tests and browser verification prove users can find the current workflow without route guesswork.

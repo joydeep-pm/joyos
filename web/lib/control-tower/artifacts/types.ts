@@ -18,6 +18,8 @@ export type ArtifactType =
   | "monthly_product_update"  // M2P: Monthly product update
   | "grooming_checklist"      // M2P: Grooming readiness checklist
   | "product_roadmap"         // M2P: Product roadmap
+  | "roadmap_update"          // M2P: Vertical/stakeholder roadmap update
+  | "roadmap_deck_outline"    // M2P: Business/RFP roadmap deck outline
   | "bmad_prd";               // M2P: BMAD-style PRD (if different from generic)
 
 export type ArtifactStatus = "draft" | "review" | "approved" | "sent";

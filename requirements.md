@@ -243,6 +243,10 @@ User explicitly listed these as recurring outputs:
 5. AOP / roadmap input
 6. Team feedback note
 7. Prioritization decision
+8. Roadmap status update for a business stakeholder tied to a specific vertical (for example, Gold Loan)
+9. Overall roadmap deck used in RFP or business-facing conversations across verticals and platform areas represented in the monthly product update format
+10. Quarterly refresh of Product Decks and Product Factsheets for each vertical
+11. 1:1 and IDP updates that include AI proficiency as a development dimension
 
 ### Confirmed End-To-End Operating Flow For A Typical Item
 
@@ -292,8 +296,23 @@ The user listed these pain points:
 3. Dependency chasing
 4. Reviewing PM output quality
 5. Switching between product and people management
+6. Repeated requests to share roadmap status updates with business stakeholders for a specific vertical (for example, Gold Loan)
+7. Repeated need to assemble an overall roadmap into a presentation deck for RFPs and external-facing business conversations
+8. Product Update and Roadmap Update are different communication artifacts and should not be merged conceptually
+9. Product Decks and Product Factsheets for each vertical must be refreshed every quarter, creating a recurring maintenance burden
+10. AI proficiency is becoming a development topic to include in 1:1s and IDP discussions
 
 The user repeated "too many asks across clients," which indicates it is likely the strongest pain point.
+
+Additional pain introduced later in the workflow:
+
+1. Roadmap communication is not just internal status tracking; it must often be reframed for a specific business stakeholder tied to one vertical
+2. The user’s real monthly product-update format is already structured by multiple lending verticals and platform areas, including examples such as Personal Loan, Gold Loan, Education Loan, LAS, LAMF, MFI, BNPL / Credit Line, Consumer Durables, Business Loan / SCF, Auto Loan, LAP, Home Loan, LOS, Collections, LMS, Co-Lending, Security / Collateral Management, Auction & Repo, and Legal
+3. Product Update and Roadmap Update represent different business views and require separate artifact logic
+4. Roadmap communication also has to be rolled up into an overall deck format for RFP support across these verticals and product areas
+5. Product Decks and Factsheets are recurring quarterly assets that need reminder and refresh workflows, not one-time documents
+6. AI proficiency is becoming part of PM growth expectations and should be reflected in coaching, 1:1s, and IDPs
+7. These roadmap-status, roadmap-deck, and quarterly collateral requests are recurring outputs, not one-off exceptions
 
 ### Interpreted Root Problems
 
@@ -305,6 +324,8 @@ From the above, the likely root problems are:
 4. Time spent synthesizing status instead of making decisions
 5. PM quality-control burden on the user
 6. Fragmented system of record across Jira, Confluence, Teams, Excel, and verbal engineering inputs
+7. Roadmap communication overhead across multiple stakeholder contexts
+8. Repeated repackaging of the same roadmap truth into different stakeholder-friendly formats
 
 ---
 
@@ -320,6 +341,11 @@ The user explicitly requested these top assistant behaviors:
 4. Show where PMs are stuck
 5. Prepare stakeholder / leadership updates automatically
 6. Draft IDP after 1:1
+7. Prepare roadmap status updates for a business stakeholder focused on a specific vertical using the same vertical-aware structure the user already uses in monthly product updates
+8. Roll up the overall roadmap into a deck format suitable for RFP and business-facing use across the same lending verticals and platform areas
+9. Treat Product Update and Roadmap Update as distinct artifact types with different output logic
+10. Remind the user when Product Decks and Product Factsheets for each vertical are due for quarterly refresh
+11. Include AI proficiency as a trackable development topic in 1:1 prep, coaching notes, and IDP drafting
 
 ### PM Team Support Expectations
 
@@ -336,6 +362,7 @@ Interpreted requested PM-management support areas:
 5. Follow-up nudges
 6. 1:1 prep
 7. Performance evidence log
+8. AI proficiency tracking as part of coaching, growth, and IDP conversations
 
 ---
 

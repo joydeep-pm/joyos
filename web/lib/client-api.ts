@@ -20,7 +20,8 @@ import type {
   TrendPoint,
   WeeklyReview,
   ApprovalEnvelopeRecord,
-  ApprovalEnvelopeTransitionPayload
+  ApprovalEnvelopeTransitionPayload,
+  CollateralReminderItem
 } from "@/lib/types";
 
 interface ApiResponse<T> {
@@ -116,6 +117,15 @@ export const api = {
     }),
   getCommsHistory: () => request<AssistantCommsHistory>("/api/assistant/comms/history"),
   getApprovalEnvelopes: () => request<ApprovalEnvelopeRecord[]>("/api/assistant/approval-envelopes"),
+  getCollateralReminders: (date?: string) =>
+    request<CollateralReminderItem[]>(
+      `/api/assistant/collateral-reminders${date ? `?date=${encodeURIComponent(date)}` : ""}`
+    ),
+  resolveCollateralReminder: (id: string) =>
+    request<CollateralReminderItem>(`/api/assistant/collateral-reminders/${encodeURIComponent(id)}/resolve`, {
+      method: "POST",
+      body: JSON.stringify({})
+    }),
   createApprovalEnvelope: (payload: {
     actionType: "comms_send" | "jira_writeback" | "confluence_writeback";
     targetType: "comms_draft" | "jira_issue" | "confluence_page";

@@ -167,6 +167,8 @@ export type CommsDraftStatus = "draft" | "approved" | "sent";
 export type CommsAuditEvent = "draft_created" | "approved" | "send_denied" | "sent";
 export type WeekStartDay = "monday";
 export type AssistantAlertType = "priority_drift" | "wip_limit";
+export type CollateralAssetType = "product_deck" | "product_factsheet";
+export type CollateralReminderStatus = "upcoming" | "due" | "overdue" | "resolved";
 export type CorrectiveActionType =
   | "move_to_in_progress"
   | "mark_awaiting_input"
@@ -342,6 +344,39 @@ export interface ApprovalEnvelopeTransitionPayload {
   action: "approve" | "deny" | "execute";
   actor: string;
   reason?: string;
+}
+
+export interface CollateralReminderInventoryEntry {
+  assetType: CollateralAssetType;
+  vertical: string;
+  cadenceMonths: number;
+  lastRefreshedAt: string;
+  owner?: string;
+}
+
+export interface CollateralReminderItem {
+  id: string;
+  assetType: CollateralAssetType;
+  vertical: string;
+  cadenceMonths: number;
+  quarterLabel: string;
+  dueDate: string;
+  status: CollateralReminderStatus;
+  severity: DriftSeverity;
+  lastRefreshedAt: string;
+  daysUntilDue: number;
+  owner?: string;
+  resolvedAt?: string;
+}
+
+export interface CollateralReminderResolutionRecord {
+  resolvedAt: string;
+}
+
+export interface CollateralReminderState {
+  version: number;
+  inventory: CollateralReminderInventoryEntry[];
+  resolved: Record<string, CollateralReminderResolutionRecord>;
 }
 
 export interface AssistantQueueItem {

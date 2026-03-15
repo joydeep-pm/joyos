@@ -656,6 +656,16 @@ export function getTemplate(type: ArtifactType): ArtifactTemplate {
       return OKR_UPDATE_TEMPLATE;
     case "idp_feedback":
       return IDP_FEEDBACK_TEMPLATE;
+    case "monthly_product_update":
+      return STATUS_UPDATE_TEMPLATE;
+    case "grooming_checklist":
+      return STATUS_UPDATE_TEMPLATE;
+    case "product_roadmap":
+      return STATUS_UPDATE_TEMPLATE;
+    case "roadmap_update":
+      return STATUS_UPDATE_TEMPLATE;
+    case "roadmap_deck_outline":
+      return STATUS_UPDATE_TEMPLATE;
     case "bmad_prd":
       return PRD_TEMPLATE; // Use generic PRD for now, can be customized later
     default:
@@ -695,6 +705,11 @@ export function getDefaultTemplates(): Map<ArtifactType, ArtifactTemplate> {
   templates.set("client_summary", CLIENT_SUMMARY_TEMPLATE);
   templates.set("okr_update", OKR_UPDATE_TEMPLATE);
   templates.set("idp_feedback", IDP_FEEDBACK_TEMPLATE);
+  templates.set("monthly_product_update", STATUS_UPDATE_TEMPLATE);
+  templates.set("grooming_checklist", STATUS_UPDATE_TEMPLATE);
+  templates.set("product_roadmap", STATUS_UPDATE_TEMPLATE);
+  templates.set("roadmap_update", STATUS_UPDATE_TEMPLATE);
+  templates.set("roadmap_deck_outline", STATUS_UPDATE_TEMPLATE);
   templates.set("bmad_prd", PRD_TEMPLATE); // Can be customized with YAML template
 
   return templates;

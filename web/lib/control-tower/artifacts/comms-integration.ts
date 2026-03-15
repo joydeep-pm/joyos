@@ -23,6 +23,8 @@ function artifactTypeToCommsType(
     case "status_update":
     case "leadership_update":
     case "client_summary":
+    case "roadmap_update":
+    case "roadmap_deck_outline":
       return "stakeholder_update";
     default:
       return "stakeholder_update";
@@ -50,6 +52,10 @@ function generateSubjectLine(artifact: Artifact): string {
       return `Leadership Update: ${metadata.featureRequestTitle}`;
     case "client_summary":
       return `Client Escalation Summary: ${metadata.featureRequestTitle}`;
+    case "roadmap_update":
+      return `Roadmap Update: ${metadata.featureRequestTitle}`;
+    case "roadmap_deck_outline":
+      return `Roadmap Deck Outline: ${metadata.featureRequestTitle}`;
     default:
       return metadata.featureRequestTitle;
   }
@@ -67,8 +73,12 @@ function determineDestination(artifact: Artifact): string {
   }
 
   // For leadership updates, use leadership channel
-  if (type === "leadership_update") {
+  if (type === "leadership_update" || type === "roadmap_deck_outline") {
     return "leadership@example.com";
+  }
+
+  if (type === "roadmap_update" && metadata.client) {
+    return `${metadata.client.toLowerCase().replace(/\s+/g, "-")}@example.com`;
   }
 
   // For client summaries, use client contact
@@ -106,6 +116,8 @@ export function canSendViaComms(artifactType: ArtifactType): boolean {
     "clarification_request",
     "status_update",
     "leadership_update",
-    "client_summary"
+    "client_summary",
+    "roadmap_update",
+    "roadmap_deck_outline"
   ].includes(artifactType);
 }

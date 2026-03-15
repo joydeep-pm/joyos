@@ -255,6 +255,44 @@ describe("Artifact Generator", () => {
 
       expect(content).toContain("**Status:** 🟢 Green");
     });
+
+    it("should generate roadmap update content", () => {
+      const context = createTemplateContext(baseFeatureRequest);
+      const content = generateArtifactContent("roadmap_update", context);
+
+      expect(content).toContain("# Roadmap Update:");
+      expect(content).toContain("**Audience:** Test Bank");
+      expect(content).toContain("**Vertical / Product Area:** Lending Platform");
+      expect(content).toContain("## Roadmap Status");
+      expect(content).toContain("## Stakeholder Summary");
+      expect(content).toContain("Need confirmation on rollout sequence.");
+      expect(content).toContain("## Current Quarter Movement");
+      expect(content).toContain("PROJ-123");
+      expect(content).toContain("## Next Quarter Focus");
+      expect(content).toContain("Follow up with implementation lead");
+      expect(content).toContain("## Risks, Dependencies, and Decisions");
+      expect(content).toContain("Waiting for backend API");
+      expect(content).toContain("## Evidence Links");
+      expect(content).toContain("Requirements Doc");
+    });
+
+    it("should generate roadmap deck outline content", () => {
+      const context = createTemplateContext(baseFeatureRequest);
+      const content = generateArtifactContent("roadmap_deck_outline", context);
+
+      expect(content).toContain("# Roadmap Deck Outline: Lending Platform");
+      expect(content).toContain("**Use Case:** Business / RFP conversation");
+      expect(content).toContain("## Slide 2 — Vertical Coverage");
+      expect(content).toContain("Gold Loan");
+      expect(content).toContain("BNPL / Credit Line");
+      expect(content).toContain("## Slide 3 — Platform Strengths");
+      expect(content).toContain("Co-Lending");
+      expect(content).toContain("Legal");
+      expect(content).toContain("## Slide 4 — Roadmap Themes");
+      expect(content).toContain("Need confirmation on rollout sequence.");
+      expect(content).toContain("## Slide 7 — Proof Points and References");
+      expect(content).toContain("Requirements Doc");
+    });
   });
 
   describe("generateArtifact", () => {
@@ -282,13 +320,18 @@ describe("Artifact Generator", () => {
       const followUp = generateArtifact("follow_up", baseFeatureRequest, {
         recipientName: "Bob"
       });
+      const roadmapUpdate = generateArtifact("roadmap_update", baseFeatureRequest);
+      const roadmapDeck = generateArtifact("roadmap_deck_outline", baseFeatureRequest);
 
       expect(prd.type).toBe("prd");
       expect(userStory.type).toBe("user_story");
       expect(followUp.type).toBe("follow_up");
+      expect(roadmapUpdate.type).toBe("roadmap_update");
+      expect(roadmapDeck.type).toBe("roadmap_deck_outline");
 
       expect(prd.content).not.toBe(userStory.content);
       expect(prd.content).not.toBe(followUp.content);
+      expect(roadmapUpdate.content).not.toBe(roadmapDeck.content);
     });
   });
 });

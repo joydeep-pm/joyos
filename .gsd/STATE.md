@@ -1,10 +1,10 @@
 # GSD State
 
-**Active Milestone:** M008 — Navigation and route coherence for the director operating model
-**Active Slice:** S01 — Promote Today and Assistant in primary navigation
+**Active Milestone:** None
+**Active Slice:** None
 **Active Task:** None
-**Phase:** Slice complete
-**Next Action:** Plan M008/S02 to decide how legacy `/intervention` should remain reachable while no longer competing with Today and Assistant.
+**Phase:** Milestones M008 and M009 complete
+**Next Action:** Choose the next milestone to plan based on current product priority.
 
 ## Recent Decisions
 

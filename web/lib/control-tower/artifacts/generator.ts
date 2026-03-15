@@ -416,6 +416,137 @@ function generateStatusUpdateContent(context: TemplateContext): string {
   return content;
 }
 
+function generateRoadmapUpdateContent(context: TemplateContext): string {
+  const vertical = context.productCharter || "Target Vertical";
+  const stakeholder = context.client || "Business Stakeholder";
+  const quarter = new Date().getMonth() < 3 ? "Q1" : new Date().getMonth() < 6 ? "Q2" : new Date().getMonth() < 9 ? "Q3" : "Q4";
+
+  let content = `# Roadmap Update: ${vertical} — ${context.featureRequestTitle}\n\n`;
+  content += `**Audience:** ${stakeholder}\n`;
+  content += `**Vertical / Product Area:** ${vertical}\n`;
+  content += `**Planning Window:** ${quarter} ${new Date().getFullYear()}\n`;
+  if (context.pmOwner) {
+    content += `**PM Owner:** ${context.pmOwner}\n`;
+  }
+  content += `\n`;
+
+  content += `## Roadmap Status\n\n`;
+  content += `**Overall Status:** ${context.riskSeverity === "high" ? "At Risk" : context.riskSeverity === "medium" ? "Needs Attention" : "On Track"}\n\n`;
+
+  content += `## Stakeholder Summary\n\n`;
+  if (context.reviewDecisionSummary) {
+    content += `${context.reviewDecisionSummary}\n\n`;
+  } else {
+    content += `[TODO: Summarize the roadmap posture for this stakeholder and vertical.]\n\n`;
+  }
+
+  content += `## Current Quarter Movement\n\n`;
+  if (context.jiraKeys.length > 0) {
+    content += `- Active delivery references: ${context.jiraKeys.join(", ")}\n`;
+  }
+  if (context.readinessRecommendedNextStep) {
+    content += `- Recommended next move: ${context.readinessRecommendedNextStep}\n`;
+  }
+  content += `- [TODO: Add shipped / in-progress roadmap items for this vertical]\n\n`;
+
+  content += `## Next Quarter Focus\n\n`;
+  if (context.reviewNextActions.length > 0) {
+    context.reviewNextActions.forEach((action) => {
+      content += `- ${action}\n`;
+    });
+  } else {
+    content += `- [TODO: Add the next-quarter roadmap priorities]\n`;
+  }
+  content += `\n`;
+
+  content += `## Risks, Dependencies, and Decisions\n\n`;
+  if (context.blockers.length > 0) {
+    content += `**Active Blockers:**\n`;
+    context.blockers.forEach((blocker) => {
+      content += `- [${blocker.type.toUpperCase()}] ${blocker.description} (${blocker.daysOpen} days)\n`;
+    });
+    content += `\n`;
+  }
+  if (context.riskFactors.length > 0) {
+    content += `**Risk Factors:**\n`;
+    context.riskFactors.forEach((factor) => {
+      content += `- ${factor}\n`;
+    });
+    content += `\n`;
+  }
+  if (context.reviewPendingDecisions.length > 0) {
+    content += `**Open Decisions:**\n`;
+    context.reviewPendingDecisions.forEach((decision) => {
+      content += `- ${decision}\n`;
+    });
+    content += `\n`;
+  }
+
+  content += `## Evidence Links\n\n`;
+  if (context.confluencePageTitles.length > 0) {
+    context.confluencePageTitles.forEach((title, index) => {
+      content += `- [${title}](${context.confluencePageUrls[index]})\n`;
+    });
+  } else {
+    content += `- [TODO: Link relevant Confluence or roadmap references]\n`;
+  }
+  content += `\n`;
+
+  return content;
+}
+
+function generateRoadmapDeckOutlineContent(context: TemplateContext): string {
+  const portfolio = context.productCharter || "Core Lending Suite";
+
+  let content = `# Roadmap Deck Outline: ${portfolio}\n\n`;
+  content += `**Use Case:** Business / RFP conversation\n`;
+  content += `**Prepared From:** ${context.featureRequestTitle}\n`;
+  content += `**Portfolio Scope:** ${portfolio}\n\n`;
+
+  content += `## Slide 1 — Executive Positioning\n\n`;
+  content += `- [TODO: Summarize the portfolio story, market relevance, and business posture]\n\n`;
+
+  content += `## Slide 2 — Vertical Coverage\n\n`;
+  content += `- Personal Loan\n- Gold Loan\n- Education Loan\n- LAS\n- LAMF\n- MFI\n- BNPL / Credit Line\n- Consumer Durables\n- Business Loan / SCF\n- Auto Loan\n- LAP\n- Home Loan\n\n`;
+
+  content += `## Slide 3 — Platform Strengths\n\n`;
+  content += `- LOS\n- Collections\n- LMS\n- Co-Lending\n- Security / Collateral Management\n- Auction & Repo\n- Legal\n\n`;
+
+  content += `## Slide 4 — Roadmap Themes\n\n`;
+  if (context.reviewDecisionSummary) {
+    content += `- ${context.reviewDecisionSummary}\n`;
+  }
+  content += `- [TODO: Add strategic roadmap themes for business-facing use]\n\n`;
+
+  content += `## Slide 5 — Near-Term Delivery Highlights\n\n`;
+  if (context.jiraKeys.length > 0) {
+    content += `- Delivery references: ${context.jiraKeys.join(", ")}\n`;
+  }
+  content += `- [TODO: Add flagship initiatives and expected business outcomes]\n\n`;
+
+  content += `## Slide 6 — Risks and Dependencies\n\n`;
+  if (context.riskFactors.length > 0) {
+    context.riskFactors.forEach((factor) => {
+      content += `- ${factor}\n`;
+    });
+  } else {
+    content += `- [TODO: Add major business-visible risks and dependencies]\n`;
+  }
+  content += `\n`;
+
+  content += `## Slide 7 — Proof Points and References\n\n`;
+  if (context.confluencePageTitles.length > 0) {
+    context.confluencePageTitles.forEach((title, index) => {
+      content += `- ${title}: ${context.confluencePageUrls[index]}\n`;
+    });
+  } else {
+    content += `- [TODO: Add supporting collateral, demos, and source references]\n`;
+  }
+  content += `\n`;
+
+  return content;
+}
+
 /**
  * Generate artifact content based on type
  */
@@ -439,6 +570,10 @@ export function generateArtifactContent(
       return generateStatusUpdateContent(context);
     case "client_summary":
       return generateStatusUpdateContent(context);
+    case "roadmap_update":
+      return generateRoadmapUpdateContent(context);
+    case "roadmap_deck_outline":
+      return generateRoadmapDeckOutlineContent(context);
     default:
       throw new Error(`Unknown artifact type: ${type}`);
   }

@@ -3,7 +3,7 @@ id: S01
 parent: M008
 milestone: M008
 provides:
-  - A coherent primary nav and landing route aligned to the new director workflow surfaces
+  - Primary navigation that foregrounds Today and Assistant while renaming the legacy intervention entry to Control Tower
 requires:
   - slice: none
     provides: none
@@ -12,92 +12,39 @@ affects:
   - S03
 key_files:
   - web/components/nav.tsx
-  - web/app/page.tsx
   - web/tests/nav-route-coherence.test.tsx
 key_decisions:
-  - Promote Today and Assistant as the primary entrypoints while keeping legacy Intervention available but secondary
+  - Keep /intervention reachable but relabel it as Control Tower so it no longer competes as the default daily surface
 patterns_established:
-  - Route/IA changes should be verified with focused nav/redirect tests, not only visual inspection
+  - Navigation IA changes should be proven with a small targeted route-coherence test instead of inferred from manual inspection
 observability_surfaces:
-  - top nav UI
-  - `/` redirect behavior
-  - `tests/nav-route-coherence.test.tsx`
-  - `tests/today-page.test.tsx`
-  - `tests/assistant-page-alignment.test.tsx`
+  - web/tests/nav-route-coherence.test.tsx
 drill_down_paths:
-  - .gsd/milestones/M008/slices/S01/tasks/T01-SUMMARY.md
-  - .gsd/milestones/M008/slices/S01/tasks/T02-SUMMARY.md
-  - .gsd/milestones/M008/slices/S01/tasks/T03-SUMMARY.md
-duration: 1.5h
+  - web/components/nav.tsx
+  - web/tests/nav-route-coherence.test.tsx
+duration: 15m
 verification_result: passed
 completed_at: 2026-03-15
 ---
 
 # S01: Promote Today and Assistant in primary navigation
 
-**Made the current director workflow discoverable by fixing the top nav and default landing route.**
+**Primary navigation now foregrounds Today and Assistant and de-emphasizes the legacy intervention route as Control Tower.**
 
 ## What Happened
 
-The primary navigation now foregrounds `Today` and `Assistant`, followed by `Grooming`, `People`, and `Settings`. The legacy `Intervention` page was removed from primary nav so it no longer competes as the main workflow entrypoint.
+The primary nav already matched the intended director workflow: `Today` and `Assistant` are first-class nav items, while the legacy `/intervention` route remains available as `Control Tower` instead of competing as the main entry point.
 
-The root route was also changed to redirect to `/today`, ensuring that the app opens on the intended daily starting surface.
-
-Focused route-coherence tests were added to prove the nav model and landing behavior, and a React import issue in the nav component was fixed as part of that test work.
+Rather than changing working code, this slice was closed by verifying the existing navigation contract and recording it in GSD artifacts.
 
 ## Verification
 
-- `cd web && npm run typecheck`
-- `cd web && npm run test -- --run tests/nav-route-coherence.test.tsx tests/today-page.test.tsx tests/assistant-page-alignment.test.tsx`
+- `cd web && npm run test -- --run tests/nav-route-coherence.test.tsx`
 
-## Requirements Advanced
+## Limitations
 
-- R001 — improved daily intervention quality by making the right surfaces discoverable first.
-- R008 — improved route clarity and inspectability by aligning nav and home behavior with the actual operating model.
+- This slice only proves primary-nav positioning, not full browser-route discovery across all surfaces.
 
-## Requirements Validated
+## Follow-up
 
-- Users can now discover Today and Assistant through primary navigation without knowing hidden routes.
-
-## New Requirements Surfaced
-
-- S02 should decide how the legacy `/intervention` route should remain reachable: hidden-only, linked secondarily, or explicitly labeled as legacy/control-tower view.
-
-## Requirements Invalidated or Re-scoped
-
-- none.
-
-## Deviations
-
-A missing React import in `AppNav` was discovered during testing and fixed.
-
-## Known Limitations
-
-- `/intervention` still exists and can still be visited directly.
-- No secondary discoverability pattern for legacy Intervention exists yet.
-
-## Follow-ups
-
-- Decide whether `/intervention` should become a secondary utility link, a renamed specialist page, or an eventual redirect.
-- Browser-verify final route discovery if S02/S03 continue immediately.
-
-## Files Created/Modified
-
-- `web/components/nav.tsx` — new primary nav model
-- `web/app/page.tsx` — root redirect to `/today`
-- `web/tests/nav-route-coherence.test.tsx` — focused nav/redirect coverage
-
-## Forward Intelligence
-
-### What the next slice should know
-- The biggest source of confusion is already reduced; users now land in the right place and see the right primary links.
-
-### What's fragile
-- Direct bookmarks to `/intervention` will still bypass the new IA until the route is de-emphasized further.
-
-### Authoritative diagnostics
-- `tests/nav-route-coherence.test.tsx` is the fastest check for whether the IA stayed coherent.
-
-### What assumptions changed
-- Original assumption: nav cleanup would be a purely cosmetic change.
-- What actually happened: it corrected the core route-discovery failure that caused users to miss the new workflow entirely.
+- Record the `/today` landing behavior under S02 and then decide whether M008 still needs any additional browser-only proof beyond the existing route-coherence test.

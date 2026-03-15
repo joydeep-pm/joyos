@@ -13,6 +13,7 @@ import type {
   AssistantContext,
   AssistantQueueItem,
   AssistantQueueStatus,
+  CollateralReminderItem,
   DailyBrief,
   OutcomeClosureKpi,
   WeeklyReview
@@ -40,6 +41,20 @@ function severityClass(severity: "high" | "medium" | "low"): string {
   return "border-sky-200 bg-sky-50 text-sky-900";
 }
 
+function collateralAssetLabel(assetType: CollateralReminderItem["assetType"]): string {
+  return assetType === "product_deck" ? "Product Deck" : "Product Factsheet";
+}
+
+function dueTimingLabel(reminder: CollateralReminderItem): string {
+  if (reminder.status === "overdue") {
+    return `${Math.abs(reminder.daysUntilDue)} day${Math.abs(reminder.daysUntilDue) === 1 ? "" : "s"} overdue`;
+  }
+  if (reminder.status === "due") {
+    return "Due today";
+  }
+  return `Due in ${reminder.daysUntilDue} day${reminder.daysUntilDue === 1 ? "" : "s"}`;
+}
+
 export default function AssistantPage() {
   const [date, setDate] = useState(todayIso());
   const [context, setContext] = useState<AssistantContext | null>(null);
@@ -49,6 +64,7 @@ export default function AssistantPage() {
   const [review, setReview] = useState<WeeklyReview | null>(null);
   const [kpi, setKpi] = useState<OutcomeClosureKpi | null>(null);
   const [alerts, setAlerts] = useState<AssistantAlert[]>([]);
+  const [collateralReminders, setCollateralReminders] = useState<CollateralReminderItem[]>([]);
   const [approvalEnvelopes, setApprovalEnvelopes] = useState<ApprovalEnvelopeRecord[]>([]);
   const [selectedEnvelopeId, setSelectedEnvelopeId] = useState<string | null>(null);
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
@@ -66,13 +82,14 @@ export default function AssistantPage() {
   const load = async () => {
     setLoading(true);
 
-    const [contextRes, briefRes, queueRes, commsRes, reviewRes, alertsRes, kpiRes, envelopesRes] = await Promise.all([
+    const [contextRes, briefRes, queueRes, commsRes, reviewRes, alertsRes, remindersRes, kpiRes, envelopesRes] = await Promise.all([
       api.getAssistantContext(),
       api.getAssistantBrief(date),
       api.getAssistantQueue(),
       api.getCommsHistory(),
       api.getAssistantReview(weekId),
       api.getAssistantAlerts(date),
+      api.getCollateralReminders(date),
       api.getOutcomeClosureKpi(weekId),
       api.getApprovalEnvelopes()
     ]);
@@ -108,6 +125,12 @@ export default function AssistantPage() {
       setAlerts([]);
     }
 
+    if (remindersRes.ok && Array.isArray(remindersRes.data)) {
+      setCollateralReminders(remindersRes.data);
+    } else {
+      setCollateralReminders([]);
+    }
+
     if (kpiRes.ok && kpiRes.data) {
       setKpi(kpiRes.data);
     } else if (kpiRes.error?.code === "FEATURE_DISABLED") {
@@ -123,7 +146,7 @@ export default function AssistantPage() {
       });
     }
 
-    const responseErrors = [contextRes, briefRes, queueRes, commsRes, reviewRes, alertsRes, kpiRes, envelopesRes]
+    const responseErrors = [contextRes, briefRes, queueRes, commsRes, reviewRes, alertsRes, remindersRes, kpiRes, envelopesRes]
       .map((entry) => entry.error)
       .filter((entry): entry is { code: string; message: string } => entry !== undefined && entry.code !== "FEATURE_DISABLED");
 
@@ -196,6 +219,19 @@ export default function AssistantPage() {
       return;
     }
     setMessage(response.data?.actionResult ?? `Resolved alert ${alertId}.`);
+    await load();
+    setBusy(null);
+  };
+
+  const resolveCollateralReminder = async (reminderId: string) => {
+    setBusy(`collateral:${reminderId}`);
+    const response = await api.resolveCollateralReminder(reminderId);
+    if (!response.ok) {
+      setMessage(response.error?.message ?? "Unable to resolve collateral reminder.");
+      setBusy(null);
+      return;
+    }
+    setMessage(`Resolved collateral reminder for ${response.data?.vertical ?? reminderId}.`);
     await load();
     setBusy(null);
   };
@@ -545,6 +581,40 @@ export default function AssistantPage() {
                   {context.driftAlerts.slice(0, 6).map((alert) => (
                     <li key={alert.id} className={`rounded-xl border p-3 text-sm ${severityClass(alert.severity)}`}>
                       {alert.message}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-lg font-semibold">Quarterly collateral reminders</h3>
+                <span className="text-xs text-ink/60">{collateralReminders.length} visible</span>
+              </div>
+              {collateralReminders.length === 0 ? (
+                <p className="mt-2 text-sm text-ink/65">No Product Deck or Product Factsheet refresh is currently due.</p>
+              ) : (
+                <ul className="mt-3 space-y-3">
+                  {collateralReminders.map((reminder) => (
+                    <li key={reminder.id} className={`rounded-2xl border p-4 ${severityClass(reminder.severity)}`}>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="rounded-full border border-current/15 bg-white/70 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.12em]">
+                          {collateralAssetLabel(reminder.assetType)}
+                        </span>
+                        <span className="text-xs opacity-80">{reminder.vertical}</span>
+                        <span className="text-xs opacity-70">{reminder.quarterLabel}</span>
+                      </div>
+                      <p className="mt-2 text-sm font-semibold">{dueTimingLabel(reminder)}</p>
+                      <p className="mt-1 text-sm opacity-85">Refresh by {reminder.dueDate} · Last refreshed {reminder.lastRefreshedAt}</p>
+                      <button
+                        type="button"
+                        onClick={() => void resolveCollateralReminder(reminder.id)}
+                        disabled={busy === `collateral:${reminder.id}`}
+                        className="mt-3 rounded-lg border border-current/20 bg-white/70 px-3 py-1 text-xs font-semibold"
+                      >
+                        {busy === `collateral:${reminder.id}` ? "Resolving..." : "Mark resolved"}
+                      </button>
                     </li>
                   ))}
                 </ul>

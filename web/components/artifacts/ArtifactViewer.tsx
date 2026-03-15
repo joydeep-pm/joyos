@@ -25,6 +25,8 @@ const ARTIFACT_TYPE_LABELS: Record<ArtifactType, string> = {
   monthly_product_update: "Monthly Product Update (M2P Format)",
   grooming_checklist: "Grooming Checklist (M2P Format)",
   product_roadmap: "Product Roadmap (M2P Format)",
+  roadmap_update: "Roadmap Update",
+  roadmap_deck_outline: "Roadmap Deck Outline",
   bmad_prd: "PRD (BMAD Format)"
 };
 

@@ -15,6 +15,7 @@ vi.mock("@/lib/client-api", () => ({
     getCommsHistory: vi.fn(),
     getAssistantReview: vi.fn(),
     getAssistantAlerts: vi.fn(),
+    getCollateralReminders: vi.fn(),
     getOutcomeClosureKpi: vi.fn(),
     getApprovalEnvelopes: vi.fn(),
     commitAssistantPlan: vi.fn(),
@@ -90,6 +91,7 @@ describe("AssistantPage alignment", () => {
       }
     } as never);
     vi.mocked(api.getAssistantAlerts).mockResolvedValue({ ok: true, data: [] } as never);
+    vi.mocked(api.getCollateralReminders).mockResolvedValue({ ok: true, data: [] } as never);
     vi.mocked(api.getOutcomeClosureKpi).mockResolvedValue({
       ok: true,
       data: { target: 0.7, metTarget: false }
