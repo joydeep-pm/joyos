@@ -20,11 +20,12 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("navigation and route coherence", () => {
-  it("shows Today and Assistant in primary navigation and omits Intervention", () => {
+  it("shows Today and Assistant in primary navigation and exposes the legacy sync view as Control Tower", () => {
     render(<AppNav />);
 
     expect(screen.getByRole("link", { name: "Today" })).toHaveAttribute("href", "/today");
     expect(screen.getByRole("link", { name: "Assistant" })).toHaveAttribute("href", "/assistant");
+    expect(screen.getByRole("link", { name: "Control Tower" })).toHaveAttribute("href", "/intervention");
     expect(screen.queryByRole("link", { name: "Intervention" })).not.toBeInTheDocument();
   });
 
