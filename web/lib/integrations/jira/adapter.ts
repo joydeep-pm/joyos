@@ -113,19 +113,21 @@ export class JiraAdapter {
   /**
    * Fetch all issues from configured projects AND boards
    * Supports M2P dual-board workflow (CSo + LEN)
+   * When custom JQL is provided, it overrides project/board queries.
    * When epicKeys are provided (or configured), only issues under those epics are fetched.
    */
-  async fetchIssues(epicKeys?: string[]): Promise<NormalizedJiraIssue[]> {
+  async fetchIssues(epicKeys?: string[], customJql?: string): Promise<NormalizedJiraIssue[]> {
     if (!this.client.isReady()) {
       console.warn("Jira client not ready, returning empty results");
       return [];
     }
 
     const effectiveEpicKeys = epicKeys ?? this.config.epicKeys;
+    const effectiveJql = customJql?.trim() || this.config.syncJql;
     const allIssues: NormalizedJiraIssue[] = [];
 
-    // Fetch from projects (original behavior, with optional epic filter)
-    const projectIssues = await this.client.getAllProjectIssues(effectiveEpicKeys);
+    // Fetch from projects (original behavior, with optional epic filter or JQL override)
+    const projectIssues = await this.client.getAllProjectIssues(effectiveEpicKeys, effectiveJql);
     const normalizedProjectIssues = projectIssues.map((issue) =>
       normalizeJiraIssue(issue, this.baseUrl, {
         charterMapping: this.config.charterMapping
@@ -134,7 +136,7 @@ export class JiraAdapter {
     allIssues.push(...normalizedProjectIssues);
 
     // Fetch from boards (M2P extension)
-    if (this.config.boardIds && this.config.boardIds.length > 0) {
+    if (!effectiveJql && this.config.boardIds && this.config.boardIds.length > 0) {
       for (const boardId of this.config.boardIds) {
         const boardIssues = await this.client.getBoardIssues(boardId);
         const normalizedBoardIssues = boardIssues.map((issue) =>

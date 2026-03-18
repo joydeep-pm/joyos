@@ -184,8 +184,9 @@ function createFeatureRequest(matchResult: MatchResult): FeatureRequest {
 /**
  * Sync and ingest feature requests from all sources.
  * When epicKeys are provided, only issues under those epics are fetched from Jira.
+ * When custom JQL is provided, it overrides the default Jira sync query.
  */
-export async function ingestFeatureRequests(options?: { forceSync?: boolean; epicKeys?: string[] }): Promise<FeatureRequest[]> {
+export async function ingestFeatureRequests(options?: { forceSync?: boolean; epicKeys?: string[]; jql?: string }): Promise<FeatureRequest[]> {
   const featureRequests: FeatureRequest[] = [];
 
   // Fetch or use cached Jira issues
@@ -194,7 +195,7 @@ export async function ingestFeatureRequests(options?: { forceSync?: boolean; epi
     const jiraConfig = getJiraConfig();
     if (jiraConfig) {
       const adapter = createJiraAdapter(jiraConfig);
-      jiraIssues = await adapter.fetchIssues(options.epicKeys);
+      jiraIssues = await adapter.fetchIssues(options?.epicKeys, options?.jql);
       await writeJiraCache(jiraIssues);
     }
   }

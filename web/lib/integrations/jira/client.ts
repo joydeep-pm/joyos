@@ -135,40 +135,47 @@ export class JiraClient {
 
   /**
    * Get issues for configured projects updated after a certain date.
+   * When custom JQL is provided, it overrides project/epic filtering.
    * When epicKeys are provided, only issues belonging to those epics are returned.
    */
-  async getRecentIssues(updatedAfter?: string, epicKeys?: string[]): Promise<JiraIssue[]> {
-    const projectKeys = this.config.projectKeys;
-    const projectFilter = `project in (${projectKeys.join(", ")})`;
-    const dateFilter = updatedAfter ? ` AND updated >= "${updatedAfter}"` : "";
-    const epicFilter = epicKeys && epicKeys.length > 0
-      ? ` AND parentEpic in (${epicKeys.join(", ")})`
-      : "";
-    const jql = `${projectFilter}${dateFilter}${epicFilter} ORDER BY updated DESC`;
+  async getRecentIssues(updatedAfter?: string, epicKeys?: string[], customJql?: string): Promise<JiraIssue[]> {
+    const jql = customJql?.trim()
+      ? customJql.trim()
+      : (() => {
+          const projectKeys = this.config.projectKeys;
+          const projectFilter = `project in (${projectKeys.join(", ")})`;
+          const dateFilter = updatedAfter ? ` AND updated >= "${updatedAfter}"` : "";
+          const epicFilter = epicKeys && epicKeys.length > 0
+            ? ` AND parentEpic in (${epicKeys.join(", ")})`
+            : "";
+          return `${projectFilter}${dateFilter}${epicFilter} ORDER BY updated DESC`;
+        })();
 
     const result = await this.searchIssues(jql, { maxResults: 500 });
     return result?.issues ?? [];
   }
 
   /**
-   * Get all issues for configured projects, optionally filtered by epics
+   * Get all issues for configured projects, optionally filtered by epics or custom JQL
    */
-  async getAllProjectIssues(epicKeys?: string[]): Promise<JiraIssue[]> {
-    return this.getRecentIssues(undefined, epicKeys);
+  async getAllProjectIssues(epicKeys?: string[], customJql?: string): Promise<JiraIssue[]> {
+    return this.getRecentIssues(undefined, epicKeys, customJql);
   }
 
   /**
    * Get issues for a specific board (M2P CSo/LEN workflow)
+   * When custom JQL is provided, it overrides the board query.
    */
-  async getBoardIssues(boardId: number, options?: { maxResults?: number; startAt?: number }): Promise<JiraIssue[]> {
+  async getBoardIssues(boardId: number, options?: { maxResults?: number; startAt?: number; customJql?: string }): Promise<JiraIssue[]> {
     if (!this.client) {
       console.error("Jira client not initialized");
       return [];
     }
 
     try {
-      // Use board-specific JQL query
-      const jql = `board = ${boardId} ORDER BY updated DESC`;
+      const jql = options?.customJql?.trim()
+        ? options.customJql.trim()
+        : `board = ${boardId} ORDER BY updated DESC`;
       const result = await this.searchIssues(jql, options);
       return result?.issues ?? [];
     } catch (error) {

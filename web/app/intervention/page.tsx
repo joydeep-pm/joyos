@@ -11,17 +11,45 @@ import { PmOwnerGroup } from "@/components/intervention/PmOwnerGroup";
 import { FeatureRequestDetail } from "@/components/intervention/FeatureRequestDetail";
 import type { InterventionBrief, FeatureRequestWithIntervention } from "@/lib/control-tower/intervention-engine";
 
+const DEFAULT_LEN_SYNC_JQL = `project = LEN
+AND status NOT IN ("Merged to Codebase", Done, Closed, Resolved, Completed)
+AND issuetype != Bug
+AND issuetype not in subTaskIssueTypes()
+ORDER BY updated DESC`;
+
 export default function InterventionPage() {
   const [brief, setBrief] = useState<InterventionBrief | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedFeatureRequest, setSelectedFeatureRequest] = useState<FeatureRequestWithIntervention | null>(null);
   const [epicFilter, setEpicFilter] = useState("");
+  const [jqlFilter, setJqlFilter] = useState(DEFAULT_LEN_SYNC_JQL);
   const [showEpicFilter, setShowEpicFilter] = useState(false);
 
   useEffect(() => {
+    const savedEpicFilter = typeof window !== "undefined" ? window.localStorage.getItem("intervention-sync-epic-filter") : null;
+    const savedJqlFilter = typeof window !== "undefined" ? window.localStorage.getItem("intervention-sync-jql-filter") : null;
+
+    if (savedEpicFilter) {
+      setEpicFilter(savedEpicFilter);
+    }
+
+    if (savedJqlFilter && savedJqlFilter.trim()) {
+      setJqlFilter(savedJqlFilter);
+    }
+
     fetchBrief();
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem("intervention-sync-epic-filter", epicFilter);
+  }, [epicFilter]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem("intervention-sync-jql-filter", jqlFilter);
+  }, [jqlFilter]);
 
   async function fetchBrief() {
     try {
@@ -87,10 +115,18 @@ export default function InterventionPage() {
         .map((k) => k.trim())
         .filter(Boolean);
 
+      const payload: { epicKeys?: string[]; jql?: string } = {};
+      if (epicKeys.length > 0) {
+        payload.epicKeys = epicKeys;
+      }
+      if (jqlFilter.trim()) {
+        payload.jql = jqlFilter.trim();
+      }
+
       const response = await fetch("/api/control-tower/feature-requests/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(epicKeys.length > 0 ? { epicKeys } : {})
+        body: JSON.stringify(payload)
       });
       const data = await response.json();
 
@@ -167,21 +203,25 @@ export default function InterventionPage() {
               <button
                 onClick={() => setShowEpicFilter(!showEpicFilter)}
                 className={`px-3 py-2 border rounded-lg text-sm transition-colors flex items-center gap-1.5 ${
-                  epicFilter
+                  epicFilter || jqlFilter
                     ? "border-blue-300 bg-blue-50 text-blue-700"
                     : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
                 }`}
-                title="Filter sync by epic keys"
+                title="Filter sync by epic keys or custom JQL"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
-                Epics
-                {epicFilter && <span className="w-2 h-2 rounded-full bg-blue-500" />}
+                Filters
+                <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700 border border-blue-200">
+                  advanced
+                </span>
+                {(epicFilter || jqlFilter) && <span className="w-2 h-2 rounded-full bg-blue-500" />}
               </button>
               <button
                 onClick={handleSync}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                title="Sync using the saved/default LEN filter"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -191,17 +231,17 @@ export default function InterventionPage() {
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
-                Sync Now
+                Sync LEN
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Epic Filter Panel */}
+      {/* Sync Filter Panel */}
       {showEpicFilter && (
         <div className="bg-blue-50 border-b border-blue-200">
-          <div className="max-w-7xl mx-auto px-8 py-3">
+          <div className="max-w-7xl mx-auto px-8 py-3 space-y-3">
             <div className="flex items-center gap-3">
               <label className="text-sm font-medium text-blue-800 whitespace-nowrap">
                 Filter by Epics:
@@ -210,7 +250,7 @@ export default function InterventionPage() {
                 type="text"
                 value={epicFilter}
                 onChange={(e) => setEpicFilter(e.target.value)}
-                placeholder="e.g. CSO-123, LEN-456"
+                placeholder="e.g. LEN-69, LEN-76"
                 className="flex-1 px-3 py-1.5 text-sm border border-blue-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {epicFilter && (
@@ -222,8 +262,46 @@ export default function InterventionPage() {
                 </button>
               )}
               <span className="text-xs text-blue-600">
-                Comma-separated epic keys. Leave empty to sync all.
+                Comma-separated epic keys. Optional.
               </span>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <label className="text-sm font-medium text-blue-800 whitespace-nowrap pt-2">
+                Custom JQL:
+              </label>
+              <textarea
+                value={jqlFilter}
+                onChange={(e) => setJqlFilter(e.target.value)}
+                placeholder={'e.g. project = LEN AND status NOT IN ("Merged to Codebase", Done, Closed, Resolved, Completed) AND issuetype != Bug AND issuetype not in subTaskIssueTypes()'}
+                rows={3}
+                className="flex-1 px-3 py-2 text-sm border border-blue-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y"
+              />
+              {jqlFilter && (
+                <button
+                  onClick={() => setJqlFilter("")}
+                  className="text-sm text-blue-600 hover:text-blue-800 pt-2"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
+            <div className="rounded-md border border-blue-200 bg-white/70 p-3 text-xs text-blue-700 space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-medium text-blue-900">Default LEN sync query</p>
+                <button
+                  type="button"
+                  onClick={() => setJqlFilter(DEFAULT_LEN_SYNC_JQL)}
+                  className="rounded border border-blue-300 bg-white px-2 py-1 text-[11px] font-medium text-blue-700 hover:bg-blue-50"
+                >
+                  Use default
+                </button>
+              </div>
+              <pre className="whitespace-pre-wrap break-words rounded bg-slate-950/90 p-3 text-[11px] leading-relaxed text-slate-100 overflow-x-auto">{DEFAULT_LEN_SYNC_JQL}</pre>
+              <p>
+                This query is loaded by default and used automatically when you click Sync Now. Custom JQL overrides the default Jira sync query. If both are provided, JQL takes precedence over board/project sync scope.
+              </p>
             </div>
           </div>
         </div>
