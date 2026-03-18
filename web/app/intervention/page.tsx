@@ -15,6 +15,36 @@ const DEFAULT_LEN_SYNC_JQL = `project = LEN
 AND status NOT IN ("Merged to Codebase", Done, Closed, Resolved, Completed)
 AND issuetype != Bug
 AND issuetype not in subTaskIssueTypes()
+AND "Epic Link" in (
+  LEN-64,
+  LEN-69,
+  LEN-76,
+  LEN-85,
+  LEN-86,
+  LEN-87,
+  LEN-91,
+  LEN-110,
+  LEN-113,
+  LEN-115,
+  LEN-146,
+  LEN-150,
+  LEN-474,
+  LEN-478,
+  LEN-1027,
+  LEN-1523,
+  LEN-1525,
+  LEN-1529,
+  LEN-1723,
+  LEN-1724,
+  LEN-1725,
+  LEN-1727,
+  LEN-2115,
+  LEN-2395,
+  LEN-2903,
+  LEN-3733,
+  LEN-3794,
+  LEN-3806
+)
 ORDER BY updated DESC`;
 
 export default function InterventionPage() {
