@@ -3,8 +3,8 @@
 **Active Milestone:** None
 **Active Slice:** None
 **Active Task:** None
-**Phase:** Milestones M008 and M009 complete
-**Next Action:** Choose the next milestone to plan based on current product priority.
+**Phase:** M014 complete
+**Next Action:** Use `Knowledge/Strategy/FY27/Status-Output-Index.md` as the main entrypoint for shareable outputs and `examples/workflows/monthly-strategy-review.md` for month-level strategy refresh.
 
 ## Recent Decisions
 

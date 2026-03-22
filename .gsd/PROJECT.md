@@ -30,6 +30,11 @@ See `.gsd/REQUIREMENTS.md` for the explicit capability contract, requirement sta
 - [x] M006: Meeting intelligence and follow-up orchestration — Turn meeting notes and transcripts into durable follow-ups, blockers, and operating-context updates.
 - [x] M008: Navigation and route coherence for the director operating model — Foreground Today and Assistant, de-emphasize legacy Intervention, and align route discovery with the new operating workflow.
 - [x] M009: Roadmap communications and collateral operations — Separate Product Update vs Roadmap Update, support roadmap decks for business/RFP use, and surface quarterly collateral refresh reminders.
+- [x] M010: Strategy knowledge system inside Personal OS — Convert FY27 strategy materials from browser-local artifacts into durable markdown knowledge and an operating brief inside Personal OS.
+- [x] M011: Strategy-to-task extraction for FY27 operating follow-through — Turn the FY27 strategy corpus into a concise set of Personal OS tasks for real follow-through.
+- [x] M012: Weekly strategy review workflow for Personal OS — Add a reusable weekly ritual that refreshes FY27 strategy, follow-through tasks, and next-week interventions.
+- [x] M013: Stakeholder output pack for shareable strategy and roadmap updates — Add reusable templates and a current shareable FY27 status note for business-facing communication.
+- [x] M014: Monthly strategy review workflow and status-output index — Add a monthly strategy cadence and a single entrypoint for current shareable outputs.
 
 ## What Changed in M001
 
