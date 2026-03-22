@@ -6,10 +6,12 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { PmOwnerGroup } from "@/components/intervention/PmOwnerGroup";
 import { FeatureRequestDetail } from "@/components/intervention/FeatureRequestDetail";
+import { StatusUpdateModal } from "@/components/intervention/StatusUpdateModal";
 import type { InterventionBrief, FeatureRequestWithIntervention } from "@/lib/control-tower/intervention-engine";
+import type { RealStatusEntry, RealStatusValue } from "@/lib/control-tower/real-status";
 
 const DEFAULT_LEN_SYNC_JQL = `project = LEN
 AND status NOT IN ("Merged to Codebase", Done, Closed, Resolved, Completed)
@@ -55,6 +57,25 @@ export default function InterventionPage() {
   const [epicFilter, setEpicFilter] = useState("");
   const [jqlFilter, setJqlFilter] = useState(DEFAULT_LEN_SYNC_JQL);
   const [showEpicFilter, setShowEpicFilter] = useState(false);
+  const [activeOnly, setActiveOnly] = useState(true); // noise filter
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [realStatuses, setRealStatuses] = useState<Record<string, RealStatusEntry>>({});
+
+  // Load real status overrides from server
+  const loadRealStatuses = useCallback(async () => {
+    try {
+      const res = await fetch("/api/control-tower/real-status");
+      const data = await res.json();
+      if (data.success) setRealStatuses(data.statuses ?? {});
+    } catch { /* non-fatal */ }
+  }, []);
+
+  function handleRealStatusSaved(id: string, status: RealStatusValue, note: string) {
+    setRealStatuses((prev) => ({
+      ...prev,
+      [id]: { ...(prev[id] ?? {}), featureRequestId: id, status, note, reviewedToday: true, reviewedTodayAt: new Date().toISOString(), jiraKeys: [], setAt: new Date().toISOString(), setBy: "director" },
+    }));
+  }
 
   useEffect(() => {
     const savedEpicFilter = typeof window !== "undefined" ? window.localStorage.getItem("intervention-sync-epic-filter") : null;
@@ -69,7 +90,8 @@ export default function InterventionPage() {
     }
 
     fetchBrief();
-  }, []);
+    loadRealStatuses();
+  }, [loadRealStatuses]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -212,6 +234,28 @@ export default function InterventionPage() {
     return null;
   }
 
+  // Daily review progress
+  const allFRs = brief.pmGroups.flatMap((g) => g.featureRequests);
+  const reviewedCount = allFRs.filter((fr) => realStatuses[fr.id]?.reviewedToday).length;
+  const totalCount = allFRs.length;
+
+  // Active-only filter: hide items with no real status and Jira stage = done/backlog candidates
+  const filteredGroups = activeOnly
+    ? {
+        ...brief,
+        pmGroups: brief.pmGroups
+          .map((g) => ({
+            ...g,
+            featureRequests: g.featureRequests.filter((fr) => {
+              // Keep if has real status (director has touched it) OR stage is not done
+              const rs = realStatuses[fr.id];
+              if (rs?.status === "deprioritized") return false;
+              return true;
+            }),
+          }))
+          .filter((g) => g.featureRequests.length > 0),
+      }
+    : brief;
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -229,7 +273,43 @@ export default function InterventionPage() {
                 })}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              {/* Daily review progress */}
+              <div className="flex items-center gap-1.5 text-sm">
+                <span className={`font-semibold ${reviewedCount === totalCount && totalCount > 0 ? "text-green-600" : "text-gray-700"}`}>
+                  {reviewedCount}/{totalCount}
+                </span>
+                <span className="text-gray-400">reviewed</span>
+                {reviewedCount === totalCount && totalCount > 0 && (
+                  <span className="text-green-500 text-xs">✓ done</span>
+                )}
+              </div>
+
+              {/* Noise filter toggle */}
+              <button
+                onClick={() => setActiveOnly(!activeOnly)}
+                className={`px-3 py-2 border rounded-lg text-sm transition-colors flex items-center gap-1.5 ${
+                  activeOnly
+                    ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                    : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
+                }`}
+                title={activeOnly ? "Showing active items only — click to show all" : "Showing all items — click to hide deprioritized"}
+              >
+                {activeOnly ? "Active only" : "All items"}
+              </button>
+
+              {/* Share status update */}
+              <button
+                onClick={() => setShowStatusModal(true)}
+                className="px-3 py-2 border border-emerald-300 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors flex items-center gap-1.5"
+                title="Generate a Teams-ready status update for any vertical"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                Share Status
+              </button>
+
               <button
                 onClick={() => setShowEpicFilter(!showEpicFilter)}
                 className={`px-3 py-2 border rounded-lg text-sm transition-colors flex items-center gap-1.5 ${
@@ -363,22 +443,31 @@ export default function InterventionPage() {
         </div>
 
         {/* PM Groups */}
-        {brief.pmGroups.length === 0 ? (
+        {filteredGroups.pmGroups.length === 0 ? (
           <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
-            <p className="text-gray-500">No feature requests found. Click "Sync Now" to fetch data from Jira and Confluence.</p>
+            <p className="text-gray-500">
+              {activeOnly
+                ? "No active items — all have been deprioritized or none remain. Toggle \"Active only\" to see everything."
+                : "No feature requests found. Click \"Sync LEN\" to fetch data from Jira."}
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
-            {brief.pmGroups.map((group) => (
+            {filteredGroups.pmGroups.map((group) => (
               <PmOwnerGroup
                 key={group.pmOwner}
                 group={group}
                 onOpenDetail={handleOpenDetail}
+                realStatuses={realStatuses}
+                onRealStatusSaved={handleRealStatusSaved}
               />
             ))}
           </div>
         )}
       </div>
+
+      {/* Status Update Modal */}
+      <StatusUpdateModal open={showStatusModal} onClose={() => setShowStatusModal(false)} />
 
       {/* Feature Request Detail Modal */}
       {selectedFeatureRequest && (

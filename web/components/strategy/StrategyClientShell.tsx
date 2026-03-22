@@ -3,28 +3,30 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 
-export type StrategyTabId = "overview" | "roadmap" | "outputs";
+export type StrategyTabId = "overview" | "strategy" | "roadmap" | "aop" | "risks" | "deepdives";
 
 interface StrategyClientShellProps {
   overview: React.ReactNode;
+  strategy: React.ReactNode;
   roadmap: React.ReactNode;
-  outputs: React.ReactNode;
+  aop: React.ReactNode;
+  risks: React.ReactNode;
+  deepdives: React.ReactNode;
 }
 
 const tabs: Array<{ id: StrategyTabId; label: string; subtitle: string }> = [
-  { id: "overview", label: "Overview", subtitle: "Whole picture" },
-  { id: "roadmap", label: "Roadmap", subtitle: "Protection and risk" },
-  { id: "outputs", label: "Outputs", subtitle: "Shareable updates" }
+  { id: "overview",  label: "Overview",         subtitle: "KPIs + status query" },
+  { id: "strategy",  label: "Product Strategy",  subtitle: "Pillars, parity, moats" },
+  { id: "roadmap",   label: "Roadmap",           subtitle: "EPIC kanban board" },
+  { id: "aop",       label: "AOP Planning",      subtitle: "Full EPIC table" },
+  { id: "risks",     label: "Risks & Hiring",    subtitle: "Register + decisions" },
+  { id: "deepdives", label: "Deep-Dives",        subtitle: "Verticals + horizontals" },
 ];
 
-export function StrategyClientShell({ overview, roadmap, outputs }: StrategyClientShellProps) {
+export function StrategyClientShell({ overview, strategy, roadmap, aop, risks, deepdives }: StrategyClientShellProps) {
   const [activeTab, setActiveTab] = useState<StrategyTabId>("overview");
 
-  const panels: Record<StrategyTabId, React.ReactNode> = {
-    overview,
-    roadmap,
-    outputs
-  };
+  const panels: Record<StrategyTabId, React.ReactNode> = { overview, strategy, roadmap, aop, risks, deepdives };
 
   return (
     <div className="space-y-6">
@@ -75,3 +77,4 @@ export function StrategyClientShell({ overview, roadmap, outputs }: StrategyClie
     </div>
   );
 }
+

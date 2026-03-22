@@ -2,7 +2,7 @@
   "version": 1,
   "drafts": [
     {
-      "id": "comms-c9384e06-c8c1-4f05-b2a7-b7f047bfd17e",
+      "id": "comms-b4af3898-c951-4cd0-9eae-bf1e2258aca6",
       "type": "blocked_followup",
       "status": "draft",
       "destination": "alice@example.com",
@@ -15,11 +15,11 @@
   ],
   "audit": [
     {
-      "draftId": "comms-c9384e06-c8c1-4f05-b2a7-b7f047bfd17e",
+      "draftId": "comms-b4af3898-c951-4cd0-9eae-bf1e2258aca6",
       "event": "draft_created",
       "actor": "assistant",
       "details": "blocked_followup created for alice@example.com",
-      "id": "audit_36c58fc9-f887-4b79-b5c6-b05815de1f47",
+      "id": "audit_29b4fc7d-83f5-4a5b-8ea1-61077e3c1b38",
       "timestamp": "2026-03-11T10:00:00.000Z"
     }
   ]

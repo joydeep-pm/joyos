@@ -7,13 +7,16 @@
 import React, { useState } from "react";
 import { FeatureRequestCard } from "./FeatureRequestCard";
 import type { PmOwnerGroup } from "@/lib/control-tower/intervention-engine";
+import type { RealStatusEntry, RealStatusValue } from "@/lib/control-tower/real-status-types";
 
 interface PmOwnerGroupProps {
   group: PmOwnerGroup;
   onOpenDetail?: (id: string) => void;
+  realStatuses?: Record<string, RealStatusEntry>;
+  onRealStatusSaved?: (id: string, status: RealStatusValue, note: string) => void;
 }
 
-export function PmOwnerGroup({ group, onOpenDetail }: PmOwnerGroupProps) {
+export function PmOwnerGroup({ group, onOpenDetail, realStatuses = {}, onRealStatusSaved }: PmOwnerGroupProps) {
   const [isExpanded, setIsExpanded] = useState(group.totalRequiringIntervention > 0);
 
   return (
@@ -63,7 +66,13 @@ export function PmOwnerGroup({ group, onOpenDetail }: PmOwnerGroupProps) {
       {isExpanded && (
         <div className="px-6 pb-4 space-y-3">
           {group.featureRequests.map((fr) => (
-            <FeatureRequestCard key={fr.id} featureRequest={fr} onOpenDetail={onOpenDetail} />
+            <FeatureRequestCard
+              key={fr.id}
+              featureRequest={fr}
+              onOpenDetail={onOpenDetail}
+              realStatus={realStatuses[fr.id]}
+              onRealStatusSaved={onRealStatusSaved}
+            />
           ))}
         </div>
       )}

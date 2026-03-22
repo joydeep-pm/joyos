@@ -1,14 +1,14 @@
 [
   {
-    "id": "f45b1e6a",
-    "label": "personal-os-web-3004",
-    "command": "cd '/Users/joy/Projects/joy-portfolio/Personal OS/personal-os/web' && npm run dev -- --port 3004",
+    "id": "2d0bee4e",
+    "label": "strategy-ui-dev",
+    "command": "cd web && npm run dev",
     "cwd": "/Users/joy/Projects/joy-portfolio/Personal OS/personal-os",
-    "startedAt": 1773565769727,
+    "startedAt": 1774164762662,
     "processType": "server",
-    "group": "personal-os-m008",
+    "group": "strategy-ui",
     "readyPattern": null,
-    "readyPort": 3004,
-    "pid": 98870
+    "readyPort": 3000,
+    "pid": 1785
   }
 ]
