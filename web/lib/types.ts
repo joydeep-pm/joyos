@@ -103,6 +103,46 @@ export interface GoalsResponse {
   };
 }
 
+export interface StrategyDocumentSummary {
+  slug: string;
+  title: string;
+  path: string;
+  body: string;
+  updatedAt?: string;
+}
+
+export interface StrategyWorkspaceResponse {
+  currentShareableStatus: StrategyDocumentSummary | null;
+  businessStatusUpdates: StrategyDocumentSummary[];
+  roadmapUpdates: StrategyDocumentSummary[];
+  executiveSnapshots: StrategyDocumentSummary[];
+  boardSummaries: StrategyDocumentSummary[];
+  keyStrategyNotes: StrategyDocumentSummary[];
+  decisionSupport: StrategyDocumentSummary[];
+  templates: StrategyDocumentSummary[];
+  indexes: StrategyDocumentSummary[];
+  metrics: Array<{ label: string; value: string; note: string }>;
+  protectedPriorities: string[];
+  watchouts: string[];
+  riskThemes: string[];
+  dependencyHighlights: string[];
+  roadmapQuarters: Array<{ quarter: string; theme: string; objective: string }>;
+  parityHighlights: Array<{ name: string; parity: string; note: string }>;
+  verticalHighlights: string[];
+}
+
+export type StrategyRoadmapStatus = "not_started" | "in_progress" | "at_risk" | "blocked" | "done";
+
+export interface StrategyRoadmapItem {
+  id: string;
+  quarter: "Q1" | "Q2" | "Q3" | "Q4";
+  title: string;
+  category: string;
+  type: "parity" | "compliance" | "market_entry" | "stability" | "ecosystem";
+  status: StrategyRoadmapStatus;
+  reason: string;
+}
+
 export interface ModuleActionParam {
   name: string;
   type: "string" | "number" | "boolean" | "array";

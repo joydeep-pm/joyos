@@ -21,7 +21,10 @@ import type {
   WeeklyReview,
   ApprovalEnvelopeRecord,
   ApprovalEnvelopeTransitionPayload,
-  CollateralReminderItem
+  CollateralReminderItem,
+  StrategyWorkspaceResponse,
+  StrategyRoadmapItem,
+  StrategyRoadmapStatus
 } from "@/lib/types";
 
 interface ApiResponse<T> {
@@ -144,6 +147,12 @@ export const api = {
     request<ApprovalEnvelopeRecord>(`/api/assistant/approval-envelopes/${encodeURIComponent(id)}`, {
       method: "POST",
       body: JSON.stringify(payload)
+    }),
+  getStrategyWorkspace: () => request<StrategyWorkspaceResponse>("/api/strategy"),
+  updateRoadmapStatus: (id: string, status: StrategyRoadmapStatus) =>
+    request<StrategyRoadmapItem[]>(`/api/strategy/roadmap/${encodeURIComponent(id)}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status })
     }),
   chatCopilot: (message: string) =>
     request<CopilotReply>("/api/copilot/chat", {

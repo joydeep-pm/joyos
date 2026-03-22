@@ -8,6 +8,7 @@ import clsx from "clsx";
 const links = [
   { href: "/today", label: "Today" },
   { href: "/assistant", label: "Assistant" },
+  { href: "/strategy", label: "Strategy" },
   { href: "/intervention", label: "Control Tower" },
   { href: "/grooming", label: "Grooming" },
   { href: "/people", label: "People" },
@@ -25,7 +26,7 @@ export function AppNav() {
           return (
             <li key={link.href}>
               <Link
-                href={link.href}
+                href={link.href as never}
                 className={clsx(
                   "inline-flex rounded-xl px-4 py-2 text-sm font-semibold tracking-tight transition",
                   active

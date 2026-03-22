@@ -1,10 +1,10 @@
 # GSD State
 
-**Active Milestone:** None
-**Active Slice:** None
-**Active Task:** None
-**Phase:** M014 complete
-**Next Action:** Use `Knowledge/Strategy/FY27/Status-Output-Index.md` as the main entrypoint for shareable outputs and `examples/workflows/monthly-strategy-review.md` for month-level strategy refresh.
+**Active Milestone:** M015
+**Active Slice:** S01
+**Active Task:** Planning
+**Phase:** M015 planned and ready to execute
+**Next Action:** Build the structured strategy command-center data model and wire roadmap/deep-dive/AOP/risk sections into `/strategy`.
 
 ## Recent Decisions
 

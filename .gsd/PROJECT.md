@@ -35,6 +35,7 @@ See `.gsd/REQUIREMENTS.md` for the explicit capability contract, requirement sta
 - [x] M012: Weekly strategy review workflow for Personal OS — Add a reusable weekly ritual that refreshes FY27 strategy, follow-through tasks, and next-week interventions.
 - [x] M013: Stakeholder output pack for shareable strategy and roadmap updates — Add reusable templates and a current shareable FY27 status note for business-facing communication.
 - [x] M014: Monthly strategy review workflow and status-output index — Add a monthly strategy cadence and a single entrypoint for current shareable outputs.
+- [ ] M015: Real Strategy Command Center in the frontend — Rebuild roadmap status, product deep-dives, AOP, and risks/hiring into `/strategy` so the UI becomes a real strategy cockpit.
 
 ## What Changed in M001
 
