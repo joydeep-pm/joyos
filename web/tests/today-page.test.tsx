@@ -8,6 +8,7 @@ vi.mock("@/lib/client-api", () => ({
     getTasks: vi.fn(),
     getSystemStatus: vi.fn(),
     getGoals: vi.fn(),
+    getAssistantBrief: vi.fn(),
     capture: vi.fn()
   }
 }));
@@ -75,6 +76,46 @@ describe("TodayPage", () => {
           vision: "Run a stronger Director-of-Products operating rhythm",
           topPriorities: "Documentation, Stability, New Business"
         }
+      }
+    } as never);
+
+    vi.mocked(api.getAssistantBrief).mockResolvedValue({
+      ok: true,
+      data: {
+        date: "2026-03-23",
+        generatedAt: "2026-03-23T08:00:00.000Z",
+        topOutcomes: [
+          {
+            id: "outcome-1",
+            taskId: "task-1.md",
+            title: "Resolve stale client escalation",
+            priority: "P0",
+            score: 98,
+            whyNow: "Client escalation needs follow-up.",
+            goalReference: "Documentation"
+          },
+          {
+            id: "outcome-2",
+            taskId: "task-2.md",
+            title: "Finalize leadership update",
+            priority: "P1",
+            score: 92,
+            whyNow: "Leadership update is approaching.",
+            goalReference: "Stability"
+          },
+          {
+            id: "outcome-3",
+            taskId: "task-3.md",
+            title: "Review grooming readiness gaps",
+            priority: "P1",
+            score: 89,
+            whyNow: "Grooming quality needs review.",
+            goalReference: "Documentation"
+          }
+        ],
+        predictedRisks: [],
+        middayCheckpoint: "Check progress at midday.",
+        eveningClosurePrompt: "Close the loop before end of day."
       }
     } as never);
   });
