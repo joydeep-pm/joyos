@@ -5,15 +5,15 @@
  */
 
 import { NextResponse } from "next/server";
-import { ingestFeatureRequests } from "@/lib/control-tower/feature-request-engine";
+import { getCachedFeatureRequests } from "@/lib/control-tower/cache";
 import { generateGroomingSummary } from "@/lib/control-tower/grooming-engine";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    // Ingest feature requests
-    const featureRequests = await ingestFeatureRequests();
+    // Use the persisted control-tower cache so grooming matches intervention and people views.
+    const featureRequests = await getCachedFeatureRequests();
 
     // Generate grooming summary with serialized readiness diagnostics
     const summary = generateGroomingSummary(featureRequests);
