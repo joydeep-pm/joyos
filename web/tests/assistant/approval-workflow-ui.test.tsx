@@ -170,6 +170,8 @@ const apiMock = vi.hoisted(() => ({
   getCommsHistory: vi.fn(),
   getAssistantReview: vi.fn(),
   getAssistantAlerts: vi.fn(),
+  getCollateralReminders: vi.fn(),
+  resolveCollateralReminder: vi.fn(),
   getOutcomeClosureKpi: vi.fn(),
   commitAssistantPlan: vi.fn(),
   rebuildAssistantContext: vi.fn(),
@@ -196,6 +198,8 @@ describe("assistant approval workflow UI", () => {
     apiMock.getCommsHistory.mockResolvedValue({ ok: true, data: comms });
     apiMock.getAssistantReview.mockResolvedValue({ ok: true, data: review });
     apiMock.getAssistantAlerts.mockResolvedValue({ ok: true, data: [] });
+    apiMock.getCollateralReminders.mockResolvedValue({ ok: true, data: [] });
+    apiMock.resolveCollateralReminder.mockResolvedValue({ ok: true, data: undefined });
     apiMock.getOutcomeClosureKpi.mockResolvedValue({ ok: true, data: kpi });
     apiMock.getApprovalEnvelopes.mockResolvedValue({ ok: true, data: [proposedEnvelope] });
     apiMock.createApprovalEnvelope.mockResolvedValue({ ok: true, data: proposedEnvelope });

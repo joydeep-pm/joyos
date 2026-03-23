@@ -117,25 +117,45 @@ describe("intervention page review refresh", () => {
   });
 
   it("refreshes the selected detail view after saving a review", async () => {
-    fetchMock
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ success: true, brief: initialBrief })
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
+    let interventionFetchCount = 0;
+
+    fetchMock.mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      const method = init?.method ?? "GET";
+
+      if (url === "/api/control-tower/real-status") {
+        return {
           ok: true,
-          data: {
-            created: true,
-            review: refreshedBrief.pmGroups[0].featureRequests[0].review.record
-          }
-        })
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ success: true, brief: refreshedBrief })
-      });
+          json: async () => ({ success: true, statuses: {} })
+        };
+      }
+
+      if (url === "/api/control-tower/reviews" && method === "POST") {
+        return {
+          ok: true,
+          json: async () => ({
+            ok: true,
+            data: {
+              created: true,
+              review: refreshedBrief.pmGroups[0].featureRequests[0].review.record
+            }
+          })
+        };
+      }
+
+      if (url === "/api/control-tower/intervention") {
+        interventionFetchCount += 1;
+        return {
+          ok: true,
+          json: async () => ({
+            success: true,
+            brief: interventionFetchCount === 1 ? initialBrief : refreshedBrief
+          })
+        };
+      }
+
+      throw new Error(`Unexpected fetch call: ${method} ${url}`);
+    });
 
     render(<InterventionPage />);
 
@@ -171,10 +191,9 @@ describe("intervention page review refresh", () => {
     expect(await screen.findByText("Joy Director")).toBeTruthy();
 
     await waitFor(() => {
-      expect(fetchMock).toHaveBeenNthCalledWith(
-        3,
-        "/api/control-tower/intervention"
-      );
+      expect(
+        fetchMock.mock.calls.filter(([url]) => url === "/api/control-tower/intervention")
+      ).toHaveLength(2);
     });
   });
 });

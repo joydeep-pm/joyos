@@ -16,6 +16,8 @@ vi.mock("@/lib/client-api", () => ({
     getCommsHistory: vi.fn(),
     getAssistantReview: vi.fn(),
     getAssistantAlerts: vi.fn(),
+    getCollateralReminders: vi.fn(),
+    resolveCollateralReminder: vi.fn(),
     getOutcomeClosureKpi: vi.fn(),
     getApprovalEnvelopes: vi.fn(),
     commitAssistantPlan: vi.fn(),
@@ -56,6 +58,8 @@ function seedBaseResponses() {
     }
   } as never);
   vi.mocked(api.getAssistantAlerts).mockResolvedValue({ ok: true, data: [] } as never);
+  vi.mocked(api.getCollateralReminders).mockResolvedValue({ ok: true, data: [] } as never);
+  vi.mocked(api.resolveCollateralReminder).mockResolvedValue({ ok: true, data: undefined } as never);
   vi.mocked(api.getOutcomeClosureKpi).mockResolvedValue({ ok: true, data: { weekId: "2026-W11", closureRate: 0, target: 0.7, metTarget: false } } as never);
   vi.mocked(api.getApprovalEnvelopes).mockResolvedValue({ ok: true, data: [] } as never);
 }

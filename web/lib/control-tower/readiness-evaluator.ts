@@ -160,7 +160,9 @@ function evaluateFreshness(fr: FeatureRequest): {
   dimension: FeatureRequestReadinessDimension;
   missingInputs: FeatureRequestReadinessMissingInputCode[];
 } {
-  const staleBy = Math.max(daysSince(fr.latestUpdate.date), daysSince(fr.updatedAt));
+  // Use the freshest available product signal. `updatedAt` can lag behind the
+  // most recent linked source update, and that should not downgrade readiness.
+  const staleBy = Math.min(daysSince(fr.latestUpdate.date), daysSince(fr.updatedAt));
   const isLateStage = GROOMING_READY_STAGES.includes(fr.stage);
 
   if (staleBy > STALE_UPDATE_DAYS) {

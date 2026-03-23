@@ -85,3 +85,4 @@ target/
 vendor/
 coverage/
 tmp/
+.gstack/
