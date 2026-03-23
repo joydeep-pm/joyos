@@ -1,7 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { api } from "@/lib/client-api";
+
+function formatSettingValue(value: unknown): string {
+  if (value === null) {
+    return "null";
+  }
+
+  if (typeof value === "object") {
+    return JSON.stringify(value, null, 2);
+  }
+
+  return String(value);
+}
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Record<string, unknown> | null>(null);
@@ -37,7 +49,7 @@ export default function SettingsPage() {
           {Object.entries(settings).map(([key, value]) => (
             <div key={key} className="rounded-xl border border-ink/10 bg-cloud/60 p-3">
               <dt className="font-semibold text-ink">{key}</dt>
-              <dd className="mono mt-1 break-all text-xs text-ink/70">{value === null ? "null" : String(value)}</dd>
+              <dd className="mono mt-1 whitespace-pre-wrap break-all text-xs text-ink/70">{formatSettingValue(value)}</dd>
             </div>
           ))}
         </dl>
