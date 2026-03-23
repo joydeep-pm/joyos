@@ -196,4 +196,59 @@ describe("intervention page review refresh", () => {
       ).toHaveLength(2);
     });
   });
+
+  it("keeps the intervention brief visible when sync fails due to missing configuration", async () => {
+    // Regression: ISSUE-001 — sync failure replaced the full intervention view with a fatal error state
+    // Found by /qa on 2026-03-23
+    // Report: .gstack/qa-reports/qa-report-localhost-3005-2026-03-23.md
+    fetchMock.mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      const method = init?.method ?? "GET";
+
+      if (url === "/api/control-tower/real-status") {
+        return {
+          ok: true,
+          json: async () => ({ success: true, statuses: {} })
+        };
+      }
+
+      if (url === "/api/control-tower/intervention") {
+        return {
+          ok: true,
+          json: async () => ({
+            success: true,
+            brief: initialBrief
+          })
+        };
+      }
+
+      if (url === "/api/control-tower/feature-requests/sync" && method === "POST") {
+        return {
+          ok: true,
+          json: async () => ({
+            success: false,
+            configurationRequired: true,
+            error: "Neither Jira nor Confluence is configured. Please set environment variables."
+          })
+        };
+      }
+
+      throw new Error(`Unexpected fetch call: ${method} ${url}`);
+    });
+
+    render(<InterventionPage />);
+
+    expect(await screen.findByText("Intervention Brief")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Sync LEN" }));
+
+    expect(await screen.findByText("Sync unavailable")).toBeTruthy();
+    expect(
+      await screen.findByText("Neither Jira nor Confluence is configured. Please set environment variables.")
+    ).toBeTruthy();
+
+    expect(screen.getByText("Signal summary")).toBeTruthy();
+    expect(screen.getByText("Where intervention matters now.")).toBeTruthy();
+    expect(screen.queryByText(/^Error$/)).toBeNull();
+  });
 });
