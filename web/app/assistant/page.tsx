@@ -36,9 +36,9 @@ function isoWeekIdFromDate(dateInput?: string): string {
 }
 
 function severityClass(severity: "high" | "medium" | "low"): string {
-  if (severity === "high") return "border-rose-200 bg-rose-50 text-rose-900";
-  if (severity === "medium") return "border-amber-200 bg-amber-50 text-amber-900";
-  return "border-sky-200 bg-sky-50 text-sky-900";
+  if (severity === "high") return "border-oxblood/20 bg-oxblood/10 text-oxblood";
+  if (severity === "medium") return "border-amber/25 bg-amber/12 text-amber";
+  return "border-petrol/20 bg-petrol/10 text-petrol";
 }
 
 function collateralAssetLabel(assetType: CollateralReminderItem["assetType"]): string {
@@ -362,11 +362,11 @@ export default function AssistantPage() {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-3xl border border-ink/10 bg-white/85 p-6 shadow-panel">
+      <div className="panel-surface section-shell">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate">Director intervention workspace</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Daily intervention brief and action queue</h2>
+            <p className="eyebrow-label">Director intervention workspace</p>
+            <h2 className="section-title mt-3">Daily intervention brief and action queue</h2>
             <p className="mt-2 text-sm text-ink/65">
               Review today&apos;s intervention candidates, commit the right outcomes, track drift during the day, and draft outbound updates with explicit approval.
             </p>
@@ -376,13 +376,13 @@ export default function AssistantPage() {
               type="date"
               value={date}
               onChange={(event) => setDate(event.target.value)}
-              className="rounded-xl border border-ink/20 bg-white px-3 py-2 text-sm"
+              className="paper-input rounded-2xl px-3 py-2 text-sm"
             />
             <button
               type="button"
               onClick={refreshContext}
               disabled={busy === "rebuild"}
-              className="rounded-xl border border-ink/20 bg-cloud px-4 py-2 text-sm font-semibold text-ink"
+              className="ghost-button"
             >
               {busy === "rebuild" ? "Rebuilding..." : "Rebuild context"}
             </button>
@@ -392,7 +392,7 @@ export default function AssistantPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-ink/10 bg-white/85 p-4 shadow-card">
+        <div className="panel-muted rounded-[24px] p-4">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate">Weekly operating signal</h3>
             <Link href="/review" className="text-xs font-semibold text-ink underline-offset-2 hover:underline">
@@ -406,7 +406,7 @@ export default function AssistantPage() {
           ) : (
             <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
               <div className="rounded-xl border border-ink/10 bg-cloud/60 p-3">
-                <p className="text-xs text-ink/60">Committed</p>
+                <p className="eyebrow-label !tracking-[0.14em]">Committed</p>
                 <p className="mt-1 text-xl font-semibold">{review.scorecard.committedCount}</p>
               </div>
               <div className="rounded-xl border border-ink/10 bg-cloud/60 p-3">
@@ -430,7 +430,7 @@ export default function AssistantPage() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-ink/10 bg-white/85 p-4 shadow-card">
+        <div className="panel-muted rounded-[24px] p-4">
           <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate">Intervention alerts</h3>
           {!alertsEnabled ? (
             <p className="mt-2 text-sm text-ink/65">Alerts are disabled by feature flag.</p>
@@ -479,15 +479,15 @@ export default function AssistantPage() {
         <EmptyState title="No brief available" subtitle="Try rebuilding context and generating the brief again." />
       ) : (
         <div className="grid gap-6 lg:grid-cols-[1.8fr_1fr]">
-          <div className="space-y-6">
-            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
+            <div className="space-y-6">
+            <div className="panel-surface rounded-[28px] p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h3 className="text-lg font-semibold">Today&apos;s intervention candidates</h3>
+                <h3 className="font-display text-[2rem] leading-none">Today&apos;s intervention candidates</h3>
                 <button
                   type="button"
                   onClick={commitDayPlan}
                   disabled={busy === "commit"}
-                  className="rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-cloud disabled:opacity-60"
+                  className="primary-button disabled:opacity-60"
                 >
                   {busy === "commit" ? "Committing..." : "Commit day plan"}
                 </button>
@@ -498,7 +498,7 @@ export default function AssistantPage() {
               ) : (
                 <ul className="mt-4 space-y-3">
                   {brief.topOutcomes.map((outcome) => (
-                    <li key={outcome.id} className="rounded-2xl border border-ink/10 bg-cloud/70 p-4">
+                    <li key={outcome.id} className="rounded-[22px] border border-ink/10 bg-bone/80 p-4">
                       <div className="flex items-start gap-3">
                         <input
                           type="checkbox"
@@ -529,21 +529,21 @@ export default function AssistantPage() {
               <textarea
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
-                className="mt-4 min-h-20 w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm"
+                className="paper-input mt-4 min-h-20 w-full rounded-2xl px-3 py-2 text-sm"
                 placeholder="Optional commitment notes"
               />
               <p className="mt-2 text-xs text-ink/55">Midday intervention check: {brief.middayCheckpoint}</p>
               <p className="mt-1 text-xs text-ink/55">Evening closure prompt: {brief.eveningClosurePrompt}</p>
             </div>
 
-            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
-              <h3 className="text-lg font-semibold">Committed action queue</h3>
+            <div className="panel-muted rounded-[28px] p-5">
+              <h3 className="font-display text-[2rem] leading-none">Committed action queue</h3>
               {queue.length === 0 ? (
                 <p className="mt-3 text-sm text-ink/65">No queued items yet. Commit the day plan to seed execution.</p>
               ) : (
                 <ul className="mt-4 space-y-3">
                   {queue.map((item) => (
-                    <li key={item.id} className="rounded-2xl border border-ink/10 bg-cloud/60 p-4">
+                    <li key={item.id} className="rounded-[22px] border border-ink/10 bg-bone/80 p-4">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
                           <div className="flex items-center gap-2">
@@ -555,7 +555,7 @@ export default function AssistantPage() {
                         <select
                           value={item.status}
                           onChange={(event) => void updateQueueStatus(item.id, event.target.value as AssistantQueueStatus)}
-                          className="rounded-lg border border-ink/20 bg-white px-2 py-1 text-xs"
+                          className="paper-input rounded-xl px-2 py-1 text-xs"
                         >
                           {queueStatuses.map((status) => (
                             <option key={status} value={status}>
@@ -572,8 +572,8 @@ export default function AssistantPage() {
           </div>
 
           <aside className="space-y-6">
-            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
-              <h3 className="text-lg font-semibold">Risk and drift requiring attention</h3>
+            <div className="panel-muted rounded-[28px] p-5">
+              <h3 className="font-display text-[2rem] leading-none">Risk and drift requiring attention</h3>
               {!context || context.driftAlerts.length === 0 ? (
                 <p className="mt-2 text-sm text-ink/65">No drift alert active.</p>
               ) : (
@@ -587,7 +587,7 @@ export default function AssistantPage() {
               )}
             </div>
 
-            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
+            <div className="panel-muted rounded-[28px] p-5">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="text-lg font-semibold">Quarterly collateral reminders</h3>
                 <span className="text-xs text-ink/60">{collateralReminders.length} visible</span>
@@ -621,7 +621,7 @@ export default function AssistantPage() {
               )}
             </div>
 
-            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
+            <div className="panel-muted rounded-[28px] p-5">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="text-lg font-semibold">Meeting continuity review</h3>
                 {context && (
@@ -640,7 +640,7 @@ export default function AssistantPage() {
                     .map((item) => {
                       const view = presentMeetingContinuityItem(item);
                       return (
-                        <li key={item.id} className="rounded-2xl border border-ink/10 bg-cloud/60 p-4">
+                        <li key={item.id} className="rounded-[22px] border border-ink/10 bg-bone/80 p-4">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="rounded-full border border-ink/15 bg-white px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate">
                               {view.statusLabel}
@@ -650,10 +650,10 @@ export default function AssistantPage() {
                           <h4 className="mt-2 font-semibold text-ink">{view.heading}</h4>
                           <p className="mt-2 text-sm text-ink/70">{view.summary}</p>
                           {item.blockers.length > 0 && (
-                            <p className="mt-2 text-xs text-rose-800">Blocker: {item.blockers[0]}</p>
+                            <p className="mt-2 text-xs text-oxblood">Blocker: {item.blockers[0]}</p>
                           )}
                           {item.openQuestions.length > 0 && (
-                            <p className="mt-1 text-xs text-amber-800">Ambiguity: {item.openQuestions[0]}</p>
+                            <p className="mt-1 text-xs text-amber">Ambiguity: {item.openQuestions[0]}</p>
                           )}
                           <p className="mt-2 text-xs text-ink/60">Suggested route: {view.nextStepLabel}</p>
                         </li>
@@ -663,8 +663,8 @@ export default function AssistantPage() {
               )}
             </div>
 
-            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
-              <h3 className="text-lg font-semibold">Outbound updates</h3>
+            <div className="panel-muted rounded-[28px] p-5">
+              <h3 className="font-display text-[2rem] leading-none">Outbound updates</h3>
               {!commsEnabled ? (
                 <p className="mt-2 text-sm text-ink/65">Comms module is disabled by feature flag.</p>
               ) : (
@@ -680,7 +680,7 @@ export default function AssistantPage() {
                       type="button"
                       onClick={() => void createDraft("stakeholder_update")}
                       disabled={busy === "draft"}
-                      className="rounded-xl border border-ink/20 bg-cloud px-3 py-2 text-sm font-semibold text-ink"
+                    className="ghost-button rounded-2xl px-3 py-2"
                     >
                       Draft stakeholder update
                     </button>
@@ -688,7 +688,7 @@ export default function AssistantPage() {
                       type="button"
                       onClick={() => void createDraft("blocked_followup")}
                       disabled={busy === "draft"}
-                      className="rounded-xl border border-ink/20 bg-cloud px-3 py-2 text-sm font-semibold text-ink"
+                    className="ghost-button rounded-2xl px-3 py-2"
                     >
                       Draft blocker follow-up
                     </button>
@@ -697,7 +697,7 @@ export default function AssistantPage() {
                   {!latestDraft ? (
                     <p className="mt-3 text-sm text-ink/65">No draft yet.</p>
                   ) : (
-                    <div className="mt-4 rounded-xl border border-ink/10 bg-cloud/60 p-3">
+                    <div className="mt-4 rounded-2xl border border-ink/10 bg-bone/80 p-3">
                       <p className="text-xs text-ink/60">{latestDraft.status.toUpperCase()}</p>
                       <p className="mt-1 text-sm font-semibold text-ink">{latestDraft.subject}</p>
                       <pre className="mt-2 max-h-36 overflow-y-auto whitespace-pre-wrap text-xs text-ink/75">{latestDraft.body}</pre>
@@ -706,7 +706,7 @@ export default function AssistantPage() {
                           type="button"
                           onClick={() => void approveDraft(latestDraft.id)}
                           disabled={latestDraft.status !== "draft" || busy === `approve:${latestDraft.id}`}
-                          className="rounded-lg bg-ink px-3 py-1 text-xs font-semibold text-cloud disabled:opacity-50"
+                          className="primary-button rounded-xl px-3 py-1 text-xs disabled:opacity-50"
                         >
                           Approve
                         </button>
@@ -714,7 +714,7 @@ export default function AssistantPage() {
                           type="button"
                           onClick={() => void sendDraft(latestDraft.id)}
                           disabled={latestDraft.status !== "approved" || busy === `send:${latestDraft.id}`}
-                          className="rounded-lg bg-mint px-3 py-1 text-xs font-semibold text-ink disabled:opacity-50"
+                          className="primary-button rounded-xl px-3 py-1 text-xs disabled:opacity-50"
                         >
                           Send
                         </button>
@@ -725,8 +725,8 @@ export default function AssistantPage() {
               )}
             </div>
 
-            <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
-              <h3 className="text-lg font-semibold">Approval workflow</h3>
+            <div className="panel-muted rounded-[28px] p-5">
+              <h3 className="font-display text-[2rem] leading-none">Approval workflow</h3>
               {!latestDraft ? (
                 <p className="mt-2 text-sm text-ink/65">Create a draft to prepare an approval envelope.</p>
               ) : (
@@ -736,7 +736,7 @@ export default function AssistantPage() {
                       type="button"
                       onClick={() => void createApprovalEnvelope(latestDraft.id)}
                       disabled={latestDraft.status !== "approved" || busy === `envelope:create:${latestDraft.id}`}
-                      className="rounded-xl border border-ink/20 bg-cloud px-3 py-2 text-sm font-semibold text-ink disabled:opacity-50"
+                      className="ghost-button rounded-2xl px-3 py-2 disabled:opacity-50"
                     >
                       Create approval envelope
                     </button>
@@ -754,8 +754,8 @@ export default function AssistantPage() {
                             onClick={() => setSelectedEnvelopeId(envelope.id)}
                             className={`w-full rounded-xl border px-3 py-2 text-left ${
                               envelope.id === selectedEnvelopeId
-                                ? "border-ink bg-cloud/80"
-                                : "border-ink/10 bg-cloud/50"
+                                ? "border-petrol/20 bg-bone"
+                                : "border-ink/10 bg-paper/70"
                             }`}
                           >
                             <div className="flex items-center justify-between gap-3">
@@ -767,7 +767,7 @@ export default function AssistantPage() {
                       </div>
 
                       {selectedEnvelope && (
-                        <div className="rounded-xl border border-ink/10 bg-cloud/60 p-3">
+                        <div className="rounded-2xl border border-ink/10 bg-bone/80 p-3">
                           <p className="text-xs text-ink/60">{selectedEnvelope.status.toUpperCase()}</p>
                           <p className="mt-1 text-sm font-semibold text-ink">{selectedEnvelope.summary}</p>
                           <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-ink/75">
@@ -781,7 +781,7 @@ export default function AssistantPage() {
                               type="button"
                               onClick={() => void transitionApprovalEnvelope(selectedEnvelope.id, "approve")}
                               disabled={selectedEnvelope.status !== "proposed" || busy === `envelope:approve:${selectedEnvelope.id}`}
-                              className="rounded-lg bg-ink px-3 py-1 text-xs font-semibold text-cloud disabled:opacity-50"
+                              className="primary-button rounded-xl px-3 py-1 text-xs disabled:opacity-50"
                             >
                               Approve envelope
                             </button>
@@ -789,7 +789,7 @@ export default function AssistantPage() {
                               type="button"
                               onClick={() => void transitionApprovalEnvelope(selectedEnvelope.id, "execute")}
                               disabled={selectedEnvelope.status !== "approved" || busy === `envelope:execute:${selectedEnvelope.id}`}
-                              className="rounded-lg bg-mint px-3 py-1 text-xs font-semibold text-ink disabled:opacity-50"
+                              className="primary-button rounded-xl px-3 py-1 text-xs disabled:opacity-50"
                             >
                               Execute envelope
                             </button>
@@ -810,10 +810,10 @@ export default function AssistantPage() {
                               </p>
                             )}
                             {selectedEnvelope.failureCode && (
-                              <p className="font-mono text-[11px] text-rose-700">{selectedEnvelope.failureCode}</p>
+                              <p className="font-mono text-[11px] text-oxblood">{selectedEnvelope.failureCode}</p>
                             )}
                             {selectedEnvelope.failureMessage && (
-                              <p className="text-sm text-rose-800">{selectedEnvelope.failureMessage}</p>
+                              <p className="text-sm text-oxblood">{selectedEnvelope.failureMessage}</p>
                             )}
                           </div>
 

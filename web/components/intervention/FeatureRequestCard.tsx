@@ -47,43 +47,43 @@ export function FeatureRequestCard({ featureRequest, onOpenDetail, realStatus, o
 
   return (
     <div
-      className={`border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer ${
-        fr.requiresIntervention ? "border-l-4 border-l-orange-500" : ""
+      className={`rounded-[22px] border p-4 transition hover:-translate-y-[1px] hover:shadow-card cursor-pointer ${
+        fr.requiresIntervention ? "border-oxblood/30 bg-paper/90 shadow-card" : "border-ink/10 bg-paper/70"
       }`}
       onClick={() => onOpenDetail?.(fr.id)}
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-3">
         <div className="flex-1">
-          <h3 className="font-semibold text-base text-gray-900 mb-1">{fr.title}</h3>
+          <h3 className="font-semibold text-base text-ink mb-1">{fr.title}</h3>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-gray-500">{sourceLabels[fr.source]}</span>
-            <span className="text-xs text-gray-400">•</span>
+            <span className="text-xs text-slate">{sourceLabels[fr.source]}</span>
+            <span className="text-xs text-slate/50">•</span>
             <span
-              className={`px-2 py-0.5 text-xs font-medium rounded ${stageColorClasses}`}
+              className={`px-2 py-0.5 text-xs font-medium rounded-full ${stageColorClasses}`}
               title={stageMetadata.description}
             >
               {getStageLabel(fr.stage)}
             </span>
             {fr.productCharter && (
               <>
-                <span className="text-xs text-gray-400">•</span>
-                <span className="px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-700 rounded">
+                <span className="text-xs text-slate/50">•</span>
+                <span className="rounded-full border border-petrol/20 bg-petrol/10 px-2 py-0.5 text-xs font-semibold text-petrol">
                   {fr.productCharter}
                 </span>
               </>
             )}
             {fr.client && (
               <>
-                <span className="text-xs text-gray-400">•</span>
-                <span className="text-xs text-gray-500">{fr.client}</span>
+                <span className="text-xs text-slate/50">•</span>
+                <span className="text-xs text-slate">{fr.client}</span>
               </>
             )}
           </div>
         </div>
         <div className="flex items-center gap-2">
           {realStatus?.reviewedToday && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-medium border border-green-200">
+            <span className="inline-flex items-center gap-1 rounded-full border border-moss/20 bg-moss/10 px-2 py-0.5 text-xs font-medium text-moss">
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
               </svg>
@@ -106,7 +106,7 @@ export function FeatureRequestCard({ featureRequest, onOpenDetail, realStatus, o
       )}
 
       {/* Linked Sources */}
-      <div className="flex items-center gap-4 text-xs text-gray-600">
+      <div className="flex items-center gap-4 text-xs text-slate">
         {fr.jiraIssues.length > 0 && (
           <div className="flex items-center gap-1">
             <span className="font-medium">Jira:</span>
@@ -120,7 +120,7 @@ export function FeatureRequestCard({ featureRequest, onOpenDetail, realStatus, o
           </div>
         )}
         {fr.blockerSummary.hasBlockers && (
-          <div className="flex items-center gap-1 text-red-600">
+          <div className="flex items-center gap-1 text-oxblood">
             <span>🚧</span>
             <span>{fr.blockerSummary.blockerCount} blocker{fr.blockerSummary.blockerCount > 1 ? "s" : ""}</span>
           </div>
@@ -128,7 +128,7 @@ export function FeatureRequestCard({ featureRequest, onOpenDetail, realStatus, o
       </div>
 
       {/* Real Status + Latest Update */}
-      <div className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between gap-2">
+      <div className="mt-3 flex items-center justify-between gap-2 border-t border-ink/10 pt-3">
         <RealStatusPicker
           featureRequestId={fr.id}
           jiraKeys={fr.jiraIssues.map((i) => i.key)}
@@ -137,7 +137,7 @@ export function FeatureRequestCard({ featureRequest, onOpenDetail, realStatus, o
           onSaved={(status, note) => onRealStatusSaved?.(fr.id, status, note)}
           compact
         />
-        <span className="text-xs text-gray-400 shrink-0">
+        <span className="text-xs text-slate/70 shrink-0">
           {new Date(fr.latestUpdate.date).toLocaleDateString()} · {fr.latestUpdate.source}
         </span>
       </div>

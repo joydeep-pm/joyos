@@ -20,36 +20,36 @@ export function PmOwnerGroup({ group, onOpenDetail, realStatuses = {}, onRealSta
   const [isExpanded, setIsExpanded] = useState(group.totalRequiringIntervention > 0);
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+    <div className="panel-surface overflow-hidden rounded-[24px]">
       {/* Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+        className="w-full px-6 py-5 flex items-center justify-between transition-colors hover:bg-bone/80"
       >
         <div className="flex items-center gap-4">
-          <h2 className="text-lg font-semibold text-gray-900">{group.pmOwner}</h2>
+          <h2 className="font-display text-[1.8rem] leading-none text-ink">{group.pmOwner}</h2>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded">
+            <span className="rounded-full border border-slate/20 bg-bone px-2 py-1 text-xs font-semibold text-slate">
               {group.featureRequests.length} total
             </span>
             {group.totalRequiringIntervention > 0 && (
-              <span className="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-700 rounded">
+              <span className="rounded-full border border-oxblood/20 bg-oxblood/10 px-2 py-1 text-xs font-semibold text-oxblood">
                 {group.totalRequiringIntervention} need{group.totalRequiringIntervention === 1 ? "s" : ""} intervention
               </span>
             )}
             {group.highRiskCount > 0 && (
-              <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded">
+              <span className="rounded-full border border-oxblood/20 bg-oxblood/10 px-2 py-1 text-xs font-semibold text-oxblood">
                 {group.highRiskCount} high risk
               </span>
             )}
             {group.mediumRiskCount > 0 && (
-              <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-700 rounded">
+              <span className="rounded-full border border-amber/25 bg-amber/12 px-2 py-1 text-xs font-semibold text-amber">
                 {group.mediumRiskCount} medium risk
               </span>
             )}
           </div>
         </div>
-        <div className="text-gray-400">
+        <div className="text-slate">
           {isExpanded ? (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
@@ -64,7 +64,7 @@ export function PmOwnerGroup({ group, onOpenDetail, realStatuses = {}, onRealSta
 
       {/* Feature Requests */}
       {isExpanded && (
-        <div className="px-6 pb-4 space-y-3">
+        <div className="px-6 pb-5 space-y-3">
           {group.featureRequests.map((fr) => (
             <FeatureRequestCard
               key={fr.id}

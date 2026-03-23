@@ -40,7 +40,7 @@ export function RealStatusPicker({
 
   const colorClasses = currentStatus
     ? REAL_STATUS_COLORS[currentStatus]
-    : { bg: "bg-gray-50", text: "text-gray-400", border: "border-gray-200" };
+    : { bg: "bg-bone", text: "text-slate", border: "border-slate/20" };
 
   const label = currentStatus ? REAL_STATUS_LABELS[currentStatus] : "Set real status";
 
@@ -77,11 +77,11 @@ export function RealStatusPicker({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute left-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg w-72 p-3">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Real Status</p>
+        <div className="panel-surface absolute left-0 top-full z-50 mt-2 w-72 rounded-2xl p-3">
+          <p className="eyebrow-label mb-2">Real Status</p>
 
           {/* Pre-grooming */}
-          <p className="text-[10px] text-gray-400 mb-1 uppercase tracking-widest">Pre-Grooming</p>
+          <p className="mb-1 text-[10px] uppercase tracking-[0.18em] text-slate">Pre-Grooming</p>
           <div className="grid grid-cols-2 gap-1 mb-3">
             {PRE_GROOMING_STATUSES.map((s) => {
               const c = REAL_STATUS_COLORS[s];
@@ -92,7 +92,7 @@ export function RealStatusPicker({
                   className={`text-left px-2 py-1.5 rounded text-xs border transition-all ${
                     status === s
                       ? `${c.bg} ${c.text} ${c.border} font-semibold ring-1 ring-offset-1 ring-current`
-                      : "border-gray-100 text-gray-600 hover:bg-gray-50"
+                      : "border-ink/10 text-ink/70 hover:bg-bone"
                   }`}
                 >
                   {REAL_STATUS_LABELS[s]}
@@ -102,7 +102,7 @@ export function RealStatusPicker({
           </div>
 
           {/* Post-grooming */}
-          <p className="text-[10px] text-gray-400 mb-1 uppercase tracking-widest">Post-Grooming</p>
+          <p className="mb-1 text-[10px] uppercase tracking-[0.18em] text-slate">Post-Grooming</p>
           <div className="grid grid-cols-2 gap-1 mb-3">
             {POST_GROOMING_STATUSES.map((s) => {
               const c = REAL_STATUS_COLORS[s];
@@ -113,7 +113,7 @@ export function RealStatusPicker({
                   className={`text-left px-2 py-1.5 rounded text-xs border transition-all ${
                     status === s
                       ? `${c.bg} ${c.text} ${c.border} font-semibold ring-1 ring-offset-1 ring-current`
-                      : "border-gray-100 text-gray-600 hover:bg-gray-50"
+                      : "border-ink/10 text-ink/70 hover:bg-bone"
                   }`}
                 >
                   {REAL_STATUS_LABELS[s]}
@@ -128,20 +128,20 @@ export function RealStatusPicker({
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="One-line note (optional)"
-            className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded mb-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+            className="paper-input mb-2 w-full rounded-xl px-2 py-1.5 text-xs focus:outline-none"
           />
 
           <div className="flex gap-2">
             <button
               onClick={handleSave}
               disabled={!status || saving}
-              className="flex-1 py-1.5 bg-blue-600 text-white text-xs rounded font-medium disabled:opacity-40 hover:bg-blue-700 transition-colors"
+              className="primary-button flex-1 rounded-xl py-1.5 text-xs disabled:opacity-40"
             >
               {saving ? "Saving…" : "Save"}
             </button>
             <button
               onClick={() => setOpen(false)}
-              className="px-3 py-1.5 border border-gray-200 text-gray-600 text-xs rounded hover:bg-gray-50"
+              className="ghost-button rounded-xl px-3 py-1.5 text-xs"
             >
               Cancel
             </button>

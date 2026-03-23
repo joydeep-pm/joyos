@@ -12,10 +12,10 @@ interface RiskBadgeProps {
 
 export function RiskBadge({ severity, className = "" }: RiskBadgeProps) {
   const colors = {
-    high: "bg-red-100 text-red-800 border-red-200",
-    medium: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    low: "bg-blue-100 text-blue-800 border-blue-200",
-    none: "bg-gray-100 text-gray-600 border-gray-200"
+    high: "border-oxblood/20 bg-oxblood/10 text-oxblood",
+    medium: "border-amber/25 bg-amber/12 text-amber",
+    low: "border-petrol/20 bg-petrol/10 text-petrol",
+    none: "border-slate/20 bg-bone text-slate"
   };
 
   const labels = {
@@ -27,7 +27,7 @@ export function RiskBadge({ severity, className = "" }: RiskBadgeProps) {
 
   return (
     <span
-      className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded border ${colors[severity]} ${className}`}
+      className={`inline-flex items-center rounded-full border px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${colors[severity]} ${className}`}
     >
       {labels[severity]}
     </span>

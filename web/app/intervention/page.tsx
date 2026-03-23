@@ -196,14 +196,14 @@ export default function InterventionPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="section-shell panel-muted">
+        <div className="mx-auto max-w-7xl">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+            <div className="mb-4 h-8 w-1/4 rounded bg-bone"></div>
+            <div className="mb-8 h-4 w-1/2 rounded bg-bone"></div>
             <div className="space-y-4">
-              <div className="h-32 bg-gray-200 rounded"></div>
-              <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="h-32 rounded bg-bone"></div>
+              <div className="h-32 rounded bg-bone"></div>
             </div>
           </div>
         </div>
@@ -213,14 +213,14 @@ export default function InterventionPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <h2 className="text-red-800 font-semibold mb-2">Error</h2>
-            <p className="text-red-700">{error}</p>
+      <div className="section-shell panel-muted">
+        <div className="mx-auto max-w-7xl">
+          <div className="rounded-2xl border border-oxblood/20 bg-oxblood/10 p-4">
+            <h2 className="mb-2 font-semibold text-oxblood">Error</h2>
+            <p className="text-oxblood">{error}</p>
             <button
               onClick={fetchBrief}
-              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              className="danger-button mt-4"
             >
               Retry
             </button>
@@ -257,51 +257,48 @@ export default function InterventionPage() {
       }
     : brief;
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-8 py-6">
-          <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="panel-surface section-shell">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+          <div>
+            <p className="eyebrow-label">Director intervention desk</p>
+            <h1 className="section-title mt-3">Intervention Brief</h1>
+            <p className="mt-3 text-sm text-ink/65">
+              {new Date(brief.date).toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+              })}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Intervention Brief</h1>
-              <p className="text-gray-600">
-                {new Date(brief.date).toLocaleDateString("en-US", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric"
-                })}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              {/* Daily review progress */}
               <div className="flex items-center gap-1.5 text-sm">
-                <span className={`font-semibold ${reviewedCount === totalCount && totalCount > 0 ? "text-green-600" : "text-gray-700"}`}>
+                <span className={`font-semibold ${reviewedCount === totalCount && totalCount > 0 ? "text-moss" : "text-ink/80"}`}>
                   {reviewedCount}/{totalCount}
                 </span>
-                <span className="text-gray-400">reviewed</span>
+                <span className="text-slate">reviewed</span>
                 {reviewedCount === totalCount && totalCount > 0 && (
-                  <span className="text-green-500 text-xs">✓ done</span>
+                  <span className="text-xs text-moss">✓ done</span>
                 )}
               </div>
 
-              {/* Noise filter toggle */}
               <button
                 onClick={() => setActiveOnly(!activeOnly)}
-                className={`px-3 py-2 border rounded-lg text-sm transition-colors flex items-center gap-1.5 ${
+                className={`rounded-full border px-3 py-2 text-sm font-semibold transition-colors flex items-center gap-1.5 ${
                   activeOnly
-                    ? "border-indigo-300 bg-indigo-50 text-indigo-700"
-                    : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
+                    ? "border-petrol/20 bg-petrol/10 text-petrol"
+                    : "border-ink/10 bg-paper text-slate hover:bg-bone"
                 }`}
                 title={activeOnly ? "Showing active items only — click to show all" : "Showing all items — click to hide deprioritized"}
               >
                 {activeOnly ? "Active only" : "All items"}
               </button>
 
-              {/* Share status update */}
               <button
                 onClick={() => setShowStatusModal(true)}
-                className="px-3 py-2 border border-emerald-300 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors flex items-center gap-1.5"
+                className="ghost-button flex items-center gap-1.5"
                 title="Generate a Teams-ready status update for any vertical"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -312,10 +309,10 @@ export default function InterventionPage() {
 
               <button
                 onClick={() => setShowEpicFilter(!showEpicFilter)}
-                className={`px-3 py-2 border rounded-lg text-sm transition-colors flex items-center gap-1.5 ${
+                className={`rounded-full border px-3 py-2 text-sm font-semibold transition-colors flex items-center gap-1.5 ${
                   epicFilter || jqlFilter
-                    ? "border-blue-300 bg-blue-50 text-blue-700"
-                    : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
+                    ? "border-petrol/20 bg-petrol/10 text-petrol"
+                    : "border-ink/10 bg-paper text-slate hover:bg-bone"
                 }`}
                 title="Filter sync by epic keys or custom JQL"
               >
@@ -323,14 +320,14 @@ export default function InterventionPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
                 Filters
-                <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700 border border-blue-200">
+                <span className="rounded-full border border-petrol/20 bg-petrol/10 px-2 py-0.5 text-[10px] font-semibold text-petrol">
                   advanced
                 </span>
-                {(epicFilter || jqlFilter) && <span className="w-2 h-2 rounded-full bg-blue-500" />}
+                {(epicFilter || jqlFilter) && <span className="h-2 w-2 rounded-full bg-petrol" />}
               </button>
               <button
                 onClick={handleSync}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                className="primary-button flex items-center gap-2"
                 title="Sync using the saved/default LEN filter"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -350,10 +347,9 @@ export default function InterventionPage() {
 
       {/* Sync Filter Panel */}
       {showEpicFilter && (
-        <div className="bg-blue-50 border-b border-blue-200">
-          <div className="max-w-7xl mx-auto px-8 py-3 space-y-3">
+        <div className="panel-muted section-shell space-y-3">
             <div className="flex items-center gap-3">
-              <label className="text-sm font-medium text-blue-800 whitespace-nowrap">
+              <label className="text-sm font-medium text-petrol whitespace-nowrap">
                 Filter by Epics:
               </label>
               <input
@@ -361,23 +357,23 @@ export default function InterventionPage() {
                 value={epicFilter}
                 onChange={(e) => setEpicFilter(e.target.value)}
                 placeholder="e.g. LEN-69, LEN-76"
-                className="flex-1 px-3 py-1.5 text-sm border border-blue-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="paper-input flex-1 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-petrol/30"
               />
               {epicFilter && (
                 <button
                   onClick={() => setEpicFilter("")}
-                  className="text-sm text-blue-600 hover:text-blue-800"
+                  className="text-sm text-petrol hover:text-ink"
                 >
                   Clear
                 </button>
               )}
-              <span className="text-xs text-blue-600">
+              <span className="text-xs text-slate">
                 Comma-separated epic keys. Optional.
               </span>
             </div>
 
             <div className="flex items-start gap-3">
-              <label className="text-sm font-medium text-blue-800 whitespace-nowrap pt-2">
+              <label className="text-sm font-medium text-petrol whitespace-nowrap pt-2">
                 Custom JQL:
               </label>
               <textarea
@@ -385,25 +381,25 @@ export default function InterventionPage() {
                 onChange={(e) => setJqlFilter(e.target.value)}
                 placeholder={'e.g. project = LEN AND status NOT IN ("Merged to Codebase", Done, Closed, Resolved, Completed) AND issuetype != Bug AND issuetype not in subTaskIssueTypes()'}
                 rows={3}
-                className="flex-1 px-3 py-2 text-sm border border-blue-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y"
+                className="paper-input flex-1 rounded-xl px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-petrol/30"
               />
               {jqlFilter && (
                 <button
                   onClick={() => setJqlFilter("")}
-                  className="text-sm text-blue-600 hover:text-blue-800 pt-2"
+                  className="pt-2 text-sm text-petrol hover:text-ink"
                 >
                   Clear
                 </button>
               )}
             </div>
 
-            <div className="rounded-md border border-blue-200 bg-white/70 p-3 text-xs text-blue-700 space-y-2">
+            <div className="rounded-2xl border border-ink/10 bg-paper/80 p-3 text-xs text-ink/75 space-y-2">
               <div className="flex items-center justify-between gap-3">
-                <p className="font-medium text-blue-900">Default LEN sync query</p>
+                <p className="font-medium text-ink">Default LEN sync query</p>
                 <button
                   type="button"
                   onClick={() => setJqlFilter(DEFAULT_LEN_SYNC_JQL)}
-                  className="rounded border border-blue-300 bg-white px-2 py-1 text-[11px] font-medium text-blue-700 hover:bg-blue-50"
+                  className="ghost-button rounded-xl px-2 py-1 text-[11px]"
                 >
                   Use default
                 </button>
@@ -413,30 +409,30 @@ export default function InterventionPage() {
                 This query is loaded by default and used automatically when you click Sync Now. Custom JQL overrides the default Jira sync query. If both are provided, JQL takes precedence over board/project sync scope.
               </p>
             </div>
-          </div>
         </div>
       )}
 
       {/* Summary */}
-      <div className="max-w-7xl mx-auto px-8 py-6">
-        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+      <div className="space-y-6">
+        <div className="panel-muted section-shell">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Summary</h2>
-              <p className="text-gray-700">{brief.summary}</p>
+              <p className="eyebrow-label">Signal summary</p>
+              <h2 className="font-display mt-3 text-[2rem] leading-none text-ink">Where intervention matters now.</h2>
+              <p className="mt-3 text-ink/75">{brief.summary}</p>
             </div>
             <div className="flex gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900">{brief.totalFeatureRequests}</div>
-                <div className="text-xs text-gray-500">Total Requests</div>
+              <div className="metric-card text-center">
+                <div className="text-2xl font-bold text-ink">{brief.totalFeatureRequests}</div>
+                <div className="text-xs text-slate">Total Requests</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">{brief.totalRequiringIntervention}</div>
-                <div className="text-xs text-gray-500">Need Intervention</div>
+              <div className="metric-card text-center">
+                <div className="text-2xl font-bold text-oxblood">{brief.totalRequiringIntervention}</div>
+                <div className="text-xs text-slate">Need Intervention</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{brief.pmGroups.length}</div>
-                <div className="text-xs text-gray-500">PM Owners</div>
+              <div className="metric-card text-center">
+                <div className="text-2xl font-bold text-petrol">{brief.pmGroups.length}</div>
+                <div className="text-xs text-slate">PM Owners</div>
               </div>
             </div>
           </div>
@@ -444,8 +440,8 @@ export default function InterventionPage() {
 
         {/* PM Groups */}
         {filteredGroups.pmGroups.length === 0 ? (
-          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
-            <p className="text-gray-500">
+          <div className="panel-muted section-shell text-center">
+            <p className="text-slate">
               {activeOnly
                 ? "No active items — all have been deprioritized or none remain. Toggle \"Active only\" to see everything."
                 : "No feature requests found. Click \"Sync LEN\" to fetch data from Jira."}

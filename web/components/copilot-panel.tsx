@@ -91,22 +91,22 @@ export function CopilotPanel() {
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="fixed bottom-5 right-5 z-40 rounded-full border border-ink/10 bg-ink px-5 py-3 text-sm font-semibold text-cloud shadow-panel transition hover:scale-[1.02]"
+        className="fixed bottom-5 right-5 z-40 rounded-full border border-petrol/15 bg-petrol px-5 py-3 text-sm font-semibold text-paper shadow-panel transition hover:scale-[1.02]"
       >
         {open ? "Close Copilot" : "Open Copilot"}
       </button>
 
       {open && (
-        <section className="fixed bottom-24 right-5 z-40 flex h-[70vh] w-[min(430px,calc(100vw-2rem))] flex-col rounded-3xl border border-ink/10 bg-white/95 shadow-panel backdrop-blur">
-          <header className="flex items-start justify-between gap-3 border-b border-ink/10 px-4 py-3">
+        <section className="panel-surface fixed bottom-24 right-5 z-40 flex h-[70vh] w-[min(430px,calc(100vw-2rem))] flex-col rounded-[28px]">
+          <header className="flex items-start justify-between gap-3 border-b border-ink/10 px-4 py-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate">Copilot</p>
-              <h3 className="mt-1 text-lg font-semibold tracking-tight text-ink">In-app command assistant</h3>
+              <p className="eyebrow-label">Copilot</p>
+              <h3 className="font-display mt-2 text-2xl leading-none text-ink">In-app command assistant</h3>
             </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded-lg border border-ink/15 bg-cloud px-3 py-1 text-xs font-semibold text-ink transition hover:bg-ink/10"
+              className="ghost-button px-3 py-1 text-xs"
               aria-label="Minimize Copilot"
             >
               Minimize
@@ -118,7 +118,7 @@ export function CopilotPanel() {
               <article
                 key={`${message.timestamp}-${index}`}
                 className={`rounded-2xl px-3 py-2 text-sm ${
-                  message.role === "assistant" ? "bg-cloud text-ink" : "ml-8 bg-ink text-cloud"
+                  message.role === "assistant" ? "bg-bone text-ink" : "ml-8 bg-petrol text-paper"
                 }`}
               >
                 <p className="whitespace-pre-wrap">{message.content}</p>
@@ -135,7 +135,7 @@ export function CopilotPanel() {
                   type="button"
                   onClick={() => void send(prompt)}
                   disabled={busy}
-                  className="rounded-full border border-ink/20 bg-white px-3 py-1 text-xs text-ink transition hover:bg-cloud disabled:opacity-60"
+                  className="rounded-full border border-ink/15 bg-paper px-3 py-1 text-xs text-ink transition hover:bg-bone disabled:opacity-60"
                 >
                   {prompt}
                 </button>
@@ -153,12 +153,12 @@ export function CopilotPanel() {
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 placeholder="Type a command"
-                className="flex-1 rounded-xl border border-ink/15 bg-cloud px-3 py-2 text-sm"
+                className="paper-input flex-1 rounded-2xl px-3 py-2 text-sm"
               />
               <button
                 type="submit"
                 disabled={busy || !input.trim()}
-                className="rounded-xl bg-mint px-3 py-2 text-sm font-semibold text-ink disabled:opacity-60"
+                className="primary-button rounded-2xl px-4 disabled:opacity-60"
               >
                 Send
               </button>

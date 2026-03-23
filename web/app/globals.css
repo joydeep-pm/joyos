@@ -6,15 +6,32 @@
 @tailwind utilities;
 
 :root {
-  --ink: #0f1f2c;
-  --cloud: #f4f6f3;
-  --mint: #8dd7bf;
-  --amber: #efbf7d;
-  --slate: #6d7f8d;
+  --ink: #171717;
+  --slate: #5e6673;
+  --cloud: #fffcf6;
+  --mint: #145c63;
+  --amber: #a97822;
+  --bone: #f5f1e8;
+  --paper: #fffcf6;
+  --petrol: #145c63;
+  --oxblood: #7a2e2e;
+  --moss: #456b56;
+  --line: rgba(23, 23, 23, 0.12);
+  --line-strong: rgba(23, 23, 23, 0.2);
+  --surface: rgba(255, 252, 246, 0.84);
+  --surface-2: rgba(245, 241, 232, 0.88);
+  --surface-strong: rgba(255, 252, 246, 0.96);
+  --panel-shadow: 0 20px 50px -28px rgba(23, 23, 23, 0.22);
+  --card-shadow: 0 18px 38px -24px rgba(23, 23, 23, 0.16);
+  --font-display: "Instrument Serif", Georgia, serif;
 }
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
 }
 
 body {
@@ -23,9 +40,14 @@ body {
   font-family: "Manrope Variable", "Avenir Next", "Segoe UI", sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(circle at 12% 18%, rgba(141, 215, 191, 0.22), transparent 30%),
-    radial-gradient(circle at 85% 12%, rgba(239, 191, 125, 0.22), transparent 28%),
-    linear-gradient(150deg, #f5f7f4 0%, #ebf0f4 52%, #f6f4ee 100%);
+    radial-gradient(circle at 12% 16%, rgba(20, 92, 99, 0.08), transparent 28%),
+    radial-gradient(circle at 88% 10%, rgba(169, 120, 34, 0.09), transparent 24%),
+    linear-gradient(180deg, #faf7f0 0%, #f2ede2 100%);
+}
+
+::selection {
+  background: rgba(20, 92, 99, 0.16);
+  color: var(--ink);
 }
 
 code,
@@ -34,7 +56,14 @@ pre,
   font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
 }
 
-main {
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+
+main,
+.app-shell-main {
   animation: fade-in 300ms ease-out;
 }
 
@@ -46,5 +75,82 @@ main {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@layer components {
+  .panel-surface {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--panel-shadow);
+    backdrop-filter: blur(14px);
+  }
+
+  .panel-muted {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    box-shadow: var(--card-shadow);
+  }
+
+  .section-shell {
+    @apply rounded-[28px] p-6 md:p-7;
+  }
+
+  .eyebrow-label {
+    @apply text-[11px] font-semibold uppercase tracking-[0.2em];
+    color: var(--slate);
+  }
+
+  .page-title {
+    @apply font-display text-[clamp(2.3rem,4vw,3.75rem)] leading-[0.95] text-ink;
+  }
+
+  .section-title {
+    @apply font-display text-[clamp(1.7rem,2.4vw,2.45rem)] leading-[0.98] text-ink;
+  }
+
+  .paper-input {
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+  }
+
+  .ghost-button {
+    @apply rounded-full px-4 py-2 text-sm font-semibold transition;
+    background: var(--surface-strong);
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+  }
+
+  .ghost-button:hover {
+    background: color-mix(in srgb, var(--bone) 72%, white);
+  }
+
+  .primary-button {
+    @apply rounded-full px-4 py-2 text-sm font-semibold transition;
+    background: var(--petrol);
+    color: var(--paper);
+    border: 1px solid transparent;
+  }
+
+  .primary-button:hover {
+    filter: brightness(0.96);
+  }
+
+  .danger-button {
+    @apply rounded-full px-4 py-2 text-sm font-semibold transition;
+    background: var(--oxblood);
+    color: var(--paper);
+    border: 1px solid transparent;
+  }
+
+  .danger-button:hover {
+    filter: brightness(0.96);
+  }
+
+  .metric-card {
+    @apply rounded-2xl p-4;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
   }
 }

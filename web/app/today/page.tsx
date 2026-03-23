@@ -58,11 +58,11 @@ export default function TodayPage() {
   return (
     <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
       <div className="space-y-6">
-        <div className="rounded-3xl border border-ink/10 bg-white/85 p-6 shadow-panel backdrop-blur">
+        <div className="panel-surface section-shell">
           <div className="mb-5 flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate">Director intervention brief</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight">Today&apos;s Three</h2>
+              <p className="eyebrow-label">Director intervention brief</p>
+              <h2 className="section-title mt-3">Today&apos;s Three</h2>
               <p className="mt-2 max-w-2xl text-sm text-ink/65">
                 Start with the highest-leverage interventions, not the longest task list. Use this page to decide where
                 Joydeep should unblock, review, or follow through first.
@@ -81,7 +81,7 @@ export default function TodayPage() {
           ) : (
             <div className="space-y-4">
               {focus.map((task, index) => (
-                <article key={task.filename} className="rounded-2xl border border-ink/10 bg-cloud/60 p-4">
+                <article key={task.filename} className="rounded-[22px] border border-ink/10 bg-bone/80 p-4">
                   <div className="mb-2 flex flex-wrap items-center gap-2">
                     <span className="mono text-xs text-ink/60">#{index + 1}</span>
                     <PriorityBadge priority={task.frontmatter.priority} />
@@ -99,7 +99,7 @@ export default function TodayPage() {
 
           <button
             type="button"
-            className="mt-5 rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-cloud transition hover:bg-ink/90"
+            className="primary-button mt-5"
             onClick={() => {
               if (focus[0]) {
                 setMessage(`First intervention locked: ${focus[0].frontmatter.title}`);
@@ -110,8 +110,8 @@ export default function TodayPage() {
           </button>
         </div>
 
-        <div className="rounded-3xl border border-ink/10 bg-white/85 p-6 shadow-card">
-          <h2 className="text-xl font-semibold tracking-tight">Blockers that may need intervention</h2>
+        <div className="panel-muted section-shell">
+          <h2 className="font-display text-[2rem] leading-none tracking-tight">Blockers that may need intervention</h2>
           <p className="mt-2 text-sm text-ink/65">
             Review blocked work quickly. Decide whether to escalate, clarify, or let it wait intentionally.
           </p>
@@ -120,7 +120,7 @@ export default function TodayPage() {
           ) : (
             <ul className="mt-4 space-y-3">
               {blocked.map((task) => (
-                <li key={task.filename} className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
+                <li key={task.filename} className="rounded-2xl border border-oxblood/20 bg-oxblood/10 px-4 py-3 text-sm text-oxblood">
                   <div className="flex flex-wrap items-center gap-2">
                     <PriorityBadge priority={task.frontmatter.priority} />
                     <StatusBadge status={task.frontmatter.status} />
@@ -135,12 +135,13 @@ export default function TodayPage() {
       </div>
 
       <aside className="space-y-6">
-        <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
-          <h2 className="text-lg font-semibold">Quick capture</h2>
+        <div className="panel-surface section-shell">
+          <p className="eyebrow-label">Keep momentum</p>
+          <h2 className="font-display mt-3 text-[2rem] leading-none">Quick capture</h2>
           <p className="mt-1 text-sm text-ink/60">Drop new asks, escalations, or follow-ups without losing momentum.</p>
           <form className="mt-4 space-y-3" onSubmit={handleCapture}>
             <textarea
-              className="min-h-28 w-full rounded-xl border border-ink/15 bg-cloud px-3 py-2 text-sm outline-none ring-mint transition focus:ring-2"
+              className="paper-input min-h-28 w-full rounded-2xl px-3 py-2 text-sm outline-none ring-mint transition focus:ring-2"
               value={capture}
               onChange={(event) => setCapture(event.target.value)}
               placeholder="Example: Prepare stakeholder update for middleware milestone"
@@ -148,7 +149,7 @@ export default function TodayPage() {
             <button
               type="submit"
               disabled={busy}
-              className="w-full rounded-xl bg-mint px-3 py-2 text-sm font-semibold text-ink transition hover:bg-mint/80 disabled:opacity-60"
+              className="primary-button w-full rounded-2xl disabled:opacity-60"
             >
               {busy ? "Capturing..." : "Capture to backlog"}
             </button>
@@ -156,8 +157,9 @@ export default function TodayPage() {
           {message && <p className="mt-3 text-sm text-ink/70">{message}</p>}
         </div>
 
-        <div className="rounded-3xl border border-ink/10 bg-white/85 p-5 shadow-card">
-          <h2 className="text-lg font-semibold">Operating-goal signal</h2>
+        <div className="panel-muted section-shell">
+          <p className="eyebrow-label">Role alignment</p>
+          <h2 className="font-display mt-3 text-[2rem] leading-none">Operating-goal signal</h2>
           <p className="mt-1 text-sm text-ink/60">Keep the day tied to the role goals, not just task volume.</p>
           <dl className="mt-3 space-y-3 text-sm">
             <div>
