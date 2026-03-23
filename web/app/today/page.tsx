@@ -3,15 +3,19 @@
 import React, { useMemo, useState } from "react";
 import { useEffect } from "react";
 import { api } from "@/lib/client-api";
-import { topFocusTasks } from "@/lib/scoring";
 import { EmptyState, PriorityBadge, StatusBadge } from "@/components/ui";
-import { presentBlockedTask, presentTaskInterventionCandidate } from "@/lib/intervention-presenters";
-import type { GoalsResponse, SystemStatus, TaskDocument } from "@/lib/types";
+import { presentBlockedTask, presentBriefOutcome } from "@/lib/intervention-presenters";
+import type { DailyBrief, GoalsResponse, SystemStatus, TaskDocument } from "@/lib/types";
+
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 export default function TodayPage() {
   const [tasks, setTasks] = useState<TaskDocument[]>([]);
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [goals, setGoals] = useState<GoalsResponse | null>(null);
+  const [brief, setBrief] = useState<DailyBrief | null>(null);
   const [capture, setCapture] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -19,15 +23,17 @@ export default function TodayPage() {
 
   const load = async () => {
     setLoading(true);
-    const [tasksRes, statusRes, goalsRes] = await Promise.all([
+    const [tasksRes, statusRes, goalsRes, briefRes] = await Promise.all([
       api.getTasks(new URLSearchParams({ include_done: "false" })),
       api.getSystemStatus(),
-      api.getGoals()
+      api.getGoals(),
+      api.getAssistantBrief(todayIso())
     ]);
 
     if (tasksRes.ok && Array.isArray(tasksRes.data)) setTasks(tasksRes.data);
     if (statusRes.ok && statusRes.data) setStatus(statusRes.data);
     if (goalsRes.ok && goalsRes.data) setGoals(goalsRes.data);
+    if (briefRes.ok && briefRes.data) setBrief(briefRes.data);
 
     setLoading(false);
   };
@@ -36,8 +42,9 @@ export default function TodayPage() {
     void load();
   }, []);
 
-  const focus = useMemo(() => topFocusTasks(tasks, 3), [tasks]);
   const blocked = useMemo(() => tasks.filter((task) => task.frontmatter.status === "b"), [tasks]);
+  const tasksById = useMemo(() => new Map(tasks.map((task) => [task.filename, task])), [tasks]);
+  const focus = brief?.topOutcomes ?? [];
 
   const handleCapture = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -80,20 +87,25 @@ export default function TodayPage() {
             />
           ) : (
             <div className="space-y-4">
-              {focus.map((task, index) => (
-                <article key={task.filename} className="rounded-[22px] border border-ink/10 bg-bone/80 p-4">
+              {focus.map((outcome, index) => {
+                const task = tasksById.get(outcome.taskId);
+                const view = presentBriefOutcome(outcome);
+
+                return (
+                <article key={outcome.id} className="rounded-[22px] border border-ink/10 bg-bone/80 p-4">
                   <div className="mb-2 flex flex-wrap items-center gap-2">
                     <span className="mono text-xs text-ink/60">#{index + 1}</span>
-                    <PriorityBadge priority={task.frontmatter.priority} />
-                    <StatusBadge status={task.frontmatter.status} />
-                    <span className="text-xs text-ink/60">{task.frontmatter.category}</span>
+                    <PriorityBadge priority={outcome.priority} />
+                    {task ? <StatusBadge status={task.frontmatter.status} /> : null}
+                    {task ? <span className="text-xs text-ink/60">{task.frontmatter.category}</span> : null}
+                    <span className="mono text-xs text-ink/60">score {outcome.score}</span>
                   </div>
-                  <h3 className="text-lg font-semibold text-ink">{task.frontmatter.title}</h3>
-                  <p className="mt-2 text-sm font-medium text-ink/80">{presentTaskInterventionCandidate(task).reason}</p>
-                  <p className="mt-2 text-sm text-ink/70">{presentTaskInterventionCandidate(task).goalSignal}</p>
-                  <p className="mt-2 text-sm text-ink/65">{presentTaskInterventionCandidate(task).dueLabel}</p>
+                  <h3 className="text-lg font-semibold text-ink">{outcome.title}</h3>
+                  <p className="mt-2 text-sm font-medium text-ink/80">{view.reason}</p>
+                  <p className="mt-2 text-sm text-ink/70">{view.goalSignal}</p>
+                  <p className="mt-2 text-sm text-ink/65">{task?.frontmatter.due_date ? `Due ${task.frontmatter.due_date}` : "Due: No due date"}</p>
                 </article>
-              ))}
+              )})}
             </div>
           )}
 
@@ -102,7 +114,7 @@ export default function TodayPage() {
             className="primary-button mt-5"
             onClick={() => {
               if (focus[0]) {
-                setMessage(`First intervention locked: ${focus[0].frontmatter.title}`);
+                setMessage(`First intervention locked: ${focus[0].title}`);
               }
             }}
           >
