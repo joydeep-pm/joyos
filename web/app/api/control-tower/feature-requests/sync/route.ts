@@ -19,9 +19,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
+          configurationRequired: true,
           error: "Neither Jira nor Confluence is configured. Please set environment variables."
-        },
-        { status: 400 }
+        }
       );
     }
 

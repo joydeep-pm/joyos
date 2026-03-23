@@ -53,6 +53,8 @@ export default function InterventionPage() {
   const [brief, setBrief] = useState<InterventionBrief | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
   const [selectedFeatureRequest, setSelectedFeatureRequest] = useState<FeatureRequestWithIntervention | null>(null);
   const [epicFilter, setEpicFilter] = useState("");
   const [jqlFilter, setJqlFilter] = useState(DEFAULT_LEN_SYNC_JQL);
@@ -159,8 +161,8 @@ export default function InterventionPage() {
 
   async function handleSync() {
     try {
-      setLoading(true);
-      setError(null);
+      setSyncing(true);
+      setSyncError(null);
 
       const epicKeys = epicFilter
         .split(",")
@@ -189,8 +191,9 @@ export default function InterventionPage() {
       // Refresh brief after sync
       await fetchBrief();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to sync");
-      setLoading(false);
+      setSyncError(err instanceof Error ? err.message : "Failed to sync");
+    } finally {
+      setSyncing(false);
     }
   }
 
@@ -327,6 +330,7 @@ export default function InterventionPage() {
               </button>
               <button
                 onClick={handleSync}
+                disabled={syncing}
                 className="primary-button flex items-center gap-2"
                 title="Sync using the saved/default LEN filter"
               >
@@ -338,7 +342,7 @@ export default function InterventionPage() {
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
-                Sync LEN
+                {syncing ? "Syncing..." : "Sync LEN"}
               </button>
             </div>
           </div>
@@ -409,6 +413,13 @@ export default function InterventionPage() {
                 This query is loaded by default and used automatically when you click Sync Now. Custom JQL overrides the default Jira sync query. If both are provided, JQL takes precedence over board/project sync scope.
               </p>
             </div>
+        </div>
+      )}
+
+      {syncError && (
+        <div className="rounded-2xl border border-amber/30 bg-amber/10 px-4 py-3 text-sm text-ink">
+          <p className="font-semibold text-amber">Sync unavailable</p>
+          <p className="mt-1 text-ink/75">{syncError}</p>
         </div>
       )}
 
