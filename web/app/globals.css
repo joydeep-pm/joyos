@@ -1,5 +1,20 @@
-@import "@fontsource-variable/manrope";
 @import "@fontsource/jetbrains-mono";
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi-variable.woff2") format("woff2");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi-variable-italic.woff2") format("woff2");
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
+}
 
 @tailwind base;
 @tailwind components;
@@ -23,7 +38,6 @@
   --surface-strong: rgba(255, 252, 246, 0.96);
   --panel-shadow: 0 20px 50px -28px rgba(23, 23, 23, 0.22);
   --card-shadow: 0 18px 38px -24px rgba(23, 23, 23, 0.16);
-  --font-display: "Instrument Serif", Georgia, serif;
 }
 
 * {
@@ -37,7 +51,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Manrope Variable", "Avenir Next", "Segoe UI", sans-serif;
+  font-family: "Satoshi", "Avenir Next", "Segoe UI", sans-serif;
   color: var(--ink);
   background:
     radial-gradient(circle at 12% 16%, rgba(20, 92, 99, 0.08), transparent 28%),
@@ -57,9 +71,9 @@ pre,
 }
 
 .font-display {
-  font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: -0.04em;
+  font-family: "Satoshi", "Avenir Next", "Segoe UI", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.05em;
 }
 
 main,
@@ -102,11 +116,24 @@ main,
   }
 
   .page-title {
-    @apply font-display text-[clamp(2.3rem,4vw,3.75rem)] leading-[0.95] text-ink;
+    @apply text-[clamp(2.15rem,3.7vw,3.3rem)] font-extrabold leading-[0.92] text-ink;
+    letter-spacing: -0.07em;
   }
 
   .section-title {
-    @apply font-display text-[clamp(1.7rem,2.4vw,2.45rem)] leading-[0.98] text-ink;
+    @apply text-[clamp(1.55rem,2.1vw,2.15rem)] font-bold leading-[0.96] text-ink;
+    letter-spacing: -0.055em;
+  }
+
+  .brand-wordmark {
+    @apply text-[clamp(1.9rem,3vw,2.55rem)] font-extrabold uppercase leading-none;
+    letter-spacing: -0.055em;
+    color: var(--ink);
+  }
+
+  .brand-submark {
+    @apply mt-1 text-[clamp(1rem,1.5vw,1.2rem)] font-semibold uppercase leading-none text-slate;
+    letter-spacing: 0.08em;
   }
 
   .paper-input {

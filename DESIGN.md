@@ -21,15 +21,16 @@
   - The intended effect is a product cockpit that feels personal, senior, and deliberate.
 
 ## Typography
-- **Display/Hero:** `Instrument Serif` — reserved for page-level review titles, weekly review headers, strategy headings, and any surface where the product is asking for judgment rather than data entry.
-- **Body:** `Manrope` — primary UI and reading face. Already present in the codebase. Dense, legible, modern, and calm enough for daily operational use.
-- **UI/Labels:** `Manrope` — same as body, with tighter tracking and stronger weights for section labels, controls, and summaries.
+- **Display/Hero:** `Satoshi` — a single, sharper interface family for page titles, shell branding, and section headers. It keeps the product modern and coherent without reintroducing a second editorial voice.
+- **Body:** `Satoshi` — primary UI and reading face. Slightly crisper than Manrope, with enough neutrality for dense daily operational use.
+- **UI/Labels:** `Satoshi` — same as body, with stronger weights and controlled tracking for labels, controls, summaries, and navigation.
 - **Data/Tables:** `JetBrains Mono` — for Jira keys, dates, status readouts, metrics, and any operational detail that benefits from precision and tabular rhythm.
 - **Code:** `JetBrains Mono`
 - **Loading:**
-  - App runtime: keep local `@fontsource-variable/manrope` and `@fontsource/jetbrains-mono`
-  - Add `Instrument Serif` via `next/font/google` or `@fontsource` when implementation begins
-  - Preview artifact uses Google Fonts CDN only as a temporary evaluation tool
+  - App runtime: host `Satoshi` locally under `web/public/fonts/` and load it through `@font-face`
+  - Keep `JetBrains Mono` via `@fontsource`
+  - Do not introduce a second display face unless the user explicitly asks for one again
+  - Preview artifacts should use the same runtime font stack when possible
 - **Scale:**
   - Display XXL: `clamp(54px, 7vw, 92px)`
   - Display XL: `44px`
@@ -113,13 +114,13 @@
 
 ## Deliberate Risks
 - Warm paper surfaces instead of category-standard cool white
-- Serif used selectively for judgment-heavy moments
+- Strong sans-serif hierarchy instead of default enterprise-neutral typography
 - Oxblood instead of default bright red for escalation states
 - Briefing-style section composition rather than endless uniform card grids
 
 ## Implementation Guidance
-- Use the serif only where the app is synthesizing, deciding, or reviewing. Never use it across the whole shell.
-- Keep `Manrope` as the dominant interface face.
+- Keep `Satoshi` as the dominant interface face across body and headings.
+- Differentiate hierarchy with size, weight, tracking, and spacing before reaching for a second type family.
 - Keep `JetBrains Mono` tightly scoped to IDs, metrics, dates, and machine-readable status strings.
 - Introduce color primarily through priority, state, and action. The product should not rely on a bright branded wash.
 - Prefer hairline borders, surface separation, and type hierarchy over heavy shadows or saturated fills.
@@ -138,6 +139,6 @@
 | Date | Decision | Rationale |
 |------|----------|-----------|
 | 2026-03-23 | Adopted Editorial Utilitarian direction | The product is a personal operating cockpit for senior product judgment, not a generic PM dashboard. |
-| 2026-03-23 | Kept Manrope and JetBrains Mono as operational fonts | They are already in the codebase and fit the density and precision requirements. |
-| 2026-03-23 | Added Instrument Serif as display accent | The serif creates a clear distinction between workflow execution and judgment-heavy review moments. |
+| 2026-03-23 | Switched the live UI system to Satoshi with JetBrains Mono for precision text | The user wanted end-to-end font coherence, and Satoshi provides a cleaner single-family hierarchy than the earlier mixed or Manrope-led setups. |
+| 2026-03-23 | Removed the serif display accent from the live system | User feedback showed the mixed type system felt visually inconsistent across the shell and work surfaces. |
 | 2026-03-23 | Chose warm paper neutrals with petrol / oxblood accents | This keeps the interface calm and distinctive while preserving seriousness and operational clarity. |

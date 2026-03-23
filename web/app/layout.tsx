@@ -1,15 +1,7 @@
 import type { Metadata } from "next";
-import { Instrument_Serif } from "next/font/google";
 import "@/app/globals.css";
 import { AppNav } from "@/components/nav";
 import { CopilotPanel } from "@/components/copilot-panel";
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-display"
-});
 
 export const metadata: Metadata = {
   title: "Product Control Tower",
@@ -19,12 +11,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={instrumentSerif.variable}>
+      <body>
         <div className="mx-auto min-h-screen w-full max-w-[1480px] px-4 py-4 md:px-6 lg:px-8">
           <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
             <aside className="panel-surface section-shell lg:sticky lg:top-4 lg:self-start">
               <p className="eyebrow-label">Joydeep Sarkar</p>
-              <h1 className="page-title mt-4">JoyOS Control Tower</h1>
+              <div className="mt-4">
+                <p className="brand-wordmark">JoyOS</p>
+                <h1 className="brand-submark">Control Tower</h1>
+              </div>
               <p className="mt-4 max-w-xs text-sm leading-6 text-ink/70">
                 Personal operating cockpit for intervention, grooming, strategy, people review, and approval-gated product execution.
               </p>
