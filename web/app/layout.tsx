@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </p>
               </div>
             </aside>
-            <div className="app-shell-main space-y-5">
+            <div className="app-shell-main min-w-0 space-y-5">
               <header className="panel-muted section-shell">
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div>
